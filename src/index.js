@@ -1,11 +1,21 @@
 import React from 'react';
 import ReactDOM from 'react-dom/client';
-import LoginPage from './Pages/Authentication/LoginPage';
+import AuthPage from './Pages/Authentication/AuthPage';
+import SignupCard from './Components/SignUpCard';
+import ForgotPasswordCard from './Components/ForgotPasswordCard';
+import { BrowserRouter, Routes, Route } from "react-router-dom";
 
 const root = ReactDOM.createRoot(document.getElementById('root'));
 root.render(
   <React.StrictMode>
-    <LoginPage />
+    <BrowserRouter>
+      <Routes>
+        <Route path="/" element={<AuthPage />} />
+        <Route path="/login" element={<AuthPage />} />
+        <Route path="/signup" element={<SignupCard />} />
+        <Route path='/forgot-password' element={<ForgotPasswordCard />} />
+      </Routes>
+    </BrowserRouter>
   </React.StrictMode>
 );
 

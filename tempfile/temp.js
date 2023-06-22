@@ -4,10 +4,11 @@ import { Auth } from '@supabase/auth-ui-react'
 import { ThemeSupa } from '@supabase/auth-ui-shared'
 import { Button } from 'antd'
 
-console.log(process.env.SUPABASE_KEY);
+
 
 const supabaseUrl = 'https://exsvuquqspmbrtyjdpyc.supabase.co'
 const supabaseKey = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImV4c3Z1cXVxc3BtYnJ0eWpkcHljIiwicm9sZSI6ImFub24iLCJpYXQiOjE2ODYyNzMxNDgsImV4cCI6MjAwMTg0OTE0OH0.vtMaXrTWDAluG_A-68pvQlSQ6GAskzADYfOonmCXPoo"
+
 const supabase = createClient(supabaseUrl, supabaseKey)
 
 export default function LoginPage() {
@@ -39,6 +40,7 @@ export default function LoginPage() {
   if (!session) {
     return (<Auth supabaseClient={supabase} appearance={{ theme: ThemeSupa }} />)
   }
+  // login success
   else {
     return (
       <div>
