@@ -111,7 +111,7 @@ function SignUpCard() {
 
   return (
     <div
-      className="login-container"
+      className="signup-container"
       style={{
         height: "auto",
         width: "98.93vw",
@@ -153,7 +153,7 @@ function SignUpCard() {
           name="register"
           onFinish={onFinish}
           style={{
-            maxWidth: 800,
+            maxWidth: "81%",
             marginBottom: "10px",
           }}
           scrollToFirstError

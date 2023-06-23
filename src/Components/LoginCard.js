@@ -1,9 +1,10 @@
 import { Button } from "antd";
 import loginBg from "../images/loginBg.jpeg";
-import { Form, Input } from "antd";
+import { Form, Input, Tooltip } from "antd";
 import { useState } from "react";
 import { Link } from "react-router-dom";
 import { supabase } from "../supabase-client";
+import { InfoCircleOutlined, UserOutlined } from "@ant-design/icons";
 
 function LoginCard(props) {
   const [isHoveredForgot, setIsHoveredForgot] = useState(false);
@@ -80,7 +81,7 @@ function LoginCard(props) {
               span: 16,
             }}
             style={{
-              maxWidth: 600,
+              maxWidth: 800,
             }}
             initialValues={{
               remember: true,
@@ -90,18 +91,31 @@ function LoginCard(props) {
             <h1 style={{ textAlign: "center" }}>Login</h1>
             <Form.Item
               label="Email"
-              name="email"
               rules={[
                 {
                   required: true,
                   message: "Please input your email!",
                 },
+                {
+                  type: "email",
+                  message: "Please enter a valid email address!",
+                },
               ]}
             >
               <Input
-                className="emailInput"
                 name="email"
                 onChange={handleChange}
+                placeholder="Enter your email"
+                prefix={<UserOutlined className="site-form-item-icon" />}
+                suffix={
+                  <Tooltip title="email@domain.com">
+                    <InfoCircleOutlined
+                      style={{
+                        color: "rgba(0,0,0,.45)",
+                      }}
+                    />
+                  </Tooltip>
+                }
               />
             </Form.Item>
 
@@ -119,6 +133,7 @@ function LoginCard(props) {
                 className="passwordInput"
                 name="password"
                 onChange={handleChange}
+                placeholder="Enter your password"
               />
             </Form.Item>
 
