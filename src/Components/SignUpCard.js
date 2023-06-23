@@ -1,6 +1,6 @@
 import loginBg from "../images/loginBg.jpeg";
 import { Button, Form, Input, Select } from "antd";
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import { Link } from "react-router-dom";
 import { supabase } from "../supabase-client";
 
@@ -37,31 +37,72 @@ const tailFormItemLayout = {
 };
 
 function SignUpCard() {
-  const [userType, setUsertype] = useState(null);
-  const handleChange = (value) => {
-    setUsertype(value);
-  };
-  useEffect(() => {
-    handleChange(userType);
+  let userType = null;
+  const handleUserChange = (value) => {
+    userType = value;
     console.log(userType);
-  }, [userType]);
+  };
+
+  const formData = {
+    name: "",
+    email: "",
+    password: "",
+    phone: "",
+    gender: "",
+  };
 
   const [isHovered, setIsHovered] = useState(false);
   const hoverStyle = {
     color: isHovered ? "#430f58" : "#6643b5",
   };
 
-  const [form] = Form.useForm();
-  const onFinish = (values) => {
-    console.log("Received values of form: ", values);
+  const signUp = async () => {
+    try {
+      // signup account
+      // the account created will be stored into respective table based on userType using Trigger in Supabase
+      const { data, error } = await supabase.auth.signUp({
+        email: formData.email,
+        password: formData.password,
+        phone: formData.phone,
+        options: {
+          data: {
+            userType: userType,
+            name: formData.name,
+            phone: formData.phone,
+            gender: formData.gender,
+          },
+        },
+      });
+
+      console.log(data);
+      if (error) throw error;
+
+      // send email confirmation
+      alert("Check your email for the confirmation link!");
+      window.location.href = "/login";
+    } catch (error) {
+      alert(error.error_description || error.message);
+    }
   };
+
+  const [form] = Form.useForm();
+
+  const onFinish = (value) => {
+    formData.name = value.name;
+    formData.email = value.email;
+    formData.password = value.password;
+    formData.phone = value.prefix + value.phone;
+    formData.gender = value.gender;
+    console.log(formData.phone)
+    signUp();
+  };
+
   const prefixSelector = (
-    <Form.Item name="prefix" noStyle>
+    <Form.Item name="prefix" noStyle initialValue={"60"}>
       <Select
         style={{
           width: 70,
         }}
-        defaultValue={"60"}
       >
         <Option value="60">+60</Option>
       </Select>
@@ -131,7 +172,7 @@ function SignUpCard() {
           >
             <Select
               placeholder="Select your user type"
-              onChange={handleChange}
+              onChange={handleUserChange}
               options={[
                 {
                   value: "student",
@@ -197,6 +238,24 @@ function SignUpCard() {
               {
                 required: true,
                 message: "Please input your password!",
+              },
+              {
+                validator(_, value) {
+                  if (
+                    (value.length >= 8 &&
+                      value.match(
+                        /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)[a-zA-Z\d]{8,}$/
+                      )) ||
+                    value.length === 0
+                  ) {
+                    return Promise.resolve();
+                  }
+                  return Promise.reject(
+                    new Error(
+                      "The password must be at least 8 characters, one uppercase letter, one lowercase letter and one number!"
+                    )
+                  );
+                },
               },
             ]}
             hasFeedback
