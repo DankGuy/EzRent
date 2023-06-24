@@ -1,0 +1,19 @@
+.product-carousel {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-bottom: 20px;
+}
+
+.carousel-button {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background-color: #d5def5;
+  border: none;
+  cursor: pointer;
+}
+
+.carousel-button:disabled {
+  background-color: rgb(215, 215, 215) !important;
+}

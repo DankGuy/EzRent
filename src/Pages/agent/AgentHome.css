@@ -1,0 +1,20 @@
+.ant-menu-item {
+    /* background-color: red; */
+    margin-bottom: 20px !important;
+    font-weight: 500;
+    /* display: flex !important;
+    align-items: center !important; */
+}
+
+.ant-menu-item-selected {
+    background-color: #430f58 !important;
+    color: white !important;
+    font-weight: bold;
+}
+
+
+.ant-menu-vertical > li > svg {
+    margin-left: -5px !important;
+    margin-top: 7px !important;
+    
+}
