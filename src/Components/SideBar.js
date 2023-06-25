@@ -32,7 +32,15 @@ function Sidebar({ value, setTitle }) {
     console.log('selected key: ' + selectedKey)
 
     return (
-        <Sider trigger={null} collapsible collapsed={value} collapsedWidth={90} width={220}>
+        <Sider trigger={null} collapsible collapsed={value} collapsedWidth={90} width={220}
+            style={{
+                position: 'fixed',
+                top: '0',
+                left: '0',
+                height: '100%',
+                overflowY: 'auto',
+                zIndex: '100',
+            }}>
             <Menu
                 theme="light"
                 mode="inline"
@@ -40,7 +48,8 @@ function Sidebar({ value, setTitle }) {
                 selectedKeys={[selectedKey]}
                 style={{
                     backgroundColor: '#d5def5',
-                    height: '100vh'
+                    height: '100%', 
+                    overflowY: 'auto',
                 }}
                 onClick={({ key }) => {
                     console.log(key)

@@ -1,14 +1,23 @@
 import { useState, useEffect } from 'react'
 import { PlusOutlined } from '@ant-design/icons';
-import { Modal, Upload, message, Form, Row, Col, Input, Radio, Select, InputNumber, Checkbox, Button } from 'antd';
-import StateSelection from '../../Components/StateSelection';
+import { Modal, Upload, message, Form, Row, Col, Input, Radio, Select, InputNumber, Checkbox, Button, Popconfirm } from 'antd';
 import FurnishTypeSelection from '../../Components/FurnishTypeSelection';
 import TextArea from 'antd/es/input/TextArea';
 import { createClient } from '@supabase/supabase-js';
-import { useNavigate } from 'react-router-dom';
+import { Link, useLocation, useNavigate } from 'react-router-dom';
+import "./AgentRoomRentalPost.css"
 
-function AgentCreatePost() {
+function AgentRoomRentalPost() {
+    const location = useLocation();
+    const { post, isView } = location.state;
 
+    const [form] = Form.useForm();
+    const [messageApi, contextHolder] = message.useMessage();
+    const navigate = useNavigate();
+
+    console.log(post)
+    console.log(form)
+    console.log(isView)
     const [previewOpen, setPreviewOpen] = useState(false);
     const [previewImage, setPreviewImage] = useState('');
     const [previewTitle, setPreviewTitle] = useState('');
@@ -17,13 +26,9 @@ function AgentCreatePost() {
         value: '',
     });
 
-    const [propertyState, setPropertyState] = useState('');
+    const [propertyState, setPropertyState] = useState(post.propertyState);
 
     const [isRoom, setIsRoom] = useState(true)
-
-    const [isButtonDisabled, setIsButtonDisabled] = useState(false);
-    const [messageApi, contextHolder] = message.useMessage();
-    const navigate = useNavigate();
 
     const addressSupabase = createClient(
         'https://fhqfbbomaerfhpitvmbd.supabase.co',
@@ -290,9 +295,10 @@ function AgentCreatePost() {
             roomnumber = [{ masterRoomNum }, { mediumRoomNum }, { smallRoomNum }];
         }
 
+        console.log("Update successfully")
         const { data: postData, error: postError } = await supabase
             .from('property_post')
-            .insert([
+            .update(
                 {
                     postDate: currentDate,
                     postTime: currentTime,
@@ -312,23 +318,28 @@ function AgentCreatePost() {
                     propertyRoomNumber: roomnumber,
                     propertyRoomSquareFeet: roomSquareFeet,
                     propertyDescription: propertyDescription,
-                },
-            ]);
+                })
+            .eq('postID', post.postID);
 
         if (postError) {
-            console.log(postError)
+            console.log("Error failed: " + postError)
+            messageApi.open({
+                type: 'error',
+                content: 'An error occurred during edit',
+            });
+        }
+        else {
+
+            messageApi.open({
+                type: 'success',
+                content: 'Edit successful. You will be redirected to previous page within 3 seconds...',
+            });
+
+            setTimeout(() => {
+                navigate("/agent/roomRental")
+            }, 3000);
         }
 
-        setIsButtonDisabled(true);
-
-        messageApi.open({
-            type: 'success',
-            content: 'Create successful. You will be redirected to the previous page within 3 seconds...',
-        });
-
-        setTimeout(() => {
-            navigate("/agent/roomRental")
-        }, 3000);
 
 
     }
@@ -337,8 +348,80 @@ function AgentCreatePost() {
         console.log(e)
     }
 
+    useEffect(() => {
+        window.scrollTo(0, 0);
+
+    }, [isView])
+
+    const deletePost = async () => {
+        const { data, error } = await supabase
+            .from('property_post')
+            .delete()
+            .eq('postID', post.postID)
+
+        if (error) {
+            console.log(error)
+        }
+
+        messageApi.open({
+            type: 'success',
+            content: 'Delete successful. You will be redirected to previous page within 3 seconds...',
+        });
+
+        setTimeout(() => {
+            navigate("/agent/roomRental")
+        }, 3000);
+    }
+
+    const showButton = () => {
+        if (isView) {
+            return (
+                <div style={{ display: 'flex', justifyContent: 'center', padding: '10px' }}>
+                    <Link to={`/agent/roomRental/editPost/${post.postID}`} state={{ post, isView: false }}>
+                        <Button className='viewButton' style={{ marginRight: '20px', width: '100px' }} type="primary" >
+                            Edit
+                        </Button>
+                    </Link>
+                    <Popconfirm
+                        title="Are you sure you want to delete this post?"
+                        onConfirm={() => {
+                            deletePost();
+                        }}
+                    >
+                        {contextHolder}
+                        <Button className="viewButton" style={{ width: '100px' }} type="primary">
+                            Delete
+                        </Button>
+                    </Popconfirm>
+                </div>
+            )
+        }
+        else {
+            return (
+                <div style={{ display: 'flex', justifyContent: 'center', padding: '10px' }}>
+                    <Button className='viewButton' style={{ marginRight: '20px', width: '100px' }} type="primary" onClick={() => { form.resetFields() }} >
+                        Cancel
+                    </Button>
+
+                    <Popconfirm
+                        title="Title"
+                        description="Are you sure you want to make changes?"
+                        onConfirm={() => {
+                            form.submit();
+                        }}
+                    >
+                        {contextHolder}
+                        <Button className="viewButton" style={{ width: '100px' }} type="primary">
+                            Edit
+                        </Button>
+                    </Popconfirm>
+                </div>
+            )
+        }
+    }
+
     return <>
-        <h1>Create new post</h1>
+        <h1>Edit Post</h1>
 
 
         <Modal open={previewOpen} title={previewTitle} footer={null} onCancel={handleCancel}>
@@ -354,22 +437,29 @@ function AgentCreatePost() {
 
         <Form
             layout='vertical'
-            name='halo'
             size='middle'
+            disabled={isView}
+            form={form}
             onFinish={onFinish}
             onFinishFailed={onFinishFailed}
             initialValues={{
-                // propertyState: propertyState,
-                propertyFurnishType: null,
-                propertyCategory: 'Room',
-                masterRoomNum: 1,
-                mediumRoomNum: 1,
-                smallRoomNum: 1,
-                propertyRental: 0,
-                roomSquareFeet: 1,
-                propertyDescription: null,
-                propertyType: null,
-                roomType: null,
+                propertyFurnishType: post.propertyFurnishType,
+                propertyCategory: post.propertyCategory,
+                masterRoomNum: (!post.propertyRoomNumber ? 1 : post.propertyRoomNumber[0]),
+                mediumRoomNum: (!post.propertyRoomNumber ? 1 : post.propertyRoomNumber[1]),
+                smallRoomNum: (!post.propertyRoomNumber ? 1 : post.propertyRoomNumber[2]),
+                propertyRental: post.propertyPrice,
+                roomSquareFeet: post.propertyRoomSquareFeet,
+                propertyDescription: post.propertyDescription,
+                propertyType: post.propertyType,
+                roomType: post.propertyRoomType,
+                propertyName: post.propertyName,
+                propertyAddress: post.propertyAddress,
+                propertyCity: post.propertyCity,
+                propertyPostcode: post.propertyPostcode,
+                propertyBuiltupSize: post.propertySquareFeet,
+                propertyFurnish: post.propertyFurnish,
+                propertyFacility: post.propertyFacility,
             }}
         >
             <Row>
@@ -399,7 +489,7 @@ function AgentCreatePost() {
                             message: 'Please enter the property name!',
                         },
                     ]}>
-                        <Input placeholder='Enter your property name here' style={{ width: '50%' }} />
+                        <Input disabled={true} placeholder='Enter your property name here' style={{ width: '50%' }} />
                     </Form.Item>
                 </Col>
             </Row>
@@ -475,7 +565,7 @@ function AgentCreatePost() {
                             message: 'Please choose the property furnish type!',
                         },
                     ]}>
-                        <FurnishTypeSelection bordered={true} />
+                        <FurnishTypeSelection value={post.propertyFurnishType} bordered={true} />
                     </Form.Item>
                 </Col>
             </Row>
@@ -490,7 +580,7 @@ function AgentCreatePost() {
                                 message: 'Please choose one category!',
                             },
                         ]}>
-                        <Radio.Group onChange={() => { setIsRoom(!isRoom) }}>
+                        <Radio.Group onChange={() => { setIsRoom(!isRoom) }} disabled={true}>
                             <Radio value='Room'>Room</Radio>
                             <Radio value='Unit'>Unit</Radio>
                         </Radio.Group>
@@ -523,7 +613,6 @@ function AgentCreatePost() {
                             style={{
                                 width: '100%',
                             }}
-                        // options={furnishOption}
                         >
                             <Row>
                                 {renderedItem(furnishOption)}
@@ -556,29 +645,15 @@ function AgentCreatePost() {
             <Row>
                 <Col span={20}>
                     <Form.Item name="propertyDescription" label="Other description">
-                        <TextArea maxLength={1000} style={{ resize: 'none', height: '100px' }} allowClear={true} autoSize={true} placeholder='Enter other description here...' />
+                        <TextArea maxLength={1000} style={{ resize: 'none', height: 'auto' }} allowClear={true} autoSize={true} placeholder='Enter other description here...' />
                     </Form.Item>
                 </Col>
             </Row>
-
-            <div style={{ display: 'flex', justifyContent: 'center', padding: '10px' }}>
-                <Form.Item>
-                    <Button htmlType='reset' className='viewButton' style={{ marginRight: '20px' }} type="primary" >
-                        Cancel
-                    </Button>
-                </Form.Item>
-
-                <Form.Item>
-                    {contextHolder}
-
-                    <Button htmlType='submit' className="viewButton" type="primary" disabled={isButtonDisabled}>
-                        Submit
-                    </Button>
-                </Form.Item>
-            </div>
         </Form>
+        {showButton()}
+
 
     </>
 }
 
-export default AgentCreatePost;
+export default AgentRoomRentalPost;

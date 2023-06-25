@@ -2,7 +2,7 @@ import { Select } from 'antd';
 import { useState } from 'react';
 
 function MinRentSelection({ value, onChange, ...rest}) {
-    const [minRent, setMinRent] = useState({ value });
+    const [minRent, setMinRent] = useState(null);
 
     const handleChange = (e) => {
         setMinRent(e);
@@ -10,7 +10,6 @@ function MinRentSelection({ value, onChange, ...rest}) {
     }
 
     const minRentOption = [
-        { value: 0, label: 'Min rent (RM)' },
         { value: 100, label: 'RM 100' },
         { value: 200, label: 'RM 200' },
         { value: 300, label: 'RM 300' },
@@ -35,6 +34,7 @@ function MinRentSelection({ value, onChange, ...rest}) {
         options={minRentOption}
         value={minRent}
         onChange={handleChange}
+        placeholder="Min Rent (RM)"
     />
 }
 

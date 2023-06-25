@@ -2,7 +2,7 @@ import { Select } from 'antd';
 import { useState } from 'react';
 
 function FurnishTypeSelection({ value, onChange, bordered, ...rest }) {
-    const [furnish, setFurnish] = useState( undefined );
+    const [furnish, setFurnish] = useState(null);
 
     const handleChange = (e) => {
         onChange(e);
@@ -10,11 +10,12 @@ function FurnishTypeSelection({ value, onChange, bordered, ...rest }) {
     }
 
     const furnishOption = [
-        // { value: 'null', label: 'All furnish type' },
         { value: 'Unfurnished', label: 'Unfurnished' },
         { value: 'Partially Furnished', label: 'Partially furnished' },
         { value: 'Fully Furnished', label: 'Fully furnished' },
     ];
+
+    console.log(bordered)
 
     return <Select
         placeholder="All Furnish Type"

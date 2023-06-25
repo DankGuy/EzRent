@@ -238,7 +238,7 @@ function RoomRental() {
                             </Col>
                         </Row>
                     </div>
-                    <div style={{ marginTop: 'auto' }}>
+                    <div style={{ marginTop: '20px' }}>
                         <Row>
                             <Col span={12}>
                                 <Link to={`/student/roomRental/${post.postID}`} state={post}>

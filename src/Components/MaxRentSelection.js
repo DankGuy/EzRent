@@ -2,7 +2,7 @@ import { Select } from 'antd';
 import { useState } from 'react';
 
 function MaxRentSelection({ value, onChange, ...rest }) {
-    const [maxRent, setMaxRent] = useState({ value });
+    const [maxRent, setMaxRent] = useState(null);
 
     const handleChange = (e) => {
         setMaxRent(e);
@@ -10,7 +10,6 @@ function MaxRentSelection({ value, onChange, ...rest }) {
     }
 
     const maxRentOption = [
-        { value: 0, label: 'Max rent (RM)' },
         { value: 100, label: 'RM 100' },
         { value: 200, label: 'RM 200' },
         { value: 300, label: 'RM 300' },
@@ -35,6 +34,7 @@ function MaxRentSelection({ value, onChange, ...rest }) {
         options={maxRentOption}
         value={maxRent}
         onChange={handleChange}
+        placeholder="Max Rent (RM)"
     />
 }
 

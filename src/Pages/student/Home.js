@@ -36,10 +36,10 @@ function Home() {
     const [state, setState] = useState('All States');
     const [input, setInput] = useState('null');
     const [furnish, setFurnish] = useState('null');
-    const [minRent, setMinRent] = useState('0')
-    const [maxRent, setMaxRent] = useState('0')
+    const [minRent, setMinRent] = useState(null)
+    const [maxRent, setMaxRent] = useState(null)
     const [size, setSize] = useState('500')
-    const [category, setCategory] = useState('null')
+    const [category, setCategory] = useState(null)
     const [isError, setIsError] = useState(false)
     let errorMessage = "*Minimum rent cannot larger than maximum rent";
 
@@ -56,10 +56,12 @@ function Home() {
     }
 
     const handleMinRentChange = (e) => {
-        if (e > maxRent) {
-            setIsError(true);
-            setMinRent(e);
-            return;
+        if (maxRent !== null ){
+            if (e > maxRent) {
+                setIsError(true);
+                setMinRent(e);
+                return;
+            }
         }
         setMinRent(e);
         setIsError(false);
@@ -75,14 +77,6 @@ function Home() {
         setIsError(false);
     }
 
-    const handleSizeChange = (e) => {
-        setSize(e);
-    }
-
-    const handleCategoryChange = (e) => {
-        setCategory(e);
-    }
-
     return <>
         <div style={containerStyle}>
             <Row wrap={true} gutter={160}>
@@ -94,23 +88,23 @@ function Home() {
                     {
                         stateSelection: 'null',
                         furnishType: 'null',
-                        minRent: 0,
-                        maxRent: 0,
+                        minRent: null,
+                        maxRent: null,
                         builtUpSize: 0,
                         searchInput: 'null',
-                        category: 'null',
+                        category: category,
                     }
                 }>
                 <Row style={{ marginLeft: '5%', height: '40px' }}>
                     <Col span={4}>
                         <Form.Item name="stateSelection">
-                            <StateSelection value={state} onChange={handleStateChange} style={{ width: '80%' }} />
+                            <StateSelection  style={{ width: '80%' }} />
                         </Form.Item>
                     </Col>
 
                     <Col span={16}>
                         <Form.Item name="searchInput">
-                            <SearchInput placeholder='Search by location or property name' style={{ width: '90%' }} value={input} onChange={handleInputChange} />
+                            <SearchInput placeholder='Search by location or property name' style={{ width: '90%' }}  />
                         </Form.Item>
                     </Col>
 
@@ -128,13 +122,13 @@ function Home() {
                 <Row style={{ marginLeft: '6%', marginTop: '10px', marginRight: '5%', height: '30px' }}>
                     <Col span={4}>
                         <Form.Item name='furnishType'>
-                            <FurnishTypeSelection value={furnish} onChange={handleFurnishChange} style={{ width: '95%' }} />
+                            <FurnishTypeSelection bordered={false} style={{ width: '95%' }} />
                         </Form.Item>
                     </Col>
 
                     <Col span={4}>
                         <Form.Item name="category">
-                            <CategorySelection value={category} onChange={handleCategoryChange} style={{ width: '80%' }} />
+                            <CategorySelection  style={{ width: '80%' }} />
                         </Form.Item>
                     </Col>
 
@@ -152,7 +146,7 @@ function Home() {
 
                     <Col span={4}>
                         <Form.Item name="builtUpSize">
-                            <BuiltupSizeSelection value={size} onChange={handleSizeChange} style={{ width: '100%' }} />
+                            <BuiltupSizeSelection style={{ width: '100%' }} />
                         </Form.Item>
                     </Col>         
                 </Row>

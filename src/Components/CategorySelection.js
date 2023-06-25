@@ -2,7 +2,7 @@ import { Select } from 'antd';
 import { useState } from 'react';
 
 function CategorySelection({ value, onChange, ...rest }) {
-    const [category, setCategory] = useState({ value });
+    const [category, setCategory] = useState(null);
 
     const handleChange = (e) => {
         onChange(e);
@@ -10,7 +10,6 @@ function CategorySelection({ value, onChange, ...rest }) {
     }
 
     const categoryOption = [
-        { value: 'null', label: 'All category' },
         { value: 'Unit', label: 'Unit' },
         { value: 'Room', label: 'Room' },
     ];
@@ -21,6 +20,7 @@ function CategorySelection({ value, onChange, ...rest }) {
         options={categoryOption}
         value={category}
         onChange={handleChange}
+        placeholder="All Categories"
     />
 }
 

@@ -1,0 +1,37 @@
+.ant-input-disabled{
+    color: black !important;
+    background-color: white !important;
+}
+
+.ant-select-disabled.ant-select-selector{
+    color: black !important;
+    background-color: white !important;
+}
+
+.ant-select-selector{
+    color: black !important;
+    background-color: white !important;
+}
+
+.ant-input-number-disabled{
+    color: black !important;
+    background-color: white !important;
+}
+
+.ant-radio-wrapper-disabled{
+    color: black !important;
+    background-color: white !important;
+}
+.ant-checkbox-disabled+span{
+    color: black !important;
+    background-color: white !important;
+}
+.ant-checkbox-disabled{
+    color: black !important;
+    background-color: white !important;
+}
+
+.ant-checkbox-checked{
+    color: black !important;
+    background-color: white !important;
+}
