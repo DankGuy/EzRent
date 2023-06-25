@@ -6,8 +6,6 @@ import ForgotPasswordCard from './Components/ForgotPasswordCard';
 import UpdatePasswordCard from './Components/UpdatePasswordCard';
 import { BrowserRouter, Routes, Route } from "react-router-dom";
 import AgentLayout from './Pages/agent/AgentLayout';
-
-
 import StudentLayout from './Pages/student/StudentLayout';
 import NotFound from './Pages/Result/NotFound';
 import Home from './Pages/student/Home';
@@ -24,24 +22,12 @@ import AgentAppointment from './Pages/agent/AgentAppointment';
 import AgentRentalAgreement from './Pages/agent/AgentRentalAgreement';
 import AgentRoomRentalPost from './Pages/agent/AgentRoomRentalPost';
 
-
 const root = ReactDOM.createRoot(document.getElementById('root'));
 
-
-
 const App = () => {
-
-
-
   return (
     <React.StrictMode>
       <BrowserRouter>
-
-
-
-
-
-
         <Routes>
           {/* Authentication routes */}
           <Route path="/" element={<AuthPage />} />
@@ -60,7 +46,7 @@ const App = () => {
             <Route path="roomRental/:id" element={<RoomRentalPost />} />
           </Route>
 
-
+          {/* Agent routes */}
           <Route path="/agent/" element={<AgentLayout />}>
             <Route index element={<AgentHome />} />
             <Route path="profile" element={<AgentProfile />} />
@@ -75,22 +61,12 @@ const App = () => {
           {/* 404 Not Found route */}
           <Route path="*" element={<NotFound />} />
         </Routes>
-
-
-
-
-
-        {/* <StudentLayout /> */}
-
-        {/* <AgentLayout/> */}
-
       </BrowserRouter>
     </React.StrictMode>
   )
 }
 
 root.render(
-
   <App />
 );
 
