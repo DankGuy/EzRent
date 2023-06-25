@@ -90,24 +90,33 @@ function RoomRental() {
     const fetchFromSupabase = async (input) => {
         // Make a query to search your Supabase table based on the provided value
         try {
-            const { stateSelection, locationInput, furnishType, category, minRent, maxRent, builtUpSize, sortBy } = input;
+            const {
+                searchInput, propertyBuiltupSize, propertyCategory,
+                propertyCity, propertyDescription, propertyFacility,
+                propertyFurnish, propertyFurnishType, propertyImage,
+                propertyName, propertyPostcode, propertyRental,
+                propertyState, propertyType, roomSquareFeet,
+                roomType, masterRoomNum, mediumRoomNum, smallRoomNum } = input;
 
             let query = supabase.from('property_post').select('*, agent(*)');
 
-            if (stateSelection !== "null") {
-                query = query.eq('propertyState', stateSelection);
+            if (!!propertyState) {
+                console.log("not null")
+                query = query.eq('propertyState', propertyState);
             }
 
-            if (locationInput !== "null") {
-                query = query.ilike('propertyName', `%${locationInput}%`);
+            if (!!searchInput) {
+                query = query.ilike('propertyName', `%${searchInput}%`);
+                query = query.ilike('propertyAddress', `%${searchInput}%`);
+                query = query.ilike('propertyCity', `%${searchInput}%`);
             }
 
-            if (furnishType !== "null") {
-                query = query.eq('propertyFurnishType', furnishType);
+            if (!!propertyFurnishType) {
+                query = query.eq('propertyFurnishType', propertyFurnishType);
             }
 
-            if (category !== "null") {
-                query = query.eq('propertyCategory', category);
+            if (!!propertyCategory) {
+                query = query.eq('propertyCategory', propertyCategory);
             }
 
             if (minRent > 0) {
@@ -118,8 +127,8 @@ function RoomRental() {
                 query = query.lte('propertyPrice', maxRent);
             }
 
-            if (builtUpSize > 0) {
-                query = query.gte('propertySquareFeet', builtUpSize);
+            if (propertyBuiltupSize > 0) {
+                query = query.gte('propertySquareFeet', propertyBuiltupSize);
             }
 
             //Sort by option
@@ -140,7 +149,6 @@ function RoomRental() {
                 query = query.order('propertySquareFeet', { ascending: false });
             }
 
-            
             const { data, error } = await query;
 
             if (error) {
@@ -148,11 +156,13 @@ function RoomRental() {
                 return;
             }
 
+            console.log("i am here");
             console.log(data);
             setPost(data);
 
             // Store the searched posts in local storage
             localStorage.setItem('searchedPosts', JSON.stringify(data));
+            console.log(posts)
 
         } catch (error) {
             console.error('An error occurred:', error);
@@ -163,6 +173,7 @@ function RoomRental() {
     // Retrieve the searched posts from local storage
     useEffect(() => {
         const storedPosts = localStorage.getItem('searchedPosts');
+        console.log(JSON.parse(storedPosts))
         if (storedPosts) {
             setPost(JSON.parse(storedPosts));
         }
@@ -170,6 +181,7 @@ function RoomRental() {
 
     // Show the immediate change when choose different sort by option
     useEffect(() => {
+        console.log("haha")
         const fetchData = async () => {
             try {
                 const searchData = {
@@ -194,16 +206,13 @@ function RoomRental() {
 
     const renderedPost = posts.map((post) => {
 
-        let sizeDisplay = "";
-        let bgColor = '';
-        let addDesc = '';
+        let bgColor;
+        let addDesc;
 
         if (post.propertyCategory === 'Room') {
-            sizeDisplay = post.propertyRoomSquareFeet;
             bgColor = '#d5def5';
             addDesc = post.propertyRoomType;
         } else {
-            sizeDisplay = post.propertySquareFeet;
             bgColor = '#8594e4';
             const [masterRoom, mediumRoom, smallRoom] = post.propertyRoomNumber;
             addDesc = `${masterRoom} Master room, ${mediumRoom} Medium room, ${smallRoom} Small room`;
@@ -216,11 +225,11 @@ function RoomRental() {
                 <div className='postDescription'>
                     <div>
                         <Row>
-                            <Col span={18} style={{ fontSize: '25px', fontWeight: 'normal' }}>{post.propertyName} - <span style={{fontStyle: 'italic', fontWeight: '', fontSize: '20px'}}>{post.propertyState}</span></Col>
-                            <Col span={2} offset={4} style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', backgroundColor: bgColor, fontWeight: 'bold' }}>{post.propertyCategory}</Col>
+                            <Col span={22} style={{ fontSize: '25px', fontWeight: 'normal' }}>{post.propertyName} - <span style={{fontStyle: 'italic', fontWeight: '', fontSize: '20px'}}>{post.propertyState}</span></Col>
+                            <Col span={2} style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', backgroundColor: bgColor, fontWeight: 'bold' }}>{post.propertyCategory}</Col>
                         </Row>
                         <Row>
-                            <Col span={24} style={{ fontSize: '20px', fontWeight: 'lighter', marginTop: '5px' }}><TfiLocationPin size={15}/> {post.propertyAddress}</Col>
+                            <Col span={24} style={{ fontSize: '20px', fontWeight: 'lighter', marginTop: '5px' }}><TfiLocationPin size={15}/> {post.propertyAddress},{post.propertyPostcode},{post.propertyCity},{post.propertyState}</Col>
                         </Row>
                         <Row>
                             <Col span={24} style={{ fontSize: '20px', marginTop: '5px', fontStyle: 'italic' }}>RM{post.propertyPrice}/month </Col>
@@ -264,25 +273,25 @@ function RoomRental() {
                 onFinish={onFinish}
                 initialValues={
                     {
-                        stateSelection: 'null',
-                        furnishType: 'null',
+                        propertyState: null,
+                        propertyFurnishType: null,
                         minRent: 0,
                         maxRent: 0,
-                        builtUpSize: 0,
-                        category: 'null',
-                        sortBy: 'null',
-                        locationInput: 'null'
+                        propertyBuildupSize: 0,
+                        propertyCategory: null,
+                        sortBy: null,
+                        searchInput: null,
                     }
                 }>
                 <Row style={{ marginLeft: '10%', marginRight: '5%', height: '25px' }}>
                     <Col span={4}>
-                        <Form.Item name="stateSelection">
+                        <Form.Item name="propertyState">
                             <StateSelection value={state} onChange={handleStateChange} style={{ width: '80%' }} />
                         </Form.Item>
                     </Col>
 
                     <Col span={17}>
-                        <Form.Item name="locationInput">
+                        <Form.Item name="searchInput">
                             <SearchInput placeholder='Search by location or property name' style={{ width: '90%' }} value={input} onChange={handleInputChange} />
                         </Form.Item>
                     </Col>
@@ -299,13 +308,13 @@ function RoomRental() {
                 </Row>
                 <Row style={{ marginLeft: '10%', marginTop: '20px' }}>
                     <Col span={3}>
-                        <Form.Item name='furnishType'>
+                        <Form.Item name='propertyFurnishType'>
                             <FurnishTypeSelection bordered={false} value={furnish} onChange={handleFurnishChange} style={{ width: '95%' }} />
                         </Form.Item>
                     </Col>
 
                     <Col span={3}>
-                        <Form.Item name="category">
+                        <Form.Item name="propertyCategory">
                             <CategorySelection value={category} onChange={handleCategoryChange} style={{ width: '80%' }} />
                         </Form.Item>
                     </Col>
@@ -323,7 +332,7 @@ function RoomRental() {
                     </Col>
 
                     <Col span={3}>
-                        <Form.Item name="builtUpSize">
+                        <Form.Item name="propertyBuildupSize">
                             <BuiltupSizeSelection value={size} onChange={handleSizeChange} style={{ width: '100%' }} />
                         </Form.Item>
                     </Col>
@@ -341,9 +350,6 @@ function RoomRental() {
         </div>
 
         {renderedPost}
-
-
-
 
     </>
 };

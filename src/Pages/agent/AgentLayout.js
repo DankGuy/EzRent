@@ -1,4 +1,4 @@
-import { Routes, Route } from "react-router-dom";
+import { Outlet } from "react-router-dom";
 
 import { Button, Layout, theme, Image } from 'antd';
 import { useState } from 'react';
@@ -9,14 +9,7 @@ import {
 
 import './AgentHome.css'
 
-import AgentHome from './AgentHome'
-import AgentAppointment from './AgentAppointment'
-import AgentProfile from './AgentProfile'
-import AgentRoomRental from './AgentRoomRental'
-import AgentRentalAgreement from './AgentRentalAgreement'
 import Sidebar from '../../Components/SideBar'
-import AgentCreatePost from './AgentCreatePost'
-import AgentRoomRentalPost from './AgentRoomRentalPost';
 
 
 function AgentLayout(){
@@ -92,16 +85,7 @@ function AgentLayout(){
                   background: colorBgContainer,
                 }}
               >
-                <Routes>
-                  <Route path="/agent/" element={<AgentHome />} />
-                  <Route path="/agent/profile" element={<AgentProfile />} />
-                  <Route path="/agent/roomRental/createNewPost" element={<AgentCreatePost />} />
-                  <Route path="/agent/roomRental" element={<AgentRoomRental />} />
-                  <Route path="/agent/appointment" element={<AgentAppointment />} />
-                  <Route path="/agent/rentalAgreement" element={<AgentRentalAgreement />} />
-                  <Route path="/agent/roomRental/editPost/:id" element={<AgentRoomRentalPost  />} />
-                  <Route path="/agent/roomRental/viewPost/:id" element={<AgentRoomRentalPost  />} />
-                </Routes>
+                <Outlet/>
               </Content>
             </Layout>
           </Layout>

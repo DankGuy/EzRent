@@ -56,12 +56,6 @@ function AgentRoomRental() {
                         width: '250px',
                         height: '270px',
                         border: '1px red solid',
-                        // display: 'flex',
-                        // flexDirection: 'column',
-                        // justifyContent: 'center',
-                        // alignItems: 'center',
-                        // cursor: 'pointer',
-                        // backgroundColor: '#E7E7E7',
                         marginTop: '10px'
                     }}
                 >

@@ -287,35 +287,12 @@ function RoomRentalPost() {
     };
 
 
-    //Modal form
-    const [visible, setVisible] = useState(false);
-    const [formRef, setFormRef] = useState(null);
-
-    const handleCreate = () => {
-        formRef.validateFields((err, values) => {
-            console.log(values);
-            if (err) {
-                console.log(err);
-                return;
-            }
-
-            console.log("Received values of form: ", values);
-            formRef.resetFields();
-            setVisible(false);
-        });
-    };
-
-    const saveFormRef = useCallback(node => {
-        if (node !== null) {
-            setFormRef(node);
-        }
-    }, []);
 
     return (
         <div style={{ marginLeft: '4%', marginRight: '6%', padding: '10px', border: '1px red solid' }}>
             <div>
-                <Link to="/">Home</Link>\
-                <Link to={{ pathname: "/roomRental", state: post }}>Room Rental</Link>
+                <Link to="/student/">Home</Link>\
+                <Link to={{ pathname: "/student/roomRental", state: post }}>Room Rental</Link>
             </div>
             <h1 style={{ fontFamily: 'arial', fontWeight: 'normal' }}>{post.propertyName}</h1>
             <h3 style={{ fontFamily: 'arial', fontWeight: 'normal' }}> <TfiLocationPin size={15} /> {post.propertyAddress}</h3>
@@ -376,7 +353,7 @@ function RoomRentalPost() {
                         </Row>
                         <Row>
                             <Col span={24} style={{ fontSize: '18px', margin: '5px 20px 5px', paddingRight: '30px' }}>
-                                <p style={{ whiteSpace: "pre-line" }}>{post.propertyDescription}</p>
+                            <p style={{ whiteSpace: "pre-line" }}>{post.propertyDescription === null ? "No other description..." : post.propertyDescription}</p>
                             </Col>
                         </Row>
                     </div>

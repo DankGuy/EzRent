@@ -15,8 +15,6 @@ function FurnishTypeSelection({ value, onChange, bordered, ...rest }) {
         { value: 'Fully Furnished', label: 'Fully furnished' },
     ];
 
-    console.log(bordered)
-
     return <Select
         placeholder="All Furnish Type"
         bordered={bordered}
