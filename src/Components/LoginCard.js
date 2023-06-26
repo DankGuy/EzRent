@@ -38,161 +38,149 @@ function LoginCard(props) {
       alert(error.error_description || error.message);
     }
   }
-
-  if (!props.session) {
-    return (
+  return (
+    <div
+      className="login-container"
+      style={{
+        height: "100vh",
+        width: "100vw",
+        display: "flex",
+        alignItems: "center",
+        justifyContent: "center",
+        background: `url(${loginBg}) no-repeat`,
+        backgroundSize: "cover",
+      }}
+    >
       <div
-        className="login-container"
+        className="login-card"
         style={{
-          height: "100vh",
-          width: "100vw",
+          backgroundColor: "#f0f2f5",
+          height: "60%",
+          width: "40%",
+          margin: "0",
+          padding: "0",
           display: "flex",
           alignItems: "center",
+          flexDirection: "column",
           justifyContent: "center",
-          background: `url(${loginBg}) no-repeat`,
-          backgroundSize: "cover",
+          boxShadow: "6px 6px 6px rgba(0, 0, 0, 0.2)",
+          padding: "20px",
+          borderRadius: "10px",
+          opacity: "0.95",
         }}
       >
-        <div
-          className="login-card"
-          style={{
-            backgroundColor: "#f0f2f5",
-            height: "60%",
-            width: "40%",
-            margin: "0",
-            padding: "0",
-            display: "flex",
-            alignItems: "center",
-            flexDirection: "column",
-            justifyContent: "center",
-            boxShadow: "6px 6px 6px rgba(0, 0, 0, 0.2)",
-            padding: "20px",
-            borderRadius: "10px",
-            opacity: "0.95",
+        <Form
+          className="login-form"
+          name="basic"
+          labelCol={{
+            span: 8,
           }}
+          wrapperCol={{
+            span: 16,
+          }}
+          style={{
+            maxWidth: 800,
+          }}
+          initialValues={{
+            remember: true,
+          }}
+          autoComplete="off"
         >
-          <Form
-            className="login-form"
-            name="basic"
-            labelCol={{
-              span: 8,
-            }}
+          <h1 style={{ textAlign: "center" }}>Login</h1>
+          <Form.Item
+            label="Email"
+            rules={[
+              {
+                required: true,
+                message: "Please input your email!",
+              },
+              {
+                type: "email",
+                message: "Please enter a valid email address!",
+              },
+            ]}
+          >
+            <Input
+              name="email"
+              onChange={handleChange}
+              placeholder="Enter your email"
+              prefix={<UserOutlined className="site-form-item-icon" />}
+              suffix={
+                <Tooltip title="email@domain.com">
+                  <InfoCircleOutlined
+                    style={{
+                      color: "rgba(0,0,0,.45)",
+                    }}
+                  />
+                </Tooltip>
+              }
+            />
+          </Form.Item>
+
+          <Form.Item
+            label="Password"
+            name="password"
+            rules={[
+              {
+                required: true,
+                message: "Please input your password!",
+              },
+            ]}
+          >
+            <Input.Password
+              className="passwordInput"
+              name="password"
+              onChange={handleChange}
+              placeholder="Enter your password"
+            />
+          </Form.Item>
+
+          <Form.Item
             wrapperCol={{
+              offset: 8,
               span: 16,
             }}
             style={{
-              maxWidth: 800,
+              marginBottom: 0,
             }}
-            initialValues={{
-              remember: true,
-            }}
-            autoComplete="off"
-          >
-            <h1 style={{ textAlign: "center" }}>Login</h1>
-            <Form.Item
-              label="Email"
-              rules={[
-                {
-                  required: true,
-                  message: "Please input your email!",
-                },
-                {
-                  type: "email",
-                  message: "Please enter a valid email address!",
-                },
-              ]}
-            >
-              <Input
-                name="email"
-                onChange={handleChange}
-                placeholder="Enter your email"
-                prefix={<UserOutlined className="site-form-item-icon" />}
-                suffix={
-                  <Tooltip title="email@domain.com">
-                    <InfoCircleOutlined
-                      style={{
-                        color: "rgba(0,0,0,.45)",
-                      }}
-                    />
-                  </Tooltip>
-                }
-              />
-            </Form.Item>
-
-            <Form.Item
-              label="Password"
-              name="password"
-              rules={[
-                {
-                  required: true,
-                  message: "Please input your password!",
-                },
-              ]}
-            >
-              <Input.Password
-                className="passwordInput"
-                name="password"
-                onChange={handleChange}
-                placeholder="Enter your password"
-              />
-            </Form.Item>
-
-            <Form.Item
-              wrapperCol={{
-                offset: 8,
-                span: 16,
-              }}
-              style={{
-                marginBottom: 0,
-              }}
-            ></Form.Item>
-          </Form>
-          <Button
-            type="primary"
-            block
-            style={{ width: "80%" }}
-            onClick={handleSubmit}
-          >
-            Login
-          </Button>
-
-          <p
-            style={{
-              marginBottom: -5,
-            }}
-          >
-            <Link
-              to="/forgot-password"
-              style={hoverStyleForgot}
-              onMouseEnter={() => setIsHoveredForgot(true)}
-              onMouseLeave={() => setIsHoveredForgot(false)}
-            >
-              Forgot your password?
-            </Link>
-          </p>
-          <p>
-            <Link
-              to="/signup"
-              style={hoverStyleSignUp}
-              onMouseEnter={() => setIsHoveredSignup(true)}
-              onMouseLeave={() => setIsHoveredSignup(false)}
-            >
-              Don't have an account? Sign up here!
-            </Link>
-          </p>
-        </div>
-      </div>
-    );
-  } else {
-    return (
-      <div>
-        <Button danger type="primary" onClick={props.logout}>
-          logout
+          ></Form.Item>
+        </Form>
+        <Button
+          type="primary"
+          block
+          style={{ width: "80%" }}
+          onClick={handleSubmit}
+        >
+          Login
         </Button>
-        Logged in!
+
+        <p
+          style={{
+            marginBottom: -5,
+          }}
+        >
+          <Link
+            to="/forgot-password"
+            style={hoverStyleForgot}
+            onMouseEnter={() => setIsHoveredForgot(true)}
+            onMouseLeave={() => setIsHoveredForgot(false)}
+          >
+            Forgot your password?
+          </Link>
+        </p>
+        <p>
+          <Link
+            to="/signup"
+            style={hoverStyleSignUp}
+            onMouseEnter={() => setIsHoveredSignup(true)}
+            onMouseLeave={() => setIsHoveredSignup(false)}
+          >
+            Don't have an account? Sign up here!
+          </Link>
+        </p>
       </div>
-    );
-  }
+    </div>
+  );
 }
 
 export default LoginCard;

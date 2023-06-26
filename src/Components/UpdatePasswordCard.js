@@ -37,6 +37,8 @@ function ForgotPasswordCard() {
     const { data, error } = await supabase.auth.getUser();
     if (error) {
       // Handle error case
+      alert(error.message)
+      console.log(error);
     } else {
       const email = data.user.email;
       setEmail(email);
