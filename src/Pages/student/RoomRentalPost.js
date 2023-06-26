@@ -289,7 +289,7 @@ function RoomRentalPost() {
 
 
     return (
-        <div style={{ marginLeft: '4%', marginRight: '6%', padding: '10px', border: '1px red solid' }}>
+        <div style={{ marginLeft: '4%', marginRight: '6%', marginTop: '10vh', padding: '10px', border: '1px red solid' }}>
             <div>
                 <Link to="/student/">Home</Link>\
                 <Link to={{ pathname: "/student/roomRental", state: post }}>Room Rental</Link>
