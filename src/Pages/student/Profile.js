@@ -10,10 +10,9 @@ import {
 import { Layout, Menu, theme, Button } from "antd";
 import { useState } from "react";
 import React from "react";
-import { useEffect } from "react";
 import { useNavigate, Outlet } from "react-router-dom";
 
-const { Header, Content, Footer, Sider } = Layout;
+const { Header, Content, Sider } = Layout;
 
 function Profile() {
   const [collapsed, setCollapsed] = useState(false);

@@ -18,6 +18,7 @@ import PaymentMethods from "./Pages/student/profile/PaymentMethods";
 import RentalPayment from "./Pages/student/profile/RentalPayment";
 import Appointments from "./Pages/student/profile/Appointments";
 import RentalAgreement from "./Pages/student/profile/RentalAgreement";
+import EditProfile from "./Pages/student/profile/EditProfile";
 import RoomRentalPost from "./Pages/student/RoomRentalPost";
 import AgentHome from "./Pages/agent/AgentHome";
 import AgentProfile from "./Pages/agent/AgentProfile";
@@ -56,6 +57,7 @@ const App = () => {
               <Route path="rentalPayment" element={<RentalPayment />} />
               <Route path="appointments" element={<Appointments />} />
               <Route path="rentalAgreement" element={<RentalAgreement />} />
+              <Route path="editProfile" element={<EditProfile />} />
             </Route>
             <Route path="roomRental/:id" element={<RoomRentalPost />} />
           </Route>
