@@ -1,6 +1,6 @@
 import { Button } from "antd";
 import loginBg from "../images/loginBg.jpeg";
-import { Form, Input, Tooltip } from "antd";
+import { Form, Input, Tooltip, message } from "antd";
 import { useState } from "react";
 import { Link } from "react-router-dom";
 import { supabase } from "../supabase-client";
@@ -33,9 +33,8 @@ function LoginCard(props) {
         password: formData.password,
       });
       if (error) throw error;
-      alert("Logged in!");
     } catch (error) {
-      alert(error.error_description || error.message);
+      message.error(error.error_description || error.message)
     }
   }
   return (

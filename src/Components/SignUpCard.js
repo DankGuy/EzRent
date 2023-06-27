@@ -1,6 +1,6 @@
 import loginBg from "../images/loginBg.jpeg";
-import { Button, Form, Input, Select } from "antd";
-import { useState } from "react";
+import { Button, Form, Input, Select, message } from "antd";
+import { useState, useEffect } from "react";
 import { Link } from "react-router-dom";
 import { supabase } from "../supabase-client";
 
@@ -74,14 +74,13 @@ function SignUpCard() {
         },
       });
 
-      console.log(data);
       if (error) throw error;
 
       // send email confirmation
-      alert("Check your email for the confirmation link!");
+      alert("Please check your email for confirmation link!");
       window.location.href = "/login";
     } catch (error) {
-      alert(error.error_description || error.message);
+      message.error(error.error_description || error.message);
     }
   };
 
@@ -93,7 +92,7 @@ function SignUpCard() {
     formData.password = value.password;
     formData.phone = value.prefix + value.phone;
     formData.gender = value.gender;
-    console.log(formData.phone)
+    console.log(formData.phone);
     signUp();
   };
 

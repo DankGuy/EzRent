@@ -2,7 +2,7 @@ import loginBg from "../images/loginBg.jpeg";
 import { Link } from "react-router-dom";
 import { supabase } from "../supabase-client";
 import { InfoCircleOutlined, UserOutlined } from "@ant-design/icons";
-import { Input, Tooltip, Form, Button, Spin } from "antd";
+import { Input, Tooltip, Form, Button, Spin, message } from "antd";
 import { useState, useEffect } from "react";
 
 function ForgotPasswordCard() {
@@ -37,8 +37,7 @@ function ForgotPasswordCard() {
     const { data, error } = await supabase.auth.getUser();
     if (error) {
       // Handle error case
-      alert(error.message)
-      console.log(error);
+      message.error(error.error_description || error.message)
     } else {
       const email = data.user.email;
       setEmail(email);
@@ -49,7 +48,6 @@ function ForgotPasswordCard() {
   let password;
   function handleChange(e) {
     password = e.target.value;
-    console.log(password)
   }
 
   async function handleSubmit(e) {
@@ -59,9 +57,9 @@ function ForgotPasswordCard() {
         password: password,
       });
       if (error) throw error;
-      alert("Password updated!");
+      message.success("Password updated!");
     } catch (error) {
-      alert(error.error_description || error.message);
+      message.error(error.error_description || error.message);
     }
   }
 

@@ -2,7 +2,7 @@ import loginBg from "../images/loginBg.jpeg";
 import { Link } from "react-router-dom";
 import { supabase } from "../supabase-client";
 import { InfoCircleOutlined, UserOutlined } from "@ant-design/icons";
-import { Input, Tooltip, Form, Button } from "antd";
+import { Input, Tooltip, Form, Button, message } from "antd";
 import { useState } from "react";
 
 function ForgotPasswordCard() {
@@ -20,9 +20,9 @@ function ForgotPasswordCard() {
         redirectTo: "http://localhost:3000/update-password",
       });
       if (error) throw error;
-      alert("Password recovery email has been sent!");
+      message.success("Password recovery email has been sent!");
     } catch (error) {
-      alert(error.error_description || error.message);
+      message.error(error.error_description || error.message);
     }
   }
 

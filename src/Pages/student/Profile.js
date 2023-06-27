@@ -11,12 +11,7 @@ import { Layout, Menu, theme, Button } from "antd";
 import { useState } from "react";
 import React from "react";
 import { useEffect } from "react";
-import { Routes, Route, useNavigate, Outlet } from "react-router-dom";
-import ProfileInformation from "./profile/ProfileInformation";
-import PaymentMethods from "./profile/PaymentMethods";
-import RentalPayment from "./profile/RentalPayment";
-import Appointments from "./profile/Appointments";
-import RentalAgreement from "./profile/RentalAgreement";
+import { useNavigate, Outlet } from "react-router-dom";
 
 const { Header, Content, Footer, Sider } = Layout;
 
@@ -50,7 +45,7 @@ function Profile() {
 
   const navigate = useNavigate();
   return (
-    <div style={{ marginTop: "8.5vh" }}>
+    <div style={{ marginTop: "8.55vh" }}>
       <Layout>
         <Sider
           trigger={null}
@@ -78,7 +73,7 @@ function Profile() {
             }}
             theme="light"
             mode="inline"
-            defaultSelectedKeys={["0"]}
+            defaultSelectedKeys={["/student/profile/profileInformation"]}
             items={[
               {
                 label: "Profile Information",
@@ -131,11 +126,21 @@ function Profile() {
                 height: 64,
               }}
             />
-            {title}
+            <span
+              style={{
+                fontSize: "20px",
+                marginLeft: "10px",
+                color: "black",
+              }}
+            >
+              {title}
+            </span>
           </Header>
           <Content
             style={{
-              margin: "100px 16px 24px",
+              margin: "100px 16px 10px",
+              paddingBottom: 70,
+              overflow: "auto",
             }}
           >
             <div
@@ -156,13 +161,6 @@ function Profile() {
               <Outlet />
             </div>
           </Content>
-          <Footer
-            style={{
-              textAlign: "center",
-            }}
-          >
-            EzRent
-          </Footer>
         </Layout>
       </Layout>
     </div>
