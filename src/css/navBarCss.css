@@ -43,9 +43,8 @@ li {
     width: 100vw;
 }
 
-img{
+.logoClass{
     object-fit: contain;
-    width: 130px;
     height: 51px;
     margin-left: 10px;
 }

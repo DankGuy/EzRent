@@ -1,5 +1,5 @@
 import SearchInput from '../../Components/SearchInput'
-import { Col, Row, Button, Form } from 'antd';
+import { Col, Row, Button, Form, Image } from 'antd';
 import { Link } from 'react-router-dom'
 import { SearchOutlined } from '@ant-design/icons';
 import { useState, useEffect } from 'react';
@@ -11,7 +11,7 @@ import StateSelection from '../../Components/StateSelection';
 import { createClient } from '@supabase/supabase-js';
 import CategorySelection from '../../Components/CategorySelection';
 import PostSortingSelection from '../../Components/PostSortingSelection';
-import {TfiLocationPin} from 'react-icons/tfi'
+import { TfiLocationPin } from 'react-icons/tfi'
 import './RoomRental.css'
 
 
@@ -27,6 +27,9 @@ function RoomRental() {
     const [sortBy, setSortBy] = useState('null')
     const [isError, setIsError] = useState(false)
     let errorMessage = "*Minimum rent cannot larger than maximum rent";
+
+
+    const [posts, setPost] = useState([]);
 
 
     const handleStateChange = (e) => {
@@ -85,7 +88,6 @@ function RoomRental() {
         'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImV4c3Z1cXVxc3BtYnJ0eWpkcHljIiwicm9sZSI6ImFub24iLCJpYXQiOjE2ODYyNzMxNDgsImV4cCI6MjAwMTg0OTE0OH0.vtMaXrTWDAluG_A-68pvQlSQ6GAskzADYfOonmCXPoo'
     );
 
-    const [posts, setPost] = useState([]);
 
     const fetchFromSupabase = async (input) => {
         // Make a query to search your Supabase table based on the provided value
@@ -170,14 +172,29 @@ function RoomRental() {
 
     };
 
-    // Retrieve the searched posts from local storage
     useEffect(() => {
         const storedPosts = localStorage.getItem('searchedPosts');
         console.log(JSON.parse(storedPosts))
         if (storedPosts) {
-            setPost(JSON.parse(storedPosts));
+          setPost(JSON.parse(storedPosts));
         }
-    }, []);
+      
+        const fetchFirstImages = async () => {
+          await Promise.all(posts.map((post) => getFirstImage(post)));
+        };
+      
+        fetchFirstImages();
+
+        console.log(firstImages)
+      }, []);
+      
+      useEffect(() => {
+        const fetchFirstImages = async () => {
+          await Promise.all(posts.map((post) => getFirstImage(post)));
+        };
+      
+        fetchFirstImages();
+      }, [posts]);
 
     // Show the immediate change when choose different sort by option
     useEffect(() => {
@@ -196,6 +213,12 @@ function RoomRental() {
                 };
 
                 await fetchFromSupabase(searchData);
+
+                // Call getFirstImage for each post to retrieve the first image
+                posts.forEach((post) => {
+                    getFirstImage(post);
+                });
+
             } catch (error) {
                 console.error('An error occurred:', error);
             }
@@ -204,10 +227,32 @@ function RoomRental() {
         fetchData();
     }, [sortBy]);
 
+
+    const [firstImages, setFirstImages] = useState({});
+
+    //Get the first image from supabase storage with id = postID
+    const getFirstImage = async (post) => {
+        const { data } = await supabase.storage.from('post').list(post.postID);
+    
+        if (data) {
+          setFirstImages((prevState) => ({
+            ...prevState,
+            [post.postID]: data[0],
+          }));
+        }
+      };
+    
+
+
     const renderedPost = posts.map((post) => {
 
         let bgColor;
         let addDesc;
+
+        const firstImage = firstImages[post.postID];
+
+        console.log("hahahhaa")
+
 
         if (post.propertyCategory === 'Room') {
             bgColor = '#d5def5';
@@ -221,20 +266,28 @@ function RoomRental() {
 
         return (
             <div key={post.postID} className='postContainer'>
-                <div style={{ border: '2px solid red', margin: '10px', width: '30%' }}></div>
+                <Row >
+                    <Col span={24} style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', width: "300px", paddingLeft: '10px' }}>
+                        <Image 
+                            style={{ justifyContent: 'center' }} 
+                            height={200}               
+                            src={`https://exsvuquqspmbrtyjdpyc.supabase.co/storage/v1/object/public/post/${post.postID}/${firstImage?.name}`}
+                        />
+                    </Col>
+                </Row>
                 <div className='postDescription'>
                     <div>
                         <Row>
-                            <Col span={22} style={{ fontSize: '25px', fontWeight: 'normal' }}>{post.propertyName} - <span style={{fontStyle: 'italic', fontWeight: '', fontSize: '20px'}}>{post.propertyState}</span></Col>
+                            <Col span={22} style={{ fontSize: '25px', fontWeight: 'normal' }}>{post.propertyName} - <span style={{ fontStyle: 'italic', fontWeight: '', fontSize: '20px' }}>{post.propertyState}</span></Col>
                             <Col span={2} style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', backgroundColor: bgColor, fontWeight: 'bold' }}>{post.propertyCategory}</Col>
                         </Row>
                         <Row>
-                            <Col span={24} style={{ fontSize: '20px', fontWeight: 'lighter', marginTop: '5px' }}><TfiLocationPin size={15}/> {post.propertyAddress},{post.propertyPostcode},{post.propertyCity},{post.propertyState}</Col>
+                            <Col span={24} style={{ fontSize: '20px', fontWeight: 'lighter', marginTop: '5px' }}><TfiLocationPin size={15} /> {post.propertyAddress},{post.propertyPostcode},{post.propertyCity},{post.propertyState}</Col>
                         </Row>
                         <Row>
                             <Col span={24} style={{ fontSize: '20px', marginTop: '5px', fontStyle: 'italic' }}>RM{post.propertyPrice}/month </Col>
                         </Row>
-                        
+
                         <Row>
                             <Col span={24} style={{ fontSize: '18px', marginTop: '5px' }}>{addDesc}</Col>
                         </Row>
@@ -252,7 +305,7 @@ function RoomRental() {
                             <Col span={12}>
                                 <Link to={`/student/roomRental/${post.postID}`} state={post}>
                                     <Button
-                                       type='primary'
+                                        type='primary'
                                         className='viewButton'>View</Button>
                                 </Link>
                             </Col>
@@ -265,7 +318,7 @@ function RoomRental() {
         )
     });
 
-    
+
 
     return <>
         <div style={{ margin: '10vh 0px 0px', padding: '0px 10px 0px', border: '0px solid black', boxShadow: '0px 4px 6px -2px rgba(0, 0, 0, 0.2)' }}>

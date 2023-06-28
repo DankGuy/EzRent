@@ -2,7 +2,7 @@ import { Select } from 'antd';
 import { useState } from 'react';
 
 function PostSortingSelection({ value, onChange, ...rest }) {
-    const [sortBy, setSortBy] = useState({ value });
+    const [sortBy, setSortBy] = useState(null);
 
     const handleChange = (e) => {
         onChange(e);
@@ -10,7 +10,6 @@ function PostSortingSelection({ value, onChange, ...rest }) {
     }
 
     const sortByOption = [
-        { value: 'null', label: 'Default' },
         { value: 'ascDate', label: 'Posted date (old to new)' },
         { value: 'descDate', label: 'Posted date (new to old)' },
         { value: 'ascPrice', label: 'Price (low to high)' },
@@ -25,6 +24,7 @@ function PostSortingSelection({ value, onChange, ...rest }) {
         options={sortByOption}
         value={sortBy}
         onChange={handleChange}
+        placeholder="Default"
     />
 }
 

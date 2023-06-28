@@ -1,6 +1,6 @@
 import { Link, useNavigate, useLocation } from 'react-router-dom'
 import { useState, useEffect, useCallback } from 'react'
-import { Col, Row, Button, Modal, Select, Input, Form } from 'antd';
+import { Col, Row, Button, Modal, Select, Input, Form, Image } from 'antd';
 import { TfiLocationPin, TfiBasketball } from 'react-icons/tfi'
 import { BsHouseFill, BsCurrencyDollar } from 'react-icons/bs'
 import { FaBed, FaShower, FaCar, FaSwimmer, FaRunning, FaSwimmingPool, FaDumbbell, FaTableTennis, FaShoppingCart } from 'react-icons/fa'
@@ -12,13 +12,15 @@ import { BiCloset, BiWifi, BiFootball, BiBuildingHouse } from 'react-icons/bi'
 import { GiSofa, GiClothesline, GiKidSlide, GiWashingMachine, GiShuttlecock, GiCoffeeCup, GiCctvCamera } from 'react-icons/gi'
 import { createClient } from '@supabase/supabase-js';
 
-import { DatePicker, Carousel } from 'antd';
+import { DatePicker } from 'antd';
 import dayjs from 'dayjs';
 import customParseFormat from 'dayjs/plugin/customParseFormat';
 import RecommendationPosts from '../student/RecommendationPosts';
 import ModalForm from '../../Components/ModalForm';
 
 import '../student/RoomRentalPost.css'
+import Carousel from "react-multi-carousel";
+import 'react-multi-carousel/lib/styles.css';
 
 
 function RoomRentalPost() {
@@ -30,7 +32,27 @@ function RoomRentalPost() {
 
     const [isModalOpen, setIsModalOpen] = useState(false);
 
+    const [images, setImages] = useState([]);
+
     const { TextArea } = Input;
+
+    const responsive = {
+        desktop: {
+            breakpoint: { max: 3000, min: 1024 },
+            items: 5,
+            slidesToSlide: 3 // optional, default to 1.
+        },
+        tablet: {
+            breakpoint: { max: 1024, min: 464 },
+            items: 3,
+            slidesToSlide: 2 // optional, default to 1.
+        },
+        mobile: {
+            breakpoint: { max: 464, min: 0 },
+            items: 1,
+            slidesToSlide: 1 // optional, default to 1.
+        }
+    };
 
     useEffect(() => {
         window.scrollTo(0, 0); // Scroll to the top of the page
@@ -142,41 +164,37 @@ function RoomRentalPost() {
         'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImV4c3Z1cXVxc3BtYnJ0eWpkcHljIiwicm9sZSI6ImFub24iLCJpYXQiOjE2ODYyNzMxNDgsImV4cCI6MjAwMTg0OTE0OH0.vtMaXrTWDAluG_A-68pvQlSQ6GAskzADYfOonmCXPoo'
     );
 
-    const handleClick = async () => {
-        console.log('hallo')
+    const getImages = async () => {
+        //Get all images from supabase storage with id = postID 
+        const { data, error } = await supabase.storage.from('post').list(post.postID);
 
-        const { data, error } = await supabase.storage.from('public/images2').list()
-
-
-        console.log(data);
-        console.log(error);
-        // const images = await fetchPostImages(post.postId);
-        // console.log(images); // Array of image URLs
-    }
-
-    async function fetchPostImages(postId) {
-        try {
-            // Replace 'images' with the actual folder name inside the 'images' bucket
-            const folderName = `images/${postId}`;
-
-            // Fetch the files in the specified folder
-            const { data, error } = await supabase.storage.from('images').list();
-
-            if (error) {
-                console.error('Error fetching images:', error);
-                return;
-            }
-
-            // Extract the URLs of the images from the response
-            const imageUrls = data.map((file) => file.url);
-
-            // Return the array of image URLs
-            return imageUrls;
-        } catch (error) {
-            console.error('Error fetching images:', error);
-            return;
+        if (data){
+            setImages(data);
+            console.log(data);
         }
+
+        if (error){
+            console.log(error)
+        }
+        
     }
+
+    useEffect(() => {
+        getImages();
+    }, [])
+
+
+    //Display all images
+    const displayImages = () => {
+        return images.map((image) => {
+            const publicURL = `https://exsvuquqspmbrtyjdpyc.supabase.co/storage/v1/object/public/post/${post.postID}/${image.name}`;
+
+            return (
+                <Image width={300} height={200} key={image.id} src={publicURL} alt={image.name} />
+            )
+        })
+    }
+
 
     function redirectToWhatsApp(phoneNumber, postID) {
         const processedNumber = phoneNumber.replace(/-/g, '');
@@ -219,73 +237,7 @@ function RoomRentalPost() {
     });
 
 
-    const recommededPost = (currentPost) => {
-
-        return (<Col span={7} style={{ boxShadow: '0 2px 4px rgba(0, 0, 0, 0.2)', backgroundColor: 'white', position: 'relative', margin: '10px 20px', height: '460px', width: '380px', paddingLeft: '10px' }}>
-            <div
-                style={{
-                    position: 'absolute',
-                    top: 0,
-                    right: 0,
-                    width: '20%',
-                    height: '8%',
-                    backgroundColor: '#d5def5',
-                    display: 'flex',
-                    justifyContent: 'center',
-                    alignItems: 'center',
-                    fontWeight: 'bold'
-                }}>
-                {currentPost.propertyCategory}
-            </div>
-            <Row >
-                <Col span={24} style={{ height: '200px' }}></Col>
-            </Row>
-            <div style={{ margin: '10px' }}>
-                <Row>
-                    <Col span={24} style={{ fontSize: '20px' }}><BsCurrencyDollar size={15} />Rental: RM{currentPost.propertyPrice}.00</Col>
-                </Row>
-                <br />
-                <Row>
-                    <Col span={24} style={{ fontSize: '18px', marginLeft: '0px' }}>{currentPost.propertyName}</Col>
-                </Row>
-                <Row>
-                    <Col span={24} style={{ fontSize: '16px', marginLeft: '0px', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
-                        {currentPost.propertyAddress}
-                    </Col>
-
-                </Row>
-                <Row>
-                    <Col span={24} style={{ fontSize: '16px', marginLeft: '0px' }}>{currentPost.propertyState}</Col>
-                </Row>
-                <br />
-                <Row>
-                    <Col span={24} style={{ fontSize: '16px' }}>{currentPost.propertyType}</Col>
-                </Row>
-                <Row>
-                    <Col span={10} style={{ fontSize: '14px', fontStyle: 'italic' }}>
-                        <span style={{ marginRight: '3px' }}>&bull;</span>{currentPost.propertyFurnishType}
-                    </Col>
-                    <Col span={14} style={{ fontSize: '14px', fontStyle: 'italic' }}>
-                        <span style={{ marginRight: '3px' }}>&bull;</span>Built-up size: {currentPost.propertySquareFeet}sq.ft.
-                    </Col>
-                </Row>
-                <Row style={{ margin: '10px 0px' }}>
-                    <Col span={12}>
-                        <Link to={`/student/roomRental/${currentPost.postID}`} state={currentPost}>
-                            <Button
-                                type="primary"
-                                className='viewButton'>View</Button>
-                        </Link>
-                    </Col>
-                    <Col span={11} style={{ fontSize: '16px', marginLeft: '0px', display: 'flex', justifyContent: 'end', alignItems: 'end' }}>{currentPost.agent.name}</Col>
-
-                </Row>
-            </div>
-        </Col>
-
-        )
-    };
-
+    
 
 
     return (
@@ -299,12 +251,13 @@ function RoomRentalPost() {
             <h3 style={{ fontFamily: 'arial', fontWeight: 'normal' }}>{post.propertyState}</h3>
 
 
-            <Row justify="center" align="top">
-                <Col span={24} style={{ border: '2px solid red', height: '200px' }}>
-                    <DemoBox value={100}>Image</DemoBox>
-                </Col>
-
-            </Row>
+            <div>
+                <Image.PreviewGroup>
+                    <Carousel responsive={responsive} >
+                        {displayImages()}
+                    </Carousel>
+                </Image.PreviewGroup>
+            </div>
             <Row align="top" style={{ marginTop: '20px' }}>
                 <Col span={15} style={{}}>
 
@@ -353,7 +306,7 @@ function RoomRentalPost() {
                         </Row>
                         <Row>
                             <Col span={24} style={{ fontSize: '18px', margin: '5px 20px 5px', paddingRight: '30px' }}>
-                            <p style={{ whiteSpace: "pre-line" }}>{post.propertyDescription === null ? "No other description..." : post.propertyDescription}</p>
+                                <p style={{ whiteSpace: "pre-line" }}>{post.propertyDescription === null ? "No other description..." : post.propertyDescription}</p>
                             </Col>
                         </Row>
                     </div>
@@ -416,11 +369,10 @@ function RoomRentalPost() {
 
             <div style={{ display: 'flex', flexDirection: 'column' }}>
                 <Row>
-                    <Col span={24} style={{ fontSize: '30px', marginLeft: '10px' }}>Other recommendations:</Col>
+                    <Col span={24} style={{ fontSize: '30px', marginLeft: '10px', fontWeight: 'bold' }}>Recommended Properties</Col>
                 </Row>
-                <Row justify={'center'} style={{ margin: '1% 0%', border: '1px solid red' }}>
-
-                    <RecommendationPosts content={recommededPost}></RecommendationPosts>
+                <Row justify={'center'} style={{ margin: '1% 0%'}}>
+                    <RecommendationPosts postID={post.postID}/>
                 </Row>
             </div>
         </div>

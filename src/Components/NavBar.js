@@ -15,7 +15,7 @@ function NavBar() {
         style={{ position: "fixed", top: 0, zIndex: 999 }}
       >
         <Link to="/student/">
-          <img src={logo} alt="logo" />
+          <img className="logoClass" src={logo} alt="logo" />
         </Link>
 
         <div className="nav-container">
