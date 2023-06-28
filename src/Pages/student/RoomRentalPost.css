@@ -43,3 +43,7 @@
     min-width: 300px;
     max-width: 300px;
 }
+
+.react-multi-carousel-item {
+    width: auto !important;
+}
