@@ -38,3 +38,8 @@
     border: none;
     color: black !important;
 }
+
+.carousel-item {
+    min-width: 300px;
+    max-width: 300px;
+}

@@ -28,13 +28,9 @@ function RoomRentalPost() {
     const post = location.state; // Access the passed data from the location state
     const navigate = useNavigate();
 
-    const DemoBox = (props) => <p className={`height-${props.value}`}>{props.children}</p>;
-
     const [isModalOpen, setIsModalOpen] = useState(false);
 
     const [images, setImages] = useState([]);
-
-    const { TextArea } = Input;
 
     const responsive = {
         desktop: {
@@ -190,7 +186,7 @@ function RoomRentalPost() {
             const publicURL = `https://exsvuquqspmbrtyjdpyc.supabase.co/storage/v1/object/public/post/${post.postID}/${image.name}`;
 
             return (
-                <Image width={300} height={200} key={image.id} src={publicURL} alt={image.name} />
+                <Image width={"auto"} height={200} key={image.id} src={publicURL} alt={image.name} />
             )
         })
     }
@@ -237,7 +233,11 @@ function RoomRentalPost() {
     });
 
 
-    
+    //itemClass css
+    const itemClass = {
+        width: 'auto',
+        // height: '100%',
+    }
 
 
     return (
@@ -253,12 +253,12 @@ function RoomRentalPost() {
 
             <div>
                 <Image.PreviewGroup>
-                    <Carousel responsive={responsive} >
+                    <Carousel responsive={responsive} itemClass=''>
                         {displayImages()}
                     </Carousel>
                 </Image.PreviewGroup>
             </div>
-            <Row align="top" style={{ marginTop: '20px' }}>
+            <Row align="top" style={{ margin: '2% 8% 0px' }}>
                 <Col span={15} style={{}}>
 
                     <div className='postSectionContainer'>

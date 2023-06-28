@@ -3,7 +3,7 @@ body{
     padding: 0px;
 }
 
-ul {
+.ulClass {
     list-style-type: none;
     margin: 0;
     padding: 0;

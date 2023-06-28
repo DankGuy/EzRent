@@ -20,7 +20,7 @@ function NavBar() {
 
         <div className="nav-container">
           <nav>
-            <ul>
+            <ul className="ulClass">
               <li>
                 <Link className="link" to="/student">
                   Home
