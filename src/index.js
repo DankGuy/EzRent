@@ -22,11 +22,11 @@ import EditProfile from "./Pages/student/profile/EditProfile";
 import RoomRentalPost from "./Pages/student/RoomRentalPost";
 import AgentHome from "./Pages/agent/AgentHome";
 import AgentProfile from "./Pages/agent/AgentProfile";
-import AgentCreatePost from "./Pages/agent/AgentCreatePost";
-import AgentRoomRental from "./Pages/agent/AgentRoomRental";
+import AgentCreatePost from "./Pages/agent/RoomRentalPost/AgentCreatePost";
+import AgentRoomRental from "./Pages/agent/RoomRentalPost/AgentRoomRental";
 import AgentAppointment from "./Pages/agent/AgentAppointment";
 import AgentRentalAgreement from "./Pages/agent/AgentRentalAgreement";
-import AgentRoomRentalPost from "./Pages/agent/AgentRoomRentalPost";
+import AgentRoomRentalPost from "./Pages/agent/RoomRentalPost/AgentRoomRentalPost";
 
 const root = ReactDOM.createRoot(document.getElementById("root"));
 

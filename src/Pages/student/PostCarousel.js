@@ -11,7 +11,6 @@ function PostCarousel({ post }) {
     //Get the first image from supabase storage with id = postID
     const getFirstImage = async (post) => {
         const { data } = await supabase.storage.from('post').list(post.postID);
-
         if (data) {
             setFirstImage(data[0]);
         }

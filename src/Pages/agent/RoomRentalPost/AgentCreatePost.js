@@ -1,23 +1,13 @@
 import { useState, useEffect } from 'react'
 import { PlusOutlined } from '@ant-design/icons';
-import { Modal, Upload, message, Form, Row, Col, Input, Radio, Select, InputNumber, Checkbox, Button, Popconfirm } from 'antd';
-import FurnishTypeSelection from '../../Components/FurnishTypeSelection';
+import { Modal, Upload, message, Form, Row, Col, Input, Radio, Select, InputNumber, Checkbox, Button } from 'antd';
+import FurnishTypeSelection from '../../../Components/FurnishTypeSelection';
 import TextArea from 'antd/es/input/TextArea';
 import { createClient } from '@supabase/supabase-js';
-import { Link, useLocation, useNavigate } from 'react-router-dom';
-import "./AgentRoomRentalPost.css"
+import { useNavigate } from 'react-router-dom';
 
-function AgentRoomRentalPost() {
-    const location = useLocation();
-    const { post, isView } = location.state;
+function AgentCreatePost() {
 
-    const [form] = Form.useForm();
-    const [messageApi, contextHolder] = message.useMessage();
-    const navigate = useNavigate();
-
-    console.log(post)
-    console.log(form)
-    console.log(isView)
     const [previewOpen, setPreviewOpen] = useState(false);
     const [previewImage, setPreviewImage] = useState('');
     const [previewTitle, setPreviewTitle] = useState('');
@@ -26,9 +16,13 @@ function AgentRoomRentalPost() {
         value: '',
     });
 
-    const [propertyState, setPropertyState] = useState(post.propertyState);
+    const [propertyState, setPropertyState] = useState('');
 
     const [isRoom, setIsRoom] = useState(true)
+
+    const [isButtonDisabled, setIsButtonDisabled] = useState(false);
+    const [messageApi, contextHolder] = message.useMessage();
+    const navigate = useNavigate();
 
     const addressSupabase = createClient(
         'https://fhqfbbomaerfhpitvmbd.supabase.co',
@@ -248,6 +242,30 @@ function AgentRoomRentalPost() {
         }
     };
 
+    //Funtion to upload propertyImage to supabase storage
+    const uploadImage = async (e, id) => {
+
+        console.log(e.fileList)
+        //Get the length of the image array and upload the image to supabase storage
+        e.fileList.forEach(async (image) => {
+            const { data, error } = await supabase.storage
+                .from('post')
+                .upload(`${id}/${image.name}`, image.originFileObj, {
+                    cacheControl: '3600',
+                    upsert: false
+                })
+
+            if (error) {
+                console.log(error)
+                return;
+            }
+        }
+        )
+
+    }
+
+
+
     const onFinish = async (e) => {
         let {
             propertyAddress, propertyBuiltupSize, propertyCategory,
@@ -259,6 +277,9 @@ function AgentRoomRentalPost() {
 
         console.log(propertyFacility)
         console.log(e);
+
+
+
 
         const { data, error } = await addressSupabase
             .from('malaysia_postcode')
@@ -295,10 +316,9 @@ function AgentRoomRentalPost() {
             roomnumber = [{ masterRoomNum }, { mediumRoomNum }, { smallRoomNum }];
         }
 
-        console.log("Update successfully")
         const { data: postData, error: postError } = await supabase
             .from('property_post')
-            .update(
+            .insert([
                 {
                     postDate: currentDate,
                     postTime: currentTime,
@@ -310,7 +330,9 @@ function AgentRoomRentalPost() {
                     propertyFurnish: propertyFurnish,
                     propertyFacility: propertyFacility,
                     propertyAgentID: '3f4ac7e4-272b-4b91-bcce-19184ca174ed',
-                    propertyAddress: `${propertyAddress},${propertyPostcode},${propertyCity},${propertyState}`,
+                    propertyAddress: propertyAddress,
+                    propertyCity: propertyCity,
+                    propertyPostcode: propertyPostcode,
                     propertyState: propertyState,
                     propertyFurnishType: propertyFurnishType,
                     propertyCategory: propertyCategory,
@@ -318,28 +340,33 @@ function AgentRoomRentalPost() {
                     propertyRoomNumber: roomnumber,
                     propertyRoomSquareFeet: roomSquareFeet,
                     propertyDescription: propertyDescription,
-                })
-            .eq('postID', post.postID);
+                },
+            ])
+            .select('postID');
 
         if (postError) {
-            console.log("Error failed: " + postError)
-            messageApi.open({
-                type: 'error',
-                content: 'An error occurred during edit',
-            });
-        }
-        else {
-
-            messageApi.open({
-                type: 'success',
-                content: 'Edit successful. You will be redirected to previous page within 3 seconds...',
-            });
-
-            setTimeout(() => {
-                navigate("/agent/roomRental")
-            }, 3000);
+            console.log(postError)
+        } else {
+            if (postData && postData.length > 0) {
+                console.log(postData[0].postID);
+                //Call uploadImage function
+                uploadImage(propertyImage, postData[0].postID);
+            } else {
+                console.log("No data returned after insert");
+            }
         }
 
+
+        setIsButtonDisabled(true);
+
+        messageApi.open({
+            type: 'success',
+            content: 'Create successful. You will be redirected to the previous page within 3 seconds...',
+        });
+
+        setTimeout(() => {
+            navigate("/agent/roomRental")
+        }, 3000);
 
 
     }
@@ -348,80 +375,15 @@ function AgentRoomRentalPost() {
         console.log(e)
     }
 
-    useEffect(() => {
-        window.scrollTo(0, 0);
-
-    }, [isView])
-
-    const deletePost = async () => {
-        const { data, error } = await supabase
-            .from('property_post')
-            .delete()
-            .eq('postID', post.postID)
-
-        if (error) {
-            console.log(error)
-        }
-
-        messageApi.open({
-            type: 'success',
-            content: 'Delete successful. You will be redirected to previous page within 3 seconds...',
-        });
-
+    const dummyRequest = ({ file, onSuccess }) => {
         setTimeout(() => {
-            navigate("/agent/roomRental")
-        }, 3000);
-    }
+            onSuccess("ok");
+        }, 0);
+    };
 
-    const showButton = () => {
-        if (isView) {
-            return (
-                <div style={{ display: 'flex', justifyContent: 'center', padding: '10px' }}>
-                    <Link to={`/agent/roomRental/editPost/${post.postID}`} state={{ post, isView: false }}>
-                        <Button className='viewButton' style={{ marginRight: '20px', width: '100px' }} type="primary" >
-                            Edit
-                        </Button>
-                    </Link>
-                    <Popconfirm
-                        title="Are you sure you want to delete this post?"
-                        onConfirm={() => {
-                            deletePost();
-                        }}
-                    >
-                        {contextHolder}
-                        <Button className="viewButton" style={{ width: '100px' }} type="primary">
-                            Delete
-                        </Button>
-                    </Popconfirm>
-                </div>
-            )
-        }
-        else {
-            return (
-                <div style={{ display: 'flex', justifyContent: 'center', padding: '10px' }}>
-                    <Button className='viewButton' style={{ marginRight: '20px', width: '100px' }} type="primary" onClick={() => { form.resetFields() }} >
-                        Cancel
-                    </Button>
-
-                    <Popconfirm
-                        title="Title"
-                        description="Are you sure you want to make changes?"
-                        onConfirm={() => {
-                            form.submit();
-                        }}
-                    >
-                        {contextHolder}
-                        <Button className="viewButton" style={{ width: '100px' }} type="primary">
-                            Edit
-                        </Button>
-                    </Popconfirm>
-                </div>
-            )
-        }
-    }
 
     return <>
-        <h1>Edit Post</h1>
+        <h1>Create new post</h1>
 
 
         <Modal open={previewOpen} title={previewTitle} footer={null} onCancel={handleCancel}>
@@ -437,43 +399,46 @@ function AgentRoomRentalPost() {
 
         <Form
             layout='vertical'
+            name='halo'
             size='middle'
-            disabled={isView}
-            form={form}
             onFinish={onFinish}
             onFinishFailed={onFinishFailed}
             initialValues={{
-                propertyFurnishType: post.propertyFurnishType,
-                propertyCategory: post.propertyCategory,
-                masterRoomNum: (!post.propertyRoomNumber ? 1 : post.propertyRoomNumber[0]),
-                mediumRoomNum: (!post.propertyRoomNumber ? 1 : post.propertyRoomNumber[1]),
-                smallRoomNum: (!post.propertyRoomNumber ? 1 : post.propertyRoomNumber[2]),
-                propertyRental: post.propertyPrice,
-                roomSquareFeet: post.propertyRoomSquareFeet,
-                propertyDescription: post.propertyDescription,
-                propertyType: post.propertyType,
-                roomType: post.propertyRoomType,
-                propertyName: post.propertyName,
-                propertyAddress: post.propertyAddress,
-                propertyCity: post.propertyCity,
-                propertyPostcode: post.propertyPostcode,
-                propertyBuiltupSize: post.propertySquareFeet,
-                propertyFurnish: post.propertyFurnish,
-                propertyFacility: post.propertyFacility,
+                // propertyState: propertyState,
+                propertyFurnishType: null,
+                propertyCategory: 'Room',
+                masterRoomNum: 1,
+                mediumRoomNum: 1,
+                smallRoomNum: 1,
+                propertyRental: 0,
+                roomSquareFeet: 1,
+                propertyDescription: null,
+                propertyType: null,
+                roomType: null,
             }}
         >
             <Row>
                 <Col span={24}>
-                    <Form.Item name="propertyImage" label="Property Image">
+                    <Form.Item
+                        name="propertyImage"
+                        label="Property Image"
+                        rules={[
+                            {
+                                required: true,
+                                message: 'Please upload at least one image!',
+                            },
+                        ]}
+
+
+                    >
                         <Upload
-                            action="https://www.mocky.io/v2/5cc8019d300000980a055e76"
                             listType="picture-card"
                             fileList={fileList}
                             onPreview={handlePreview}
                             onChange={handleChange}
                             multiple={true}
                             beforeUpload={beforeUpload}
-
+                            customRequest={dummyRequest}
                         >
                             {fileList.length >= 10 ? null : uploadButton}
                         </Upload>
@@ -489,7 +454,7 @@ function AgentRoomRentalPost() {
                             message: 'Please enter the property name!',
                         },
                     ]}>
-                        <Input disabled={true} placeholder='Enter your property name here' style={{ width: '50%' }} />
+                        <Input placeholder='Enter your property name here' style={{ width: '50%' }} />
                     </Form.Item>
                 </Col>
             </Row>
@@ -565,7 +530,7 @@ function AgentRoomRentalPost() {
                             message: 'Please choose the property furnish type!',
                         },
                     ]}>
-                        <FurnishTypeSelection value={post.propertyFurnishType} bordered={true} />
+                        <FurnishTypeSelection bordered={true} />
                     </Form.Item>
                 </Col>
             </Row>
@@ -580,7 +545,7 @@ function AgentRoomRentalPost() {
                                 message: 'Please choose one category!',
                             },
                         ]}>
-                        <Radio.Group onChange={() => { setIsRoom(!isRoom) }} disabled={true}>
+                        <Radio.Group onChange={() => { setIsRoom(!isRoom) }}>
                             <Radio value='Room'>Room</Radio>
                             <Radio value='Unit'>Unit</Radio>
                         </Radio.Group>
@@ -613,6 +578,7 @@ function AgentRoomRentalPost() {
                             style={{
                                 width: '100%',
                             }}
+                        // options={furnishOption}
                         >
                             <Row>
                                 {renderedItem(furnishOption)}
@@ -645,15 +611,29 @@ function AgentRoomRentalPost() {
             <Row>
                 <Col span={20}>
                     <Form.Item name="propertyDescription" label="Other description">
-                        <TextArea maxLength={1000} style={{ resize: 'none', height: 'auto' }} allowClear={true} autoSize={true} placeholder='Enter other description here...' />
+                        <TextArea maxLength={1000} style={{ resize: 'none', height: '100px' }} allowClear={true} autoSize={true} placeholder='Enter other description here...' />
                     </Form.Item>
                 </Col>
             </Row>
-        </Form>
-        {showButton()}
 
+            <div style={{ display: 'flex', justifyContent: 'center', padding: '10px' }}>
+                <Form.Item>
+                    <Button htmlType='reset' className='viewButton' style={{ marginRight: '20px' }} type="primary" >
+                        Cancel
+                    </Button>
+                </Form.Item>
+
+                <Form.Item>
+                    {contextHolder}
+
+                    <Button htmlType='submit' className="viewButton" type="primary" disabled={isButtonDisabled}>
+                        Submit
+                    </Button>
+                </Form.Item>
+            </div>
+        </Form>
 
     </>
 }
 
-export default AgentRoomRentalPost;
+export default AgentCreatePost;
