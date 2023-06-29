@@ -6,6 +6,7 @@ import { createClient } from '@supabase/supabase-js';
 import { Link, useLocation, useNavigate } from 'react-router-dom';
 import "./AgentRoomRentalPost.css"
 import FurnishTypeSelection from '../../../Components/FurnishTypeSelection';
+import { getCurrentDateTime } from '../../../Components/timeUtils';
 
 
 function AgentRoomRentalPost() {
@@ -16,9 +17,6 @@ function AgentRoomRentalPost() {
     const [messageApi, contextHolder] = message.useMessage();
     const navigate = useNavigate();
 
-    console.log(post)
-    console.log(form)
-    console.log(isView)
     const [previewOpen, setPreviewOpen] = useState(false);
     const [previewImage, setPreviewImage] = useState('');
     const [previewTitle, setPreviewTitle] = useState('');
@@ -42,6 +40,45 @@ function AgentRoomRentalPost() {
     );
 
     const [fileList, setFileList] = useState([]);
+
+
+    useEffect(() => {
+        window.scrollTo(0, 0);
+
+    }, [isView])
+
+
+    //Get the image list from supabase storage and set it to fileList
+    useEffect(() => {
+        const fetchImages = async () => {
+            const { data: images, error } = await supabase
+                .storage
+                .from('post')
+                .list(`${post.postID}`);
+
+            if (error) {
+                console.log(error)
+            } else {
+                const urls = images.map(image => {
+                    return {
+                        uid: image.id,
+                        name: image.name,
+                        status: 'done',
+                        url: `https://exsvuquqspmbrtyjdpyc.supabase.co/storage/v1/object/public/post/${post.postID}/${image.name}`
+                    }
+                })
+                setFileList(urls)
+            }
+        }
+        fetchImages()
+    }, [])
+
+
+
+
+
+
+
     const handleCancel = () => setPreviewOpen(false);
     const handlePreview = async (file) => {
         if (!file.url && !file.preview) {
@@ -87,7 +124,6 @@ function AgentRoomRentalPost() {
         }
 
         const value = isJpgOrPng && isLt2M;
-        console.log(value)
         return value || Upload.LIST_IGNORE;
     };
 
@@ -181,7 +217,6 @@ function AgentRoomRentalPost() {
     }
 
     const validatePostcode = (value) => {
-        console.log(value)
         if (value.length == 0) {
             setPropertyState('');
             return {
@@ -190,10 +225,7 @@ function AgentRoomRentalPost() {
             }
         }
         else {
-            console.log(value[0].state.state_name);
-            console.log(typeof (value[0].state.state_name))
             setPropertyState(value[0].state.state_name);
-            console.log(propertyState)
             return {
                 validateStatus: 'success',
                 errorMsg: null,
@@ -227,7 +259,6 @@ function AgentRoomRentalPost() {
                     .select('postcode, state_code, state(state_name)')
                     .eq('postcode', e.target.value);
 
-
                 if (error) {
                     console.log(error)
                     return;
@@ -241,13 +272,49 @@ function AgentRoomRentalPost() {
 
                 if (validationResult.validateStatus === 'success') {
                     setPropertyState(data[0].state.state_name);
-                    console.log(propertyState)
                 } else {
                     setPropertyState('');
                 }
             }
         }
     };
+
+    const updatePostImage = async (postID, images) => {
+        //Get all images from supabase storage
+        const { data: allData, error: allError } = await supabase
+            .storage
+            .from('post')
+            .list(`${postID}/`);
+
+        if (allError) {
+            console.log("Error failed: " + allError)
+        }
+
+        allData.forEach(async (data) => {
+            await supabase
+                .storage
+                .from('post')
+                .remove([`${postID}/${data.name}`]);
+        })
+
+        //Upload new images to supabase storage
+        images.fileList.forEach(async (image) => {
+            const { data, error } = await supabase
+                .storage
+                .from('post')
+                .upload(`${postID}/${image.name}`, image.originFileObj, {
+                    cacheControl: '3600',
+                    upsert: false
+                })
+
+            if (error) {
+                console.log("Error failed: " + error)
+            }
+        }
+        )
+
+    }
+
 
     const onFinish = async (e) => {
         let {
@@ -258,9 +325,6 @@ function AgentRoomRentalPost() {
             propertyState, propertyType, roomSquareFeet,
             roomType, masterRoomNum, mediumRoomNum, smallRoomNum } = e;
 
-        console.log(propertyFacility)
-        console.log(e);
-
         const { data, error } = await addressSupabase
             .from('malaysia_postcode')
             .select('postcode, state_code, state(state_name)')
@@ -268,25 +332,10 @@ function AgentRoomRentalPost() {
 
         if (data.length > 1) {
             propertyState = data[0].state.state_name;
-            console.log(propertyState)
         }
 
-        //Get current date and time
-        const dateObj = new Date();
-        const year = dateObj.getFullYear();
-        const month = String(dateObj.getMonth() + 1).padStart(2, '0');
-        const day = String(dateObj.getDate()).padStart(2, '0');
-        const currentDate = `${year}-${month}-${day}`;
-        // setCurrentDate(`${year}-${month}-${day}`);
 
-        const hours = String(dateObj.getHours()).padStart(2, '0');
-        const minutes = String(dateObj.getMinutes()).padStart(2, '0');
-        const seconds = String(dateObj.getSeconds()).padStart(2, '0');
-        const currentTime = `${hours}:${minutes}:${seconds}`;
-        // setCurrentTime(`${hours}:${minutes}:${seconds}`);
-
-        console.log(currentDate)
-        console.log(currentTime)
+        const dateTime = getCurrentDateTime();
 
         let roomnumber = [];
         if (masterRoomNum === undefined) {
@@ -301,11 +350,8 @@ function AgentRoomRentalPost() {
             .from('property_post')
             .update(
                 {
-                    postDate: currentDate,
-                    postTime: currentTime,
                     postType: 'Property',
                     propertyType: propertyType,
-                    propertyName: propertyName,
                     propertyPrice: propertyRental,
                     propertySquareFeet: propertyBuiltupSize,
                     propertyFurnish: propertyFurnish,
@@ -319,6 +365,7 @@ function AgentRoomRentalPost() {
                     propertyRoomNumber: roomnumber,
                     propertyRoomSquareFeet: roomSquareFeet,
                     propertyDescription: propertyDescription,
+                    lastModifiedDate: dateTime,
                 })
             .eq('postID', post.postID);
 
@@ -330,6 +377,8 @@ function AgentRoomRentalPost() {
             });
         }
         else {
+
+            updatePostImage(post.postID, propertyImage);
 
             messageApi.open({
                 type: 'success',
@@ -349,10 +398,6 @@ function AgentRoomRentalPost() {
         console.log(e)
     }
 
-    useEffect(() => {
-        window.scrollTo(0, 0);
-
-    }, [isView])
 
     const deletePost = async () => {
         const { data, error } = await supabase
@@ -421,9 +466,14 @@ function AgentRoomRentalPost() {
         }
     }
 
-    return <>
-        <h1>Edit Post</h1>
+    const dummyRequest = ({ file, onSuccess }) => {
+        setTimeout(() => {
+            onSuccess("ok");
+        }, 0);
+    };
 
+    return <>
+        {isView ? <h1>View Post</h1> : <h1>Edit Post</h1>}
 
         <Modal open={previewOpen} title={previewTitle} footer={null} onCancel={handleCancel}>
             <img
@@ -467,14 +517,13 @@ function AgentRoomRentalPost() {
                 <Col span={24}>
                     <Form.Item name="propertyImage" label="Property Image">
                         <Upload
-                            action="https://www.mocky.io/v2/5cc8019d300000980a055e76"
                             listType="picture-card"
                             fileList={fileList}
                             onPreview={handlePreview}
                             onChange={handleChange}
                             multiple={true}
                             beforeUpload={beforeUpload}
-
+                            customRequest={dummyRequest}
                         >
                             {fileList.length >= 10 ? null : uploadButton}
                         </Upload>

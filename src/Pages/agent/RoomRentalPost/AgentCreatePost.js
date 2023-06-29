@@ -5,6 +5,7 @@ import FurnishTypeSelection from '../../../Components/FurnishTypeSelection';
 import TextArea from 'antd/es/input/TextArea';
 import { createClient } from '@supabase/supabase-js';
 import { useNavigate } from 'react-router-dom';
+import { getCurrentDateTime } from '../../../Components/timeUtils';
 
 function AgentCreatePost() {
 
@@ -291,22 +292,10 @@ function AgentCreatePost() {
             console.log(propertyState)
         }
 
-        //Get current date and time
-        const dateObj = new Date();
-        const year = dateObj.getFullYear();
-        const month = String(dateObj.getMonth() + 1).padStart(2, '0');
-        const day = String(dateObj.getDate()).padStart(2, '0');
-        const currentDate = `${year}-${month}-${day}`;
-        // setCurrentDate(`${year}-${month}-${day}`);
 
-        const hours = String(dateObj.getHours()).padStart(2, '0');
-        const minutes = String(dateObj.getMinutes()).padStart(2, '0');
-        const seconds = String(dateObj.getSeconds()).padStart(2, '0');
-        const currentTime = `${hours}:${minutes}:${seconds}`;
-        // setCurrentTime(`${hours}:${minutes}:${seconds}`);
+        const dateTime = getCurrentDateTime();
 
-        console.log(currentDate)
-        console.log(currentTime)
+        console.log(dateTime)
 
         let roomnumber = [];
         if (masterRoomNum === undefined) {
@@ -320,8 +309,7 @@ function AgentCreatePost() {
             .from('property_post')
             .insert([
                 {
-                    postDate: currentDate,
-                    postTime: currentTime,
+                    postDate: dateTime,
                     postType: 'Property',
                     propertyType: propertyType,
                     propertyName: propertyName,
@@ -340,6 +328,7 @@ function AgentCreatePost() {
                     propertyRoomNumber: roomnumber,
                     propertyRoomSquareFeet: roomSquareFeet,
                     propertyDescription: propertyDescription,
+                    lastModifiedDate: dateTime,
                 },
             ])
             .select('postID');
@@ -399,7 +388,6 @@ function AgentCreatePost() {
 
         <Form
             layout='vertical'
-            name='halo'
             size='middle'
             onFinish={onFinish}
             onFinishFailed={onFinishFailed}
