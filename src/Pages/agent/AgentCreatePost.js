@@ -243,6 +243,30 @@ function AgentCreatePost() {
         }
     };
 
+    //Funtion to upload propertyImage to supabase storage
+    const uploadImage = async (e, id) => {
+
+        console.log(e.fileList)
+        //Get the length of the image array and upload the image to supabase storage
+        e.fileList.forEach(async (image) => {
+            const { data, error } = await supabase.storage
+                .from('post')
+                .upload(`${id}/${image.name}`, image.originFileObj, {
+                    cacheControl: '3600',
+                    upsert: false
+                })
+
+            if (error) {
+                console.log(error)
+                return;
+            }
+        }
+        )
+
+    }
+
+
+
     const onFinish = async (e) => {
         let {
             propertyAddress, propertyBuiltupSize, propertyCategory,
@@ -254,6 +278,9 @@ function AgentCreatePost() {
 
         console.log(propertyFacility)
         console.log(e);
+
+
+
 
         const { data, error } = await addressSupabase
             .from('malaysia_postcode')
@@ -315,11 +342,21 @@ function AgentCreatePost() {
                     propertyRoomSquareFeet: roomSquareFeet,
                     propertyDescription: propertyDescription,
                 },
-            ]);
+            ])
+            .select('postID');
 
         if (postError) {
             console.log(postError)
+        } else {
+            if (postData && postData.length > 0) {
+                console.log(postData[0].postID);
+                //Call uploadImage function
+                uploadImage(propertyImage, postData[0].postID);
+            } else {
+                console.log("No data returned after insert");
+            }
         }
+
 
         setIsButtonDisabled(true);
 
@@ -338,6 +375,13 @@ function AgentCreatePost() {
     const onFinishFailed = (e) => {
         console.log(e)
     }
+
+    const dummyRequest = ({ file, onSuccess }) => {
+        setTimeout(() => {
+            onSuccess("ok");
+        }, 0);
+    };
+
 
     return <>
         <h1>Create new post</h1>
@@ -376,16 +420,26 @@ function AgentCreatePost() {
         >
             <Row>
                 <Col span={24}>
-                    <Form.Item name="propertyImage" label="Property Image">
+                    <Form.Item
+                        name="propertyImage"
+                        label="Property Image"
+                        rules={[
+                            {
+                                required: true,
+                                message: 'Please upload at least one image!',
+                            },
+                        ]}
+
+
+                    >
                         <Upload
-                            action="https://www.mocky.io/v2/5cc8019d300000980a055e76"
                             listType="picture-card"
                             fileList={fileList}
                             onPreview={handlePreview}
                             onChange={handleChange}
                             multiple={true}
                             beforeUpload={beforeUpload}
-
+                            customRequest={dummyRequest}
                         >
                             {fileList.length >= 10 ? null : uploadButton}
                         </Upload>
