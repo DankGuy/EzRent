@@ -110,7 +110,7 @@ function AgentRoomRental() {
 
 
     return <>
-        <h1>Room Rental Post</h1>
+        <h1 style={{fontSize: '25px'}}>Room Rental Post</h1>
 
         <div>
             <Row>
@@ -119,7 +119,6 @@ function AgentRoomRental() {
                         style={{
                             width: '250px',
                             height: '270px',
-                            border: '1px red solid',
                             display: 'flex',
                             flexDirection: 'column',
                             justifyContent: 'center',

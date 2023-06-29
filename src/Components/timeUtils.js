@@ -57,3 +57,12 @@ export function getCurrentDateTime() {
 
     return dateTime;
 }
+
+export function getDateOnly(inputDate){
+    const date = new Date(inputDate);
+    const options = { day: '2-digit', month: '2-digit', year: 'numeric' };
+    const formattedDate = date.toLocaleDateString('en-GB', options);
+
+    return formattedDate;
+
+}

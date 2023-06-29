@@ -21,6 +21,7 @@ import ModalForm from '../../Components/ModalForm';
 import '../student/RoomRentalPost.css'
 import Carousel from "react-multi-carousel";
 import 'react-multi-carousel/lib/styles.css';
+import { getDateOnly, getElapsedTime } from '../../Components/timeUtils';
 
 
 function RoomRentalPost() {
@@ -154,7 +155,6 @@ function RoomRentalPost() {
         </Col>
     });
 
-    //TODO: GET IMAGE
     const supabase = createClient(
         'https://exsvuquqspmbrtyjdpyc.supabase.co',
         'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImV4c3Z1cXVxc3BtYnJ0eWpkcHljIiwicm9sZSI6ImFub24iLCJpYXQiOjE2ODYyNzMxNDgsImV4cCI6MjAwMTg0OTE0OH0.vtMaXrTWDAluG_A-68pvQlSQ6GAskzADYfOonmCXPoo'
@@ -164,15 +164,15 @@ function RoomRentalPost() {
         //Get all images from supabase storage with id = postID 
         const { data, error } = await supabase.storage.from('post').list(post.postID);
 
-        if (data){
+        if (data) {
             setImages(data);
             console.log(data);
         }
 
-        if (error){
+        if (error) {
             console.log(error)
         }
-        
+
     }
 
     useEffect(() => {
@@ -233,13 +233,6 @@ function RoomRentalPost() {
     });
 
 
-    //itemClass css
-    const itemClass = {
-        width: 'auto',
-        // height: '100%',
-    }
-
-
     return (
         <div style={{ marginLeft: '4%', marginRight: '6%', marginTop: '10vh', padding: '10px', border: '1px red solid' }}>
             <div>
@@ -248,7 +241,14 @@ function RoomRentalPost() {
             </div>
             <h1 style={{ fontFamily: 'arial', fontWeight: 'normal' }}>{post.propertyName}</h1>
             <h3 style={{ fontFamily: 'arial', fontWeight: 'normal' }}> <TfiLocationPin size={15} /> {post.propertyAddress}</h3>
-            <h3 style={{ fontFamily: 'arial', fontWeight: 'normal' }}>{post.propertyState}</h3>
+            <Row>
+                <Col span={15}>
+                    <h3 style={{ fontFamily: 'arial', fontWeight: 'normal' }}>{post.propertyState}</h3>
+                </Col>
+                <Col span={9} offset={0} style={{textAlign: 'right'}}>
+                    <p style={{fontStyle: 'italic'}}>{`Posted on: ${getDateOnly(post.postDate)} (Last modified: ${getElapsedTime(post.lastModifiedDate)})`}</p>
+                </Col>
+            </Row>
 
 
             <div>
@@ -371,8 +371,8 @@ function RoomRentalPost() {
                 <Row>
                     <Col span={24} style={{ fontSize: '30px', marginLeft: '10px', fontWeight: 'bold' }}>Recommended Properties</Col>
                 </Row>
-                <Row justify={'center'} style={{ margin: '1% 0%'}}>
-                    <RecommendationPosts postID={post.postID}/>
+                <Row justify={'center'} style={{ margin: '1% 0%' }}>
+                    <RecommendationPosts postID={post.postID} />
                 </Row>
             </div>
         </div>

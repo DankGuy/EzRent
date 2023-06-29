@@ -13,6 +13,7 @@ import CategorySelection from '../../Components/CategorySelection';
 import PostSortingSelection from '../../Components/PostSortingSelection';
 import { TfiLocationPin } from 'react-icons/tfi'
 import './RoomRental.css'
+import { getDateOnly, getElapsedTime } from '../../Components/timeUtils';
 
 
 function RoomRental() {
@@ -135,18 +136,15 @@ function RoomRental() {
 
             //Sort by option
             if (sortBy === 'ascDate') {
-                query = query.order('postDate', { ascending: true }).order('postTime', { ascending: true });
+                query = query.order('postDate', { ascending: true });
             } else if (sortBy === 'descDate') {
-                query = query.order('postDate', { ascending: false }).order('postTime', { ascending: false });
+                query = query.order('postDate', { ascending: false });
             } else if (sortBy === 'ascPrice') {
                 query = query.order('propertyPrice', { ascending: true });
-
             } else if (sortBy === 'descPrice') {
                 query = query.order('propertyPrice', { ascending: false });
-
             } else if (sortBy === 'ascSize') {
                 query = query.order('propertySquareFeet', { ascending: true });
-
             } else if (sortBy === 'descSize') {
                 query = query.order('propertySquareFeet', { ascending: false });
             }
@@ -309,7 +307,7 @@ function RoomRental() {
                                         className='viewButton'>View</Button>
                                 </Link>
                             </Col>
-                            <Col span={12} style={{ textDecoration: 'underline', fontStyle: 'italic', display: 'flex', justifyContent: 'end', alignItems: 'end' }}>Posted on: {post.postDate} {post.postTime}</Col>
+                            <Col span={12} style={{ textDecoration: 'underline', fontStyle: 'italic', display: 'flex', justifyContent: 'end', alignItems: 'end' }}>{`Posted on: ${getDateOnly(post.postDate)} (Last modified: ${getElapsedTime(post.lastModifiedDate)})`}</Col>
                         </Row>
 
                     </div>

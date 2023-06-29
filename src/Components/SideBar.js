@@ -13,9 +13,6 @@ import { useNavigate } from 'react-router-dom'
 function Sidebar({ value, setTitle }) {
 
     const { Sider } = Layout;
-
-    // const [collapsed, setCollapsed] = useState(value);
-
     const navigate = useNavigate();
 
 
