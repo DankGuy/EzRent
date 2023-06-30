@@ -1,83 +1,75 @@
-import { Select } from 'antd';
+import { Input, Select } from 'antd';
 import { useState } from 'react';
-import { createClient } from '@supabase/supabase-js';
-
+import { supabase } from '../supabase-client';
 
 function SearchInput(props) {
-    const [data, setData] = useState([]);
+    const [searchOption, setSearchOption] = useState([]);
     const [value, setValue] = useState();
-    // let timeout;
-    // let currentValue;
 
-    // const fetch = (value, callback) => {
-    //     if (timeout) {
-    //         clearTimeout(timeout);
-    //         timeout = null;
-    //     }
-    //     currentValue = value;
-    //     const fake = () => {
-    //         const str = qs.stringify({
-    //             code: 'utf-8',
-    //             q: value,
-    //         });
-    //         jsonp(`https://suggest.taobao.com/sug?${str}`)
-    //             .then((response) => response.json())
-    //             .then((d) => {
-    //                 if (currentValue === value) {
-    //                     const { result } = d;
-    //                     const data = result.map((item) => ({
-    //                         value: item[0],
-    //                         text: item[0],
-    //                     }));
-    //                     callback(data);
-    //                 }
-    //             });
-    //     };
-    //     if (value) {
-    //         timeout = setTimeout(fake, 300);
-    //     } else {
-    //         callback([]);
-    //     }
-    // };
-
-    const supabase = createClient(
-        'https://exsvuquqspmbrtyjdpyc.supabase.co',
-        'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImV4c3Z1cXVxc3BtYnJ0eWpkcHljIiwicm9sZSI6ImFub24iLCJpYXQiOjE2ODYyNzMxNDgsImV4cCI6MjAwMTg0OTE0OH0.vtMaXrTWDAluG_A-68pvQlSQ6GAskzADYfOonmCXPoo'
-    );
-
-    const searchFromSupabase = async (value, callback) => {
-        console.log("value:" + value)
-        // Make a query to search your Supabase table based on the provided value
-        await supabase
-            .from('property_post')
-            .select('*')
-            .ilike('propertyName', `${value}%`)
-            .then(({ data, error }) => {
-                if (error) {
-                    console.error('Search failed:', error);
-                    callback([]);
-                    return;
-                }
-
-                console.log(data);
-                // Format the data to match the expected structure for autocomplete options
-                const formattedData = data.map((item) => ({
-                    postID: item.postID,
-                    propertyName: item.propertyName,
-                }));
-                console.log(formattedData);
-
-                // Call the callback function with the formatted data
-                callback(formattedData);
-            })
-            .catch((error) => {
-                console.error('An error occurred:', error);
-                callback([]);
-            });
+    const searchFromSupabase = async (value) => {
+        console.log("value: " + value);
+    
+        const searchFields = ['propertyName', 'propertyAddress', 'propertyCity', 'propertyState'];
+        const searchResults = [];
+    
+        for (const field of searchFields) {
+            const { data, error } = await supabase
+                .from('property_post')
+                .select(field)
+                .ilike(field, `%${value}%`);
+    
+            if (error) {
+                console.log(error);
+            }
+    
+            if (data && data.length > 0) {
+                data.forEach((item) => {
+                    if (!searchResults.some((result) => result[field] === item[field])) {
+                        searchResults.push(item);
+                    }
+                });
+            }
+        }
+    
+        setSearchOption(searchResults);
+        console.log(searchOption);
     };
+    
+
+    const options = (searchOption || []).map((d, index) => {
+        const option = [];
+
+        // Check if the option has a property name
+        if (d.propertyName) {
+            option.push({ value: d.propertyName, label: d.propertyName, key: `name-${index}` });
+        }
+
+        // Check if the option has a property address
+        if (d.propertyAddress) {
+            option.push({ value: d.propertyAddress, label: d.propertyAddress, key: `address-${index}` });
+        }
+
+        // Check if the option has a property city
+        if (d.propertyCity) {
+            option.push({ value: d.propertyCity, label: d.propertyCity, key: `city-${index}` });
+        }
+
+        // Check if the option has a property state
+        if (d.propertyState) {
+            option.push({ value: d.propertyState, label: d.propertyState, key: `state-${index}` });
+        }
+
+        return option;
+    }).flat();
+
+
+
+    const selectOptions = options || [];
+
+
 
     const handleSearch = (newValue) => {
-        searchFromSupabase(newValue, setData);
+        searchFromSupabase(newValue);
     };
     const handleChange = (newValue) => {
         setValue(newValue);
@@ -88,18 +80,23 @@ function SearchInput(props) {
             showSearch
             value={value}
             placeholder={props.placeholder}
-            style={{...props.style}}
+            style={{ ...props.style }}
             defaultActiveFirstOption={false}
             showArrow={false}
             filterOption={false}
             onSearch={handleSearch}
             onChange={handleChange}
             notFoundContent={null}
-            options={(data || []).map((d) => ({
-                value: d.propertyName,
-                label: d.propertyName,
-            }))}
+            options={selectOptions}
+        // options={(data || []).map((d, index) => [
+        //     { value: d.propertyName, label: d.propertyName, key: `name-${index}` },
+        //     { value: d.propertyAddress, label: d.propertyAddress, key: `address-${index}` },
+        //     { value: d.propertyCity, label: d.propertyCity, key: `city-${index}` },
+        //     { value: d.propertyState, label: d.propertyState, key: `state-${index}` }
+        // ]).flat()}
+
         />
+        // <Input />
     );
 }
 

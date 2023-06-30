@@ -577,7 +577,7 @@ function AgentRoomRentalPost() {
                 <Col span={5} offset={1}>
                     <Form.Item name="propertyState" label='Property State'>
                         {/* <Input value={propertyState} disabled={false} display={propertyState}  /> */}
-                        <div style={{ paddingLeft: '10px', border: '1px solid #d9d9d9', width: '50%', height: '30px', borderRadius: '5px', display: 'flex', alignItems: 'center' }}>{propertyState}</div>
+                        <div style={{ paddingLeft: '10px', border: '1px solid #d9d9d9', width: 'auto', height: '30px', borderRadius: '5px', display: 'flex', alignItems: 'center' }}>{propertyState}</div>
                     </Form.Item>
                 </Col>
             </Row>

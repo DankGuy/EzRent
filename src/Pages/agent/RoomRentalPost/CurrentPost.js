@@ -31,7 +31,7 @@ function CurrentPost({post, deletePost, contextHolder}) {
     }
 
     return (
-        <Col span={5} style={{ marginRight: '30px', marginBottom: '30px' }} key={post.postID}>
+        <Col span={5} style={{ marginRight: '40px', marginBottom: '30px' }} key={post.postID}>
             <div
                 style={{
                     height: 'auto',

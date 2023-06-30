@@ -1,6 +1,6 @@
 import { Link, useNavigate, useLocation } from 'react-router-dom'
 import { useState, useEffect, useCallback } from 'react'
-import { Col, Row, Button, Modal, Select, Input, Form, Image } from 'antd';
+import { Col, Row, Button, Modal, Select, Input, Form, Image, Breadcrumb } from 'antd';
 import { TfiLocationPin, TfiBasketball } from 'react-icons/tfi'
 import { BsHouseFill, BsCurrencyDollar } from 'react-icons/bs'
 import { FaBed, FaShower, FaCar, FaSwimmer, FaRunning, FaSwimmingPool, FaDumbbell, FaTableTennis, FaShoppingCart } from 'react-icons/fa'
@@ -15,13 +15,13 @@ import { createClient } from '@supabase/supabase-js';
 import { DatePicker } from 'antd';
 import dayjs from 'dayjs';
 import customParseFormat from 'dayjs/plugin/customParseFormat';
-import RecommendationPosts from '../student/RecommendationPosts';
-import ModalForm from '../../Components/ModalForm';
+import ModalForm from '../../../Components/ModalForm';
+import RecommendationPosts from './RecommendationPosts';
 
-import '../student/RoomRentalPost.css'
+import "./RoomRentalPost.css"
 import Carousel from "react-multi-carousel";
 import 'react-multi-carousel/lib/styles.css';
-import { getDateOnly, getElapsedTime } from '../../Components/timeUtils';
+import { getDateOnly, getElapsedTime } from '../../../Components/timeUtils';
 
 
 function RoomRentalPost() {
@@ -52,8 +52,15 @@ function RoomRentalPost() {
     };
 
     useEffect(() => {
+        getImages();
+    }, [])
+
+    useEffect(() => {
         window.scrollTo(0, 0); // Scroll to the top of the page
+        getImages();
     }, [post]);
+
+   
 
     let roomNum = '';
     let roomType = '';
@@ -174,10 +181,7 @@ function RoomRentalPost() {
         }
 
     }
-
-    useEffect(() => {
-        getImages();
-    }, [])
+    
 
 
     //Display all images
@@ -234,13 +238,22 @@ function RoomRentalPost() {
 
 
     return (
-        <div style={{ marginLeft: '4%', marginRight: '6%', marginTop: '10vh', padding: '10px', border: '1px red solid' }}>
+        <div style={{ marginLeft: '4%', marginRight: '6%', marginTop: '10vh', padding: '10px' }}>
             <div>
-                <Link to="/student/">Home</Link>\
-                <Link to={{ pathname: "/student/roomRental", state: post }}>Room Rental</Link>
+                {/* <Link to="/student/">Home</Link>\ */}
+                {/* <Link to={{ pathname: "/student/roomRental", state: post }}>Room Rental</Link> */}
+
+
+                <Breadcrumb style={{ margin: '16px 0', fontWeight: '500' }}
+                    items={[
+                        { href: '/student', title: 'Home' },
+                        { href: '/student/roomRental', title: 'Room Rental' },
+                        { href: `/student/roomRental/${post.postID}`, title: `${post.propertyName}` },
+                    ]}
+                />
             </div>
             <h1 style={{ fontFamily: 'arial', fontWeight: 'normal' }}>{post.propertyName}</h1>
-            <h3 style={{ fontFamily: 'arial', fontWeight: 'normal' }}> <TfiLocationPin size={15} /> {post.propertyAddress}</h3>
+            <h3 style={{ fontFamily: 'arial', fontWeight: 'normal', marginBottom: '0em' }}> <TfiLocationPin size={15} />{post.propertyAddress}, {post.propertyPostcode}, {post.propertyCity}</h3>
             <Row>
                 <Col span={15}>
                     <h3 style={{ fontFamily: 'arial', fontWeight: 'normal' }}>{post.propertyState}</h3>

@@ -1,9 +1,9 @@
 import React, { useState, useEffect } from 'react';
 import {Button} from 'antd'
 import {GrPrevious, GrNext} from 'react-icons/gr'
-import '../student/RecommendationPosts.css';
+import './RecommendationPosts.css'
 import PostCarousel from './PostCarousel';
-import { supabase } from '../../supabase-client';
+import { supabase } from '../../../supabase-client';
 
 
 function RecommendationPosts({postID}) {

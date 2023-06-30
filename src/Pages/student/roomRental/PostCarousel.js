@@ -2,7 +2,8 @@ import { Button, Col, Image, Row } from 'antd';
 import { BsCurrencyDollar } from 'react-icons/bs';
 import { Link } from 'react-router-dom';
 import { useState } from 'react';
-import { supabase } from '../../supabase-client';
+import { supabase } from '../../../supabase-client';
+
 
 function PostCarousel({ post }) {
 
@@ -17,7 +18,6 @@ function PostCarousel({ post }) {
     }
 
     getFirstImage(post);
-
 
     return (<Col span={7} style={{ boxShadow: '0 2px 4px rgba(0, 0, 0, 0.2)', backgroundColor: 'white', position: 'relative', margin: '10px 20px', height: 'auto', width: '380px' }}>
         <div

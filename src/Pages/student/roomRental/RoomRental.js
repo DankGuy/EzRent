@@ -1,19 +1,19 @@
-import SearchInput from '../../Components/SearchInput'
+import SearchInput from '../../../Components/SearchInput';
 import { Col, Row, Button, Form, Image } from 'antd';
 import { Link } from 'react-router-dom'
 import { SearchOutlined } from '@ant-design/icons';
 import { useState, useEffect } from 'react';
-import FurnishTypeSelection from '../../Components/FurnishTypeSelection';
-import MinRentSelection from '../../Components/MinRentSelection';
-import MaxRentSelection from '../../Components/MaxRentSelection';
-import BuiltupSizeSelection from '../../Components/BuiltupSizeSelection';
-import StateSelection from '../../Components/StateSelection';
+import FurnishTypeSelection from '../../../Components/FurnishTypeSelection';
+import MinRentSelection from '../../../Components/MinRentSelection';
+import MaxRentSelection from '../../../Components/MaxRentSelection';
+import BuiltupSizeSelection from '../../../Components/BuiltupSizeSelection';
+import StateSelection from '../../../Components/StateSelection';
 import { createClient } from '@supabase/supabase-js';
-import CategorySelection from '../../Components/CategorySelection';
-import PostSortingSelection from '../../Components/PostSortingSelection';
+import CategorySelection from '../../../Components/CategorySelection';
+import PostSortingSelection from '../../../Components/PostSortingSelection';
 import { TfiLocationPin } from 'react-icons/tfi'
 import './RoomRental.css'
-import { getDateOnly, getElapsedTime } from '../../Components/timeUtils';
+import { getDateOnly, getElapsedTime } from '../../../Components/timeUtils';
 
 
 function RoomRental() {
