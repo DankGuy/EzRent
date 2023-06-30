@@ -2,11 +2,11 @@ import { useState, useEffect } from 'react'
 import { PlusOutlined } from '@ant-design/icons';
 import { Modal, Upload, message, Form, Row, Col, Input, Radio, Select, InputNumber, Checkbox, Button, Popconfirm } from 'antd';
 import TextArea from 'antd/es/input/TextArea';
-import { createClient } from '@supabase/supabase-js';
 import { Link, useLocation, useNavigate } from 'react-router-dom';
 import "./AgentRoomRentalPost.css"
 import FurnishTypeSelection from '../../../Components/FurnishTypeSelection';
 import { getCurrentDateTime } from '../../../Components/timeUtils';
+import { supabase, postCodeSupabase } from '../../../supabase-client';
 
 
 function AgentRoomRentalPost() {
@@ -26,19 +26,7 @@ function AgentRoomRentalPost() {
     });
 
     const [propertyState, setPropertyState] = useState(post.propertyState);
-
     const [isRoom, setIsRoom] = useState(true)
-
-    const addressSupabase = createClient(
-        'https://fhqfbbomaerfhpitvmbd.supabase.co',
-        'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImZocWZiYm9tYWVyZmhwaXR2bWJkIiwicm9sZSI6ImFub24iLCJpYXQiOjE2ODc1MjU1NTksImV4cCI6MjAwMzEwMTU1OX0.fjGeF-l21A-HgQSAvV_gMXufFJ1IGujp5Web3kvkdvI'
-    );
-
-    const supabase = createClient(
-        'https://exsvuquqspmbrtyjdpyc.supabase.co',
-        'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImV4c3Z1cXVxc3BtYnJ0eWpkcHljIiwicm9sZSI6ImFub24iLCJpYXQiOjE2ODYyNzMxNDgsImV4cCI6MjAwMTg0OTE0OH0.vtMaXrTWDAluG_A-68pvQlSQ6GAskzADYfOonmCXPoo'
-    );
-
     const [fileList, setFileList] = useState([]);
 
 
@@ -254,7 +242,7 @@ function AgentRoomRentalPost() {
                 });
                 setPropertyState('');
             } else {
-                const { data, error } = await addressSupabase
+                const { data, error } = await postCodeSupabase
                     .from('malaysia_postcode')
                     .select('postcode, state_code, state(state_name)')
                     .eq('postcode', e.target.value);
@@ -325,7 +313,7 @@ function AgentRoomRentalPost() {
             propertyState, propertyType, roomSquareFeet,
             roomType, masterRoomNum, mediumRoomNum, smallRoomNum } = e;
 
-        const { data, error } = await addressSupabase
+        const { data, error } = await postCodeSupabase
             .from('malaysia_postcode')
             .select('postcode, state_code, state(state_name)')
             .eq('postcode', propertyPostcode);
@@ -345,7 +333,6 @@ function AgentRoomRentalPost() {
             roomnumber = [{ masterRoomNum }, { mediumRoomNum }, { smallRoomNum }];
         }
 
-        console.log("Update successfully")
         const { data: postData, error: postError } = await supabase
             .from('property_post')
             .update(
@@ -389,9 +376,6 @@ function AgentRoomRentalPost() {
                 navigate("/agent/roomRental")
             }, 3000);
         }
-
-
-
     }
 
     const onFinishFailed = (e) => {

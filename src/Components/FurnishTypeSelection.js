@@ -24,5 +24,4 @@ function FurnishTypeSelection({ value, onChange, bordered, ...rest }) {
         onChange={handleChange}
     />
 }
-
 export default FurnishTypeSelection;

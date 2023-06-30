@@ -25,9 +25,6 @@ function Sidebar({ value, setTitle }) {
 
     const [selectedKey, setSelectedKey] = useState('')
 
-
-    console.log('selected key: ' + selectedKey)
-
     return (
         <Sider trigger={null} collapsible collapsed={value} collapsedWidth={90} width={220}
             style={{
@@ -49,7 +46,6 @@ function Sidebar({ value, setTitle }) {
                     overflowY: 'auto',
                 }}
                 onClick={({ key }) => {
-                    console.log(key)
                     setSelectedKey(key);
                     localStorage.setItem('selectedKey', key);
                     setTitle(key)

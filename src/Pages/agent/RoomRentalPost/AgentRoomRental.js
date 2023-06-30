@@ -20,19 +20,50 @@ function AgentRoomRental() {
         fetchData();
     }, []);
 
-
     useEffect(() => {
-        console.log("isFirstMount: ", isFirstMount);
         if (isFirstMount) {
-          setIsFirstMount(false);
-          return;
+            setIsFirstMount(false);
+            return;
         }
-    
         window.scrollTo(0, 0);
-      }, [posts]);
+    }, [posts]);
+
+    //useEffect get the data from supabase and do sorting query
+    useEffect(() => {
+        const fetchSortedData = async () => {
+
+            let query = supabase.from('property_post').select('*');
+
+            if (sortBy === 'ascDate') {
+                query = query.order('postDate', { ascending: true });
+            } else if (sortBy === 'descDate') {
+                query = query.order('postDate', { ascending: false });
+            } else if (sortBy === 'ascPrice') {
+                query = query.order('propertyPrice', { ascending: true });
+            } else if (sortBy === 'descPrice') {
+                query = query.order('propertyPrice', { ascending: false });
+            } else if (sortBy === 'ascSize') {
+                query = query.order('propertySquareFeet', { ascending: true });
+            } else if (sortBy === 'descSize') {
+                query = query.order('propertySquareFeet', { ascending: false });
+            } else if (sortBy === 'ascModifiedDate') {
+                query = query.order('lastModifiedDate', { ascending: true });
+            } else if (sortBy === 'descModifiedDate') {
+                query = query.order('lastModifiedDate', { ascending: false });
+            }
+            const { data, error } = await query;
+
+            if (error) {
+                console.log(error);
+                return;
+            }
+            setPosts(data);
+        }
+
+        fetchSortedData();
+    }, [sortBy]);
 
     const createPost = () => {
-        console.log("hi")
         navigate("/agent/roomRental/createNewPost")
     }
 
@@ -53,9 +84,6 @@ function AgentRoomRental() {
         if (error) {
             console.log(error)
         }
-
-
-        // window.location.reload();
         fetchData();
 
         messageApi.open({
@@ -66,52 +94,11 @@ function AgentRoomRental() {
 
     const handleSortBy = (value) => {
         setSortBy(value);
-        console.log(value);
-
         setIsFirstMount(true);
     }
 
-    //useEffect get the data from supabase and do sorting query
-    useEffect(() => {
-        const fetchSortedData = async () => {
-
-            let query = supabase.from('property_post').select('*');
-
-            if (sortBy === 'ascDate') {
-                query = query.order('postDate', { ascending: true });
-            } else if (sortBy === 'descDate') {
-                query = query.order('postDate', { ascending: false });
-            } else if (sortBy === 'ascPrice') {
-                query = query.order('propertyPrice', { ascending: true });
-
-            } else if (sortBy === 'descPrice') {
-                query = query.order('propertyPrice', { ascending: false });
-
-            } else if (sortBy === 'ascSize') {
-                query = query.order('propertySquareFeet', { ascending: true });
-
-            } else if (sortBy === 'descSize') {
-                query = query.order('propertySquareFeet', { ascending: false });
-            } else if (sortBy === 'ascModifiedDate') {
-                query = query.order('lastModifiedDate', { ascending: true });
-            } else if (sortBy === 'descModifiedDate') {
-                query = query.order('lastModifiedDate', { ascending: false });
-            }
-
-
-            const { data, error } = await query;
-            
-            setPosts(data);
-        }
-
-        fetchSortedData();
-    }, [sortBy]);
-
-
-
     return <>
-        <h1 style={{fontSize: '25px'}}>Room Rental Post</h1>
-
+        <h1 style={{ fontSize: '25px' }}>Room Rental Post</h1>
         <div>
             <Row>
                 <Col span={24}>
@@ -139,16 +126,18 @@ function AgentRoomRental() {
                     <h1 style={{ fontSize: '25px' }}>Current Post</h1>
                 </Col>
                 <Col span={8} offset={4} style={{ display: 'flex', alignItems: 'end' }}>
-                    <Form.Item name="sort" style={{ width: '100%' }} label="Sort by">
-                        <PostSortingSelection 
-                            style={{ width: '60%'}} 
-                            value={sortBy} 
-                            onChange={handleSortBy}
-                            additionalOption={[
-                                { value: 'ascModifiedDate', label: 'Last modified date (old to new)' },
-                                { value: 'descModifiedDate', label: 'Last modified date (new to old)' },
-                            ]}/>
-                    </Form.Item>
+                    <Form>
+                        <Form.Item name="sort" style={{ width: '100%' }} label="Sort by">
+                            <PostSortingSelection
+                                style={{ width: '60%' }}
+                                value={sortBy}
+                                onChange={handleSortBy}
+                                additionalOption={[
+                                    { value: 'ascModifiedDate', label: 'Last modified date (old to new)' },
+                                    { value: 'descModifiedDate', label: 'Last modified date (new to old)' },
+                                ]} />
+                        </Form.Item>
+                    </Form>
                 </Col>
             </Row>
             <Row>

@@ -1,28 +1,28 @@
 import React, { useState, useEffect } from 'react';
-import {Button} from 'antd'
-import {GrPrevious, GrNext} from 'react-icons/gr'
+import { Button } from 'antd'
+import { GrPrevious, GrNext } from 'react-icons/gr'
 import './RecommendationPosts.css'
 import PostCarousel from './PostCarousel';
 import { supabase } from '../../../supabase-client';
 
 
-function RecommendationPosts({postID}) {
+function RecommendationPosts({ postID }) {
 
-    
+
     const [recommendedPosts, setPost] = useState([]);
 
 
-     //Get all posts from  and get agent information from supabase
-     const fetchPosts = async () => {
-        const {data} = await supabase
+    //Get all posts from  and get agent information from supabase
+    const fetchPosts = async () => {
+        const { data } = await supabase
             .from('property_post')
             .select('*, agent(*)');
 
         setPost(data);
     }
-    useEffect(() => {
-       fetchPosts();
 
+    useEffect(() => {
+        fetchPosts();
     }, []);
 
     //Recommendation section
@@ -39,21 +39,18 @@ function RecommendationPosts({postID}) {
     const renderPosts = () => {
         const startIndex = currentIndex;
         const endIndex = (currentIndex + 2) % recommendedPosts.length;
-      
         const slicedPosts = recommendedPosts.slice(startIndex, endIndex + 1);
-      
-        console.log(slicedPosts);
-      
+
         return slicedPosts.map((post, index) => (
-          <PostCarousel
-            post={post}
-            key={index}
-            activeIndex={index}
-            totalPosts={slicedPosts.length}
-          />
+            <PostCarousel
+                post={post}
+                key={index}
+                activeIndex={index}
+                totalPosts={slicedPosts.length}
+            />
         ));
-      };
-      
+    };
+
 
     const isPreviousDisabled = currentIndex === 0;
     const isNextDisabled = currentIndex === recommendedPosts.length - 3;
@@ -61,11 +58,11 @@ function RecommendationPosts({postID}) {
     return (
         <div className="product-carousel">
             <Button onClick={goToPrevious} className="carousel-button" disabled={isPreviousDisabled} shape='circle'>
-                <GrPrevious size={25}/>
+                <GrPrevious size={25} />
             </Button>
-                {renderPosts()}
+            {renderPosts()}
             <Button onClick={goToNext} className="carousel-button" disabled={isNextDisabled} shape='circle'>
-                <GrNext size={25}/>
+                <GrNext size={25} />
             </Button>
         </div>
     );

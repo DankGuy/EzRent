@@ -3,9 +3,9 @@ import { PlusOutlined } from '@ant-design/icons';
 import { Modal, Upload, message, Form, Row, Col, Input, Radio, Select, InputNumber, Checkbox, Button } from 'antd';
 import FurnishTypeSelection from '../../../Components/FurnishTypeSelection';
 import TextArea from 'antd/es/input/TextArea';
-import { createClient } from '@supabase/supabase-js';
 import { useNavigate } from 'react-router-dom';
 import { getCurrentDateTime } from '../../../Components/timeUtils';
+import { supabase, postCodeSupabase } from '../../../supabase-client';
 
 function AgentCreatePost() {
 
@@ -24,16 +24,6 @@ function AgentCreatePost() {
     const [isButtonDisabled, setIsButtonDisabled] = useState(false);
     const [messageApi, contextHolder] = message.useMessage();
     const navigate = useNavigate();
-
-    const addressSupabase = createClient(
-        'https://fhqfbbomaerfhpitvmbd.supabase.co',
-        'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImZocWZiYm9tYWVyZmhwaXR2bWJkIiwicm9sZSI6ImFub24iLCJpYXQiOjE2ODc1MjU1NTksImV4cCI6MjAwMzEwMTU1OX0.fjGeF-l21A-HgQSAvV_gMXufFJ1IGujp5Web3kvkdvI'
-    );
-
-    const supabase = createClient(
-        'https://exsvuquqspmbrtyjdpyc.supabase.co',
-        'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImV4c3Z1cXVxc3BtYnJ0eWpkcHljIiwicm9sZSI6ImFub24iLCJpYXQiOjE2ODYyNzMxNDgsImV4cCI6MjAwMTg0OTE0OH0.vtMaXrTWDAluG_A-68pvQlSQ6GAskzADYfOonmCXPoo'
-    );
 
     const [fileList, setFileList] = useState([]);
     const handleCancel = () => setPreviewOpen(false);
@@ -81,7 +71,6 @@ function AgentCreatePost() {
         }
 
         const value = isJpgOrPng && isLt2M;
-        console.log(value)
         return value || Upload.LIST_IGNORE;
     };
 
@@ -135,10 +124,16 @@ function AgentCreatePost() {
 
     const furnishOption = [
         { label: "Air-conditioner", value: "Air-conditioner" },
-        { label: "Clothes hanger stand", value: "Clothes hanger stand" },
+        { label: "Bed", value: "Bed" },
+        { label: "Bed frame", value: "Bed frame" },
+        { label: "Clothes hanger", value: "Clothes hanger" },
+        { label: "Clothes rack", value: "Clothes rack" },
         { label: "Refrigerator", value: "Refrigerator" },
+        { label: "Dining table", value: "Dining table" },
+        { label: "Shoe rack", value: "Shoe rack" },
         { label: "Sofa", value: "Sofa" },
         { label: "Study desk and table", value: "Study desk and table" },
+        { label: "Television", value: "Television" },
         { label: "Wardrobe", value: "Wardrobe" },
         { label: "Water dispenser", value: "Water dispenser" },
         { label: "Water heater", value: "Water heater" },
@@ -175,7 +170,6 @@ function AgentCreatePost() {
     }
 
     const validatePostcode = (value) => {
-        console.log(value)
         if (value.length == 0) {
             setPropertyState('');
             return {
@@ -184,10 +178,7 @@ function AgentCreatePost() {
             }
         }
         else {
-            console.log(value[0].state.state_name);
-            console.log(typeof (value[0].state.state_name))
             setPropertyState(value[0].state.state_name);
-            console.log(propertyState)
             return {
                 validateStatus: 'success',
                 errorMsg: null,
@@ -216,7 +207,7 @@ function AgentCreatePost() {
                 });
                 setPropertyState('');
             } else {
-                const { data, error } = await addressSupabase
+                const { data, error } = await postCodeSupabase
                     .from('malaysia_postcode')
                     .select('postcode, state_code, state(state_name)')
                     .eq('postcode', e.target.value);
@@ -235,7 +226,6 @@ function AgentCreatePost() {
 
                 if (validationResult.validateStatus === 'success') {
                     setPropertyState(data[0].state.state_name);
-                    console.log(propertyState)
                 } else {
                     setPropertyState('');
                 }
@@ -246,7 +236,6 @@ function AgentCreatePost() {
     //Funtion to upload propertyImage to supabase storage
     const uploadImage = async (e, id) => {
 
-        console.log(e.fileList)
         //Get the length of the image array and upload the image to supabase storage
         e.fileList.forEach(async (image) => {
             const { data, error } = await supabase.storage
@@ -276,26 +265,20 @@ function AgentCreatePost() {
             propertyState, propertyType, roomSquareFeet,
             roomType, masterRoomNum, mediumRoomNum, smallRoomNum } = e;
 
-        console.log(propertyFacility)
-        console.log(e);
-
-
-
-
-        const { data, error } = await addressSupabase
+        const { data, error } = await postCodeSupabase
             .from('malaysia_postcode')
             .select('postcode, state_code, state(state_name)')
             .eq('postcode', propertyPostcode);
 
-        if (data.length > 1) {
-            propertyState = data[0].state.state_name;
-            console.log(propertyState)
+        if (error) {
+            console.log(error)
+            return;
         }
 
-
+        if (data.length > 1) {
+            propertyState = data[0].state.state_name;
+        }
         const dateTime = getCurrentDateTime();
-
-        console.log(dateTime)
 
         let roomnumber = [];
         if (masterRoomNum === undefined) {
@@ -337,8 +320,6 @@ function AgentCreatePost() {
             console.log(postError)
         } else {
             if (postData && postData.length > 0) {
-                console.log(postData[0].postID);
-                //Call uploadImage function
                 uploadImage(propertyImage, postData[0].postID);
             } else {
                 console.log("No data returned after insert");
@@ -356,8 +337,6 @@ function AgentCreatePost() {
         setTimeout(() => {
             navigate("/agent/roomRental")
         }, 3000);
-
-
     }
 
     const onFinishFailed = (e) => {

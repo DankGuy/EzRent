@@ -1,6 +1,6 @@
 import { Link } from "react-router-dom";
 import logo from "../images/logoIcon.png";
-import "../css/navBarCss.css";
+import "./navBarCss.css";
 import { supabase } from "../supabase-client";
 
 function NavBar() {

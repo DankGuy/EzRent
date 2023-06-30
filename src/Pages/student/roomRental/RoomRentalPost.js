@@ -8,10 +8,11 @@ import { TbAirConditioning, TbResize } from 'react-icons/tb'
 import { GoReport } from 'react-icons/go'
 import { CgSmartHomeRefrigerator } from 'react-icons/cg'
 import { MdOutlineTableRestaurant, MdWaterDrop } from 'react-icons/md'
+import { PiCoatHanger, PiTelevisionBold } from 'react-icons/pi'
 import { BiCloset, BiWifi, BiFootball, BiBuildingHouse } from 'react-icons/bi'
-import { GiSofa, GiClothesline, GiKidSlide, GiWashingMachine, GiShuttlecock, GiCoffeeCup, GiCctvCamera } from 'react-icons/gi'
-import { createClient } from '@supabase/supabase-js';
+import { GiSofa, GiClothesline, GiKidSlide, GiWashingMachine, GiShuttlecock, GiCoffeeCup, GiCctvCamera, GiBed, GiConverseShoe } from 'react-icons/gi'
 
+import { supabase } from '../../../supabase-client'
 import { DatePicker } from 'antd';
 import dayjs from 'dayjs';
 import customParseFormat from 'dayjs/plugin/customParseFormat';
@@ -85,6 +86,12 @@ function RoomRentalPost() {
         switch (value) {
             case 'Air-conditioner':
                 return TbAirConditioning;
+            case 'Bed frame':
+                return GiBed;
+            case 'Bed':
+                return FaBed;
+            case 'Dining table':
+                return MdOutlineTableRestaurant;
             case 'Water heater':
                 return FaShower;
             case 'Refrigerator':
@@ -95,8 +102,14 @@ function RoomRentalPost() {
                 return BiCloset;
             case 'Sofa':
                 return GiSofa;
-            case 'Clothes hanger stand':
+            case 'Shoe rack':
+                return GiConverseShoe;
+            case 'Clothes hanger':
+                return PiCoatHanger;
+            case 'Clothes rack':
                 return GiClothesline;
+            case 'Television':
+                return PiTelevisionBold;
             case 'Washing machine':
                 return GiWashingMachine;
             case 'WiFi':
@@ -162,28 +175,19 @@ function RoomRentalPost() {
         </Col>
     });
 
-    const supabase = createClient(
-        'https://exsvuquqspmbrtyjdpyc.supabase.co',
-        'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImV4c3Z1cXVxc3BtYnJ0eWpkcHljIiwicm9sZSI6ImFub24iLCJpYXQiOjE2ODYyNzMxNDgsImV4cCI6MjAwMTg0OTE0OH0.vtMaXrTWDAluG_A-68pvQlSQ6GAskzADYfOonmCXPoo'
-    );
-
     const getImages = async () => {
         //Get all images from supabase storage with id = postID 
         const { data, error } = await supabase.storage.from('post').list(post.postID);
 
         if (data) {
             setImages(data);
-            console.log(data);
         }
 
         if (error) {
             console.log(error)
         }
-
     }
     
-
-
     //Display all images
     const displayImages = () => {
         return images.map((image) => {
@@ -208,7 +212,6 @@ function RoomRentalPost() {
         setIsModalOpen(true);
     };
     const handleOk = (e) => {
-        console.log(e);
         setIsModalOpen(false);
     };
     const handleCancel = () => {

@@ -1,7 +1,7 @@
 import { Button, Col, Image, Row } from 'antd';
 import { BsCurrencyDollar } from 'react-icons/bs';
 import { Link } from 'react-router-dom';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { supabase } from '../../../supabase-client';
 
 
@@ -9,15 +9,30 @@ function PostCarousel({ post }) {
 
     const [firstImage, setFirstImage] = useState(null);
 
+    useEffect(() => {
+        getFirstImage(post);
+    }, []);
+
+    useEffect(() => {
+        setFirstImage(null);
+        getFirstImage(post);
+    }, [post]);
+
+
     //Get the first image from supabase storage with id = postID
     const getFirstImage = async (post) => {
-        const { data } = await supabase.storage.from('post').list(post.postID);
+        const { data, error } = await supabase.storage.from('post').list(post.postID);
+
+        if (error) {
+            console.log(error);
+            return;
+        }
         if (data) {
             setFirstImage(data[0]);
         }
     }
 
-    getFirstImage(post);
+   
 
     return (<Col span={7} style={{ boxShadow: '0 2px 4px rgba(0, 0, 0, 0.2)', backgroundColor: 'white', position: 'relative', margin: '10px 20px', height: 'auto', width: '380px' }}>
         <div
@@ -37,9 +52,12 @@ function PostCarousel({ post }) {
             {post.propertyCategory}
         </div>
         <Row >
+            {firstImage && 
             <Col span={24} style={{ display: 'flex', justifyContent: 'center' }}>
-                <Image style={{ justifyContent: 'center' }} height={200} src={`https://exsvuquqspmbrtyjdpyc.supabase.co/storage/v1/object/public/post/${post.postID}/${firstImage?.name}`} />
-            </Col>
+                <Image style={{ justifyContent: 'center' }} height={200} 
+                    src={`https://exsvuquqspmbrtyjdpyc.supabase.co/storage/v1/object/public/post/${post.postID}/${firstImage?.name}`} 
+                    onError={()=>{console.log("error")}}/>
+            </Col>}
         </Row>
         <div style={{ margin: '10px' }}>
             <Row>

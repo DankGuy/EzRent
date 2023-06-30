@@ -4,6 +4,9 @@ import { useState, useEffect } from "react";
 const supabaseUrl = process.env.REACT_APP_SUPABASE_URL;
 const supabaseKey = process.env.REACT_APP_ANON_KEY;
 
+const postCodeSupabaseUrl = process.env.REACT_APP_POSTCODE_SUPABASE_URL;
+const postCodeSupabaseKey = process.env.REACT_APP_POSTCODE_ANON_KEY;
+
 export const useCheckLogin = () => {
   const [session, setSession] = useState(null);
   useEffect(() => {
@@ -24,3 +27,4 @@ export const useCheckLogin = () => {
   }, []);
 };
 export const supabase = createClient(supabaseUrl, supabaseKey);
+export const postCodeSupabase = createClient(postCodeSupabaseUrl, postCodeSupabaseKey);

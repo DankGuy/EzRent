@@ -8,12 +8,12 @@ import MinRentSelection from '../../../Components/MinRentSelection';
 import MaxRentSelection from '../../../Components/MaxRentSelection';
 import BuiltupSizeSelection from '../../../Components/BuiltupSizeSelection';
 import StateSelection from '../../../Components/StateSelection';
-import { createClient } from '@supabase/supabase-js';
 import CategorySelection from '../../../Components/CategorySelection';
 import PostSortingSelection from '../../../Components/PostSortingSelection';
 import { TfiLocationPin } from 'react-icons/tfi'
 import './RoomRental.css'
 import { getDateOnly, getElapsedTime } from '../../../Components/timeUtils';
+import { supabase } from '../../../supabase-client';
 
 
 function RoomRental() {
@@ -31,6 +31,7 @@ function RoomRental() {
 
 
     const [posts, setPost] = useState([]);
+    const [firstImages, setFirstImages] = useState({});
 
 
     const handleStateChange = (e) => {
@@ -84,12 +85,6 @@ function RoomRental() {
         fetchFromSupabase(e);
     };
 
-    const supabase = createClient(
-        'https://exsvuquqspmbrtyjdpyc.supabase.co',
-        'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImV4c3Z1cXVxc3BtYnJ0eWpkcHljIiwicm9sZSI6ImFub24iLCJpYXQiOjE2ODYyNzMxNDgsImV4cCI6MjAwMTg0OTE0OH0.vtMaXrTWDAluG_A-68pvQlSQ6GAskzADYfOonmCXPoo'
-    );
-
-
     const fetchFromSupabase = async (input) => {
         // Make a query to search your Supabase table based on the provided value
         try {
@@ -104,7 +99,6 @@ function RoomRental() {
             let query = supabase.from('property_post').select('*, agent(*)');
 
             if (!!propertyState) {
-                console.log("not null")
                 query = query.eq('propertyState', propertyState);
             }
 
@@ -156,13 +150,10 @@ function RoomRental() {
                 return;
             }
 
-            console.log("i am here");
-            console.log(data);
             setPost(data);
 
             // Store the searched posts in local storage
             localStorage.setItem('searchedPosts', JSON.stringify(data));
-            console.log(posts)
 
         } catch (error) {
             console.error('An error occurred:', error);
@@ -172,7 +163,6 @@ function RoomRental() {
 
     useEffect(() => {
         const storedPosts = localStorage.getItem('searchedPosts');
-        console.log(JSON.parse(storedPosts))
         if (storedPosts) {
           setPost(JSON.parse(storedPosts));
         }
@@ -182,8 +172,6 @@ function RoomRental() {
         };
       
         fetchFirstImages();
-
-        console.log(firstImages)
       }, []);
       
       useEffect(() => {
@@ -196,7 +184,6 @@ function RoomRental() {
 
     // Show the immediate change when choose different sort by option
     useEffect(() => {
-        console.log("haha")
         const fetchData = async () => {
             try {
                 const searchData = {
@@ -221,12 +208,9 @@ function RoomRental() {
                 console.error('An error occurred:', error);
             }
         };
-
         fetchData();
     }, [sortBy]);
 
-
-    const [firstImages, setFirstImages] = useState({});
 
     //Get the first image from supabase storage with id = postID
     const getFirstImage = async (post) => {
@@ -241,16 +225,10 @@ function RoomRental() {
       };
     
 
-
     const renderedPost = posts.map((post) => {
-
         let bgColor;
         let addDesc;
-
         const firstImage = firstImages[post.postID];
-
-        console.log("hahahhaa")
-
 
         if (post.propertyCategory === 'Room') {
             bgColor = '#d5def5';
@@ -259,18 +237,19 @@ function RoomRental() {
             bgColor = '#8594e4';
             const [masterRoom, mediumRoom, smallRoom] = post.propertyRoomNumber;
             addDesc = `${masterRoom} Master room, ${mediumRoom} Medium room, ${smallRoom} Small room`;
-
         }
 
         return (
             <div key={post.postID} className='postContainer'>
                 <Row >
                     <Col span={24} style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', width: "300px", paddingLeft: '10px' }}>
-                        <Image 
-                            style={{ justifyContent: 'center' }} 
-                            height={200}               
-                            src={`https://exsvuquqspmbrtyjdpyc.supabase.co/storage/v1/object/public/post/${post.postID}/${firstImage?.name}`}
-                        />
+                        {firstImage && 
+                            <Image 
+                                style={{ justifyContent: 'center' }} 
+                                height={200} 
+                                src={`https://exsvuquqspmbrtyjdpyc.supabase.co/storage/v1/object/public/post/${post.postID}/${firstImage?.name}`} />
+                        }
+                       
                     </Col>
                 </Row>
                 <div className='postDescription'>

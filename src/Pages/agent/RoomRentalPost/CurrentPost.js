@@ -46,11 +46,10 @@ function CurrentPost({post, deletePost, contextHolder}) {
                     </Col>
                 </Row>
                 <Row >
-                    <Col span={24} style={{ display: 'flex', justifyContent: 'center', marginBottom: '10px' }}>
+                    {firstImage && <Col span={24} style={{ display: 'flex', justifyContent: 'center', marginBottom: '10px' }}>
                         <Image style={{ justifyContent: 'center' }} height={200} src={`https://exsvuquqspmbrtyjdpyc.supabase.co/storage/v1/object/public/post/${post.postID}/${firstImage?.name}`} />
-                    </Col>
+                    </Col>}
                 </Row>
-
                 <Row>
                     <Col span={24} style={{paddingLeft: '10px', fontSize: '18px', fontWeight: '500', paddingRight: '10px' }}>
                         {post.propertyName}
