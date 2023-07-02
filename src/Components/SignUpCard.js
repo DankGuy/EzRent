@@ -1,6 +1,6 @@
 import loginBg from "../images/loginBg.jpeg";
 import { Button, Form, Input, Select, message } from "antd";
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import { Link } from "react-router-dom";
 import { supabase } from "../supabase-client";
 
