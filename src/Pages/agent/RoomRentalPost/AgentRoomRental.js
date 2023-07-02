@@ -122,14 +122,14 @@ function AgentRoomRental() {
             </Row>
             <br />
             <Row style={{ border: '1 solid red' }}>
-                <Col span={12}>
+                <Col span={14}>
                     <h1 style={{ fontSize: '25px' }}>Current Post</h1>
                 </Col>
-                <Col span={8} offset={4} style={{ display: 'flex', alignItems: 'end' }}>
+                <Col span={8} offset={2} style={{ display: 'flex', alignItems: 'end' }}>
                     <Form>
-                        <Form.Item name="sort" style={{ width: '100%' }} label="Sort by">
+                        <Form.Item name="sort"  label="Sort by">
                             <PostSortingSelection
-                                style={{ width: '60%' }}
+                                style={{ width: '250px' }}
                                 value={sortBy}
                                 onChange={handleSortBy}
                                 additionalOption={[

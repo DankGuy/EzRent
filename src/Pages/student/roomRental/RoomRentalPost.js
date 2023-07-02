@@ -1,6 +1,6 @@
 import { Link, useNavigate, useLocation } from 'react-router-dom'
 import { useState, useEffect, useCallback } from 'react'
-import { Col, Row, Button, Modal, Select, Input, Form, Image, Breadcrumb } from 'antd';
+import { Col, Row, Button, Modal, Select, Input, Form, Image, Breadcrumb, Avatar } from 'antd';
 import { TfiLocationPin, TfiBasketball } from 'react-icons/tfi'
 import { BsHouseFill, BsCurrencyDollar } from 'react-icons/bs'
 import { FaBed, FaShower, FaCar, FaSwimmer, FaRunning, FaSwimmingPool, FaDumbbell, FaTableTennis, FaShoppingCart } from 'react-icons/fa'
@@ -24,6 +24,7 @@ import Carousel from "react-multi-carousel";
 import 'react-multi-carousel/lib/styles.css';
 import { getDateOnly, getElapsedTime } from '../../../Components/timeUtils';
 import AppointmentModalForm from './AppointmentModalForm';
+import {UserOutlined} from '@ant-design/icons';
 
 function RoomRentalPost() {
     const location = useLocation();
@@ -32,6 +33,7 @@ function RoomRentalPost() {
 
 
     const [images, setImages] = useState([]);
+    const [agentAvatar, setAgentAvatar] = useState(null);
 
     const responsive = {
         desktop: {
@@ -53,6 +55,8 @@ function RoomRentalPost() {
 
     useEffect(() => {
         getImages();
+        getAgentAvatar().then((data) => setAgentAvatar(data.publicUrl));
+
     }, [])
 
     useEffect(() => {
@@ -61,6 +65,19 @@ function RoomRentalPost() {
         // getAvailableDate();
     }, [post]);
 
+    const getAgentAvatar = async () => {
+        const { data } = supabase.storage
+          .from("avatar")
+          .getPublicUrl(`avatar-${post.agent.agent_id}`, {
+            select: "metadata",
+            fileFilter: (metadata) => {
+              const fileType = metadata.content_type.split("/")[1];
+              return fileType === "jpg" || fileType === "png";
+            },
+          });
+          console.log(data.publicUrl)
+        return data;
+      };
 
 
     let roomNum = '';
@@ -208,7 +225,7 @@ function RoomRentalPost() {
         window.location.href = whatsappUrl;
     }
 
-    
+
     return (
         <div style={{ marginLeft: '4%', marginRight: '6%', marginTop: '10vh', padding: '10px' }}>
             <div>
@@ -293,9 +310,11 @@ function RoomRentalPost() {
 
                 </Col>
                 <Col span={8} offset={1}>
-                    <div className='postSectionContainer'>
-                        <Row style={{ border: '1px black solid', height: '200px' }}>
-                            <Col span={24} className='postSectionTitle'>IMAGE</Col>
+                    <div className='postSectionContainer' style={{padding: '20px 0px'}}>
+                        <Row >
+                            <Col span={24} className='postSectionTitle' style={{display: 'flex', justifyContent: 'center', alignItems: 'center'}}>
+                                <Avatar size={140} src={agentAvatar} icon={<UserOutlined />} />
+                            </Col>
                         </Row>
                         <Row >
                             <Col span={22} style={{ fontSize: '18px', marginLeft: '20px', textAlign: 'center' }}>{post.agent.name}</Col>
@@ -310,7 +329,7 @@ function RoomRentalPost() {
                         </Row>
                         <Row>
                             <Col span={22} style={{ fontSize: '18px', marginLeft: '20px', marginTop: '10px', textAlign: 'center' }}>
-                                <AppointmentModalForm post={post}/>
+                                <AppointmentModalForm post={post} />
                             </Col>
                         </Row>
                     </div>
