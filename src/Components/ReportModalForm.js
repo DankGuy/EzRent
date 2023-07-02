@@ -1,9 +1,8 @@
 import { Modal, Form, Input, Select, Button, message } from "antd";
 import { useState } from 'react';
-import { createClient } from '@supabase/supabase-js';
+import { supabase } from '../supabase-client';
 
-
-function ModalForm({ buttonContent, postID }) {
+function ReportModalForm({ buttonContent, postID }) {
 
 
     const [form] = Form.useForm();
@@ -13,11 +12,6 @@ function ModalForm({ buttonContent, postID }) {
     const [open, setOpen] = useState(false);
 
     const [messageApi, contextHolder] = message.useMessage();
-
-    const supabase = createClient(
-        'https://exsvuquqspmbrtyjdpyc.supabase.co',
-        'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImV4c3Z1cXVxc3BtYnJ0eWpkcHljIiwicm9sZSI6ImFub24iLCJpYXQiOjE2ODYyNzMxNDgsImV4cCI6MjAwMTg0OTE0OH0.vtMaXrTWDAluG_A-68pvQlSQ6GAskzADYfOonmCXPoo'
-    );
 
     const showModal = () => {
         setOpen(true);
@@ -126,4 +120,4 @@ function ModalForm({ buttonContent, postID }) {
     )
 }
 
-export default ModalForm;
+export default ReportModalForm;

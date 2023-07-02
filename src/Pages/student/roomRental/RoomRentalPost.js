@@ -16,21 +16,20 @@ import { supabase } from '../../../supabase-client'
 import { DatePicker } from 'antd';
 import dayjs from 'dayjs';
 import customParseFormat from 'dayjs/plugin/customParseFormat';
-import ModalForm from '../../../Components/ModalForm';
+import ReportModalForm from '../../../Components/ReportModalForm';
 import RecommendationPosts from './RecommendationPosts';
 
 import "./RoomRentalPost.css"
 import Carousel from "react-multi-carousel";
 import 'react-multi-carousel/lib/styles.css';
 import { getDateOnly, getElapsedTime } from '../../../Components/timeUtils';
-
+import AppointmentModalForm from './AppointmentModalForm';
 
 function RoomRentalPost() {
     const location = useLocation();
     const post = location.state; // Access the passed data from the location state
     const navigate = useNavigate();
 
-    const [isModalOpen, setIsModalOpen] = useState(false);
 
     const [images, setImages] = useState([]);
 
@@ -59,9 +58,10 @@ function RoomRentalPost() {
     useEffect(() => {
         window.scrollTo(0, 0); // Scroll to the top of the page
         getImages();
+        // getAvailableDate();
     }, [post]);
 
-   
+
 
     let roomNum = '';
     let roomType = '';
@@ -187,7 +187,7 @@ function RoomRentalPost() {
             console.log(error)
         }
     }
-    
+
     //Display all images
     const displayImages = () => {
         return images.map((image) => {
@@ -208,45 +208,10 @@ function RoomRentalPost() {
         window.location.href = whatsappUrl;
     }
 
-    const showModal = () => {
-        setIsModalOpen(true);
-    };
-    const handleOk = (e) => {
-        setIsModalOpen(false);
-    };
-    const handleCancel = () => {
-        setIsModalOpen(false);
-    };
-
-    dayjs.extend(customParseFormat);
-    const { RangePicker } = DatePicker;
-    const range = (start, end) => {
-        const result = [];
-        for (let i = start; i < end; i++) {
-            result.push(i);
-        }
-        return result;
-    };
-
-    // eslint-disable-next-line arrow-body-style
-    const disabledDate = (current) => {
-        // Can not select days before today and today
-        return current && current < dayjs().endOf('day');
-    };
-    const disabledDateTime = () => ({
-        disabledHours: () => range(0, 24).splice(4, 20),
-        disabledMinutes: () => range(30, 60),
-        disabledSeconds: () => [55, 56],
-    });
-
-
+    
     return (
         <div style={{ marginLeft: '4%', marginRight: '6%', marginTop: '10vh', padding: '10px' }}>
             <div>
-                {/* <Link to="/student/">Home</Link>\ */}
-                {/* <Link to={{ pathname: "/student/roomRental", state: post }}>Room Rental</Link> */}
-
-
                 <Breadcrumb style={{ margin: '16px 0', fontWeight: '500' }}
                     items={[
                         { href: '/student', title: 'Home' },
@@ -261,11 +226,10 @@ function RoomRentalPost() {
                 <Col span={15}>
                     <h3 style={{ fontFamily: 'arial', fontWeight: 'normal' }}>{post.propertyState}</h3>
                 </Col>
-                <Col span={9} offset={0} style={{textAlign: 'right'}}>
-                    <p style={{fontStyle: 'italic'}}>{`Posted on: ${getDateOnly(post.postDate)} (Last modified: ${getElapsedTime(post.lastModifiedDate)})`}</p>
+                <Col span={9} offset={0} style={{ textAlign: 'right' }}>
+                    <p style={{ fontStyle: 'italic' }}>{`Posted on: ${getDateOnly(post.postDate)} (Last modified: ${getElapsedTime(post.lastModifiedDate)})`}</p>
                 </Col>
             </Row>
-
 
             <div>
                 <Image.PreviewGroup>
@@ -346,22 +310,7 @@ function RoomRentalPost() {
                         </Row>
                         <Row>
                             <Col span={22} style={{ fontSize: '18px', marginLeft: '20px', marginTop: '10px', textAlign: 'center' }}>
-                                <Button
-                                    onClick={showModal}
-                                    type="primary"
-                                    className='viewButton'>Book Appointment</Button>
-                                <Modal title="Book appointment for room viewing" open={isModalOpen} onOk={handleOk} onCancel={handleCancel}>
-                                    <p>Some contents...</p>
-                                    <DatePicker
-
-                                        format="YYYY-MM-DD"
-                                        disabledDate={disabledDate}
-                                        disabledTime={disabledDateTime}
-                                        showTime={{
-                                            defaultValue: dayjs('00:00:00'),
-                                        }}
-                                    />
-                                </Modal>
+                                <AppointmentModalForm post={post}/>
                             </Col>
                         </Row>
                     </div>
@@ -374,8 +323,8 @@ function RoomRentalPost() {
                         </Row>
                         <Row>
                             <Col span={24} style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', marginTop: '10px' }}>
-
-                                <ModalForm buttonContent={"Report this post"} postID={post.postID} />
+                                {/* //TODO: Pass student id to report modal */}
+                                <ReportModalForm buttonContent={"Report this post"} postID={post.postID} />
                             </Col>
                         </Row>
                     </div>
