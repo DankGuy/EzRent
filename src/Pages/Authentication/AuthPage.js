@@ -3,7 +3,7 @@ import LoginCard from "../../Components/LoginCard";
 import { supabase } from "../../supabase-client";
 import { Button } from "antd";
 
-export default function LoginPage() {
+export default function LoginPage({}) {
   const [session, setSession] = useState(null);
   const [metadata, setMetadata] = useState({
     userType: "",
@@ -43,6 +43,7 @@ export default function LoginPage() {
   } else {
     if (metadata.userType === "agent") {
       window.location.href = "/agent/";
+
     } else if (metadata.userType === "student") {
       window.location.href = "/student";
     }

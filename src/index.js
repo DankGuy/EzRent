@@ -27,42 +27,39 @@ import AgentRoomRental from "./Pages/agent/RoomRentalPost/AgentRoomRental";
 import AgentAppointment from "./Pages/agent/AgentAppointment";
 import AgentRentalAgreement from "./Pages/agent/AgentRentalAgreement";
 import AgentRoomRentalPost from "./Pages/agent/RoomRentalPost/AgentRoomRentalPost";
+import { supabase } from "./supabase-client";
+import { useState, useEffect } from "react";
 
 const root = ReactDOM.createRoot(document.getElementById("root"));
 
 const App = () => {
-  return (
-    <React.StrictMode>
-      <BrowserRouter>
-        <Routes>
-          {/* Authentication routes */}
-          <Route path="/" element={<AuthPage />} />
-          <Route path="/login" element={<AuthPage />} />
-          <Route path="/signup" element={<SignupCard />} />
-          <Route path="/forgot-password" element={<ForgotPasswordCard />} />
-          <Route path="/update-password" element={<UpdatePasswordCard />} />
 
-          {/* Student routes */}
-          <Route path="/student/" element={<StudentLayout />}>
-            <Route index element={<Home />} />
-            <Route path="roomRental" element={<RoomRental />} />
-            <Route path="roommate" element={<Roommate />} />
-            <Route path="aboutUs" element={<AboutUs />} />
-            <Route path="/student/profile/" element={<Profile />}>
-              <Route
-                path="profileInformation"
-                element={<ProfileInformation />}
-              />
-              <Route path="paymentMethods" element={<PaymentMethods />} />
-              <Route path="rentalPayment" element={<RentalPayment />} />
-              <Route path="appointments" element={<Appointments />} />
-              <Route path="rentalAgreement" element={<RentalAgreement />} />
-              <Route path="editProfile" element={<EditProfile />} />
-            </Route>
-            <Route path="roomRental/:id" element={<RoomRentalPost />} />
-          </Route>
+  const [userType, setUserType] = useState("");
 
-          {/* Agent routes */}
+  async function getUserMetadata() {
+    const {
+      data: { user },
+    } = await supabase.auth.getUser();
+    return user.user_metadata;
+  }
+
+  useEffect(() => {
+    supabase.auth.onAuthStateChange((_event, session) => {
+      if (session) {
+        getUserMetadata().then((res) => {
+          setUserType(res.userType)
+          // console.log(res.userType)
+        });
+        
+      }
+    });
+  }, []);
+
+
+  const userTypeRoutes = () => {
+    if (userType === "agent") {
+        return (
+          <>
           <Route path="/agent/" element={<AgentLayout />}>
             <Route index element={<AgentHome />} />
             <Route path="profile" element={<AgentProfile />} />
@@ -82,6 +79,47 @@ const App = () => {
               element={<AgentRoomRentalPost />}
             />
           </Route>
+          </>
+        );
+    } else if (userType === "student") {
+
+      return (
+        <>
+          <Route path="/student/" element={<StudentLayout />}>
+            <Route index element={<Home />} />
+            <Route path="roomRental" element={<RoomRental />} />
+            <Route path="roommate" element={<Roommate />} />
+            <Route path="aboutUs" element={<AboutUs />} />
+            <Route path="/student/profile/" element={<Profile />}>
+              <Route
+                path="profileInformation"
+                element={<ProfileInformation />}
+              />
+              <Route path="paymentMethods" element={<PaymentMethods />} />
+              <Route path="rentalPayment" element={<RentalPayment />} />
+              <Route path="appointments" element={<Appointments />} />
+              <Route path="rentalAgreement" element={<RentalAgreement />} />
+              <Route path="editProfile" element={<EditProfile />} />
+            </Route>
+            <Route path="roomRental/:id" element={<RoomRentalPost />} />
+          </Route>
+        </>
+      );
+    }
+  };
+
+  return (
+    <React.StrictMode>
+      <BrowserRouter>
+        <Routes>
+          {/* Authentication routes */}
+          <Route path="/" element={<AuthPage />} />
+          <Route path="/login" element={<AuthPage />} />
+          <Route path="/signup" element={<SignupCard />} />
+          <Route path="/forgot-password" element={<ForgotPasswordCard />} />
+          <Route path="/update-password" element={<UpdatePasswordCard />} />
+          
+          {userTypeRoutes()}
 
           {/* 404 Not Found route */}
           <Route path="*" element={<NotFound />} />
