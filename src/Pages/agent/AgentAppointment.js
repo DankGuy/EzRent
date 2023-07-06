@@ -1,8 +1,9 @@
-import { DatePicker, Row, Col, Checkbox, Button, Divider, message } from "antd";
+import { DatePicker, Row, Col, Checkbox, Button, Divider, message, Table, Tabs, Tag } from "antd";
 import moment from "moment";
 import { useState } from "react";
 import { supabase } from "../../supabase-client";
 import { useEffect } from "react";
+import "./AgentAppointment.css";
 
 
 
@@ -38,10 +39,12 @@ function AgentAppointment() {
 
     const onChangeDate = (date, dateString) => {
         console.log(date, dateString);
-        if (!date) {
+        if (!date) { //cancel date selection
             setIsEditBtnDisabled(true);
             setCheckedList(null);
             setIsEditBtnDisabled(true);
+            setIsEdit(false);
+            setIsCheckBoxDisabled(true);
             // setIsCheckBoxDisabled(true);
             return;
         }
@@ -114,16 +117,18 @@ function AgentAppointment() {
         if (data.length > 0) {
             data.forEach((timeslots) => {
 
-                timeslots.timeslot.forEach((timeslot) => {
-                    console.log(timeslot);
-                    const index = options.findIndex((option) => option === timeslot);
-                    console.log(index);
+                if (timeslots) {
+                    timeslots.timeslot.forEach((timeslot) => {
+                        console.log(timeslot);
+                        const index = options.findIndex((option) => option === timeslot);
+                        console.log(index);
 
-                    if (index > -1) {
-                        newOptions.push(timeslot);
+                        if (index > -1) {
+                            newOptions.push(timeslot);
 
-                    }
-                });
+                        }
+                    });
+                }
             });
             setCheckedList(newOptions);
         }
@@ -132,7 +137,7 @@ function AgentAppointment() {
         }
     }
 
-    
+
     async function saveTimeslot() {
         const userID = (await supabase.auth.getUser()).data.user.id;
 
@@ -182,57 +187,225 @@ function AgentAppointment() {
     }
 
 
+    const [historyData, setHistoryData] = useState([]);
+    const [activeData, setActiveData] = useState([]);
+
+    useEffect(() => {
+        getData();
+    }, []);
+
+    async function getData() {
+        const userID = (await supabase.auth.getUser()).data.user.id;
+
+        const { data, error } = await supabase
+            .from('appointment')
+            .select('appointmentID, date, timeslot, postID(propertyName, propertyAddress, propertyPostcode, propertyCity, propertyState), status, student(name)')
+            .eq('agentID', userID)
+            .order('date', { ascending: false });
+
+        if (error) {
+            console.log(error);
+            return;
+        }
+
+        console.log(data);
+
+        const actData = [];
+        const hisData = [];
+
+
+        data.forEach((appointment, index) => {
+
+            const address = `${appointment.postID.propertyAddress}, ${appointment.postID.propertyPostcode} ${appointment.postID.propertyCity}, ${appointment.postID.propertyState}`;
+
+            //If the appointment date is exceed today, it is active appointment
+            //dont use moment
+            if (new Date(appointment.date) >= new Date()) {
+                actData.push({
+                    key: index,
+                    date: new Date(appointment.date).toLocaleDateString('en-GB'),
+                    timeslot: appointment.timeslot,
+                    propertyName: appointment.postID.propertyName,
+                    propertyAddress: address,
+                    status: appointment.status,
+                    studentName: appointment.student.name,
+                    appointmentID: appointment.appointmentID,
+                });
+            }
+            else {
+                hisData.push({
+                    key: index,
+                    date: new Date(appointment.date).toLocaleDateString('en-GB'),
+                    timeslot: appointment.timeslot,
+                    propertyName: appointment.postID.propertyName,
+                    propertyAddress: address,
+                    status: appointment.status,
+                    studentName: appointment.student.name,
+                    appointmentID: appointment.appointmentID,
+                });
+            }
+        });
+
+        setActiveData(actData);
+        setHistoryData(hisData);
+    }
+
+
+    //Table
+    const columns = [
+        {
+            title: 'No.',
+            dataIndex: 'no',
+            key: 'no',
+            render: (text, record, index) => index + 1,
+        },
+        {
+            title: 'Date',
+            dataIndex: 'date',
+            key: 'date',
+            sorter: (a, b) => a.date.localeCompare(b.date),
+        },
+        {
+            title: 'Timeslot',
+            dataIndex: 'timeslot',
+            key: 'timeslot',
+        },
+        {
+            title: 'Property Name',
+            dataIndex: 'propertyName',
+            key: 'propertyName',
+            sorter: (a, b) => a.propertyName.localeCompare(b.propertyName),
+        },
+        {
+            title: 'Property Address',
+            dataIndex: 'propertyAddress',
+            key: 'propertyAddress',
+        },
+        {
+            title: 'Status',
+            dataIndex: 'status',
+            key: 'status',
+            render: (text, record) => {
+                if (record.status === 'Valid') {
+                    return <Tag color="green">{record.status}</Tag>;
+                }
+                else if (record.status === 'Cancelled') {
+                    return <Tag color="red">{record.status}</Tag>;
+                }
+            }
+        },
+        {
+            title: 'Student Name',
+            dataIndex: 'studentName',
+            key: 'studentName',
+        },
+        {
+            title: 'Action',
+            dataIndex: 'action',
+            key: 'action',
+        },
+    ];
+
+
+    const items = [
+        {
+            key: '1',
+            label: 'Active',
+            children:
+                <Table
+                    columns={columns}
+                    dataSource={activeData}
+                    bordered={true}
+                    pagination={{ pageSize: 5 }}
+                />
+        },
+        {
+            key: '2',
+            label: 'History',
+            children:
+                <Table
+                    columns={columns}
+                    dataSource={historyData}
+                    bordered={true}
+                    pagination={{ pageSize: 5 }}
+                />
+        },
+    ];
+
+
 
 
 
     return <>
 
         <h1>Set Available Timeslot</h1>
-        <div style={{ border: '1px solid red', height: '300px', display: 'flex' }}>
-            <div style={{ border: '1px solid blue', width: '50%', height: '300px' }}>
+        <div style={{ height: '300px', display: 'flex' }}>
+            <div style={{ width: '70%', height: '300px' }}>
+                <h3>Select Date</h3>
                 <DatePicker
                     format='DD-MM-YYYY'
                     disabledDate={disabledDate}
                     onChange={onChangeDate}
+                    style={{ width: '80%' }}
                 />
             </div>
-            <div style={{ display: 'flex', flexDirection: 'column' }}>
-                <div style={{ border: '1px solid blue', width: '100%', height: '300px' }}>
+            <Divider type="vertical" style={{ border: '1px solid #d9d9d9', height: 'auto' }} />
 
-                    <Checkbox.Group options={defaultOptions} value={checkedList} onChange={onChange} disabled={isCheckBoxDisabled} />
-
-                    <Divider />
-                    <Row>
-                        <Col span={8}>
-                            <Checkbox indeterminate={indeterminate} onChange={onCheckAllChange} checked={checkAll} disabled={isCheckBoxDisabled}>
-                                {isCheckedAll ? 'Uncheck all' : 'Check all'}
-                            </Checkbox>
-                        </Col>
-                    </Row>
+            <div style={{ display: 'flex', flexDirection: 'column', marginRight: '20%', marginLeft: '20px' }}>
+                <div style={{ width: '100%', height: '300px' }} className="timeslotOptions">
+                    <h3>Available Timeslot</h3>
+                    <Checkbox.Group className="timeslotCheckbox" options={defaultOptions} value={checkedList} onChange={onChange} disabled={isCheckBoxDisabled} />
                 </div>
 
-                <div style={{ border: '1px solid blue', width: '100%', height: '300px' }}>
+                <div style={{ width: '100%', height: '300px', marginTop: '20px' }}>
 
-                    {isEdit ? <Row>
-                        <Col span={8}>
-                            <Button type="primary" onClick={saveTimeslot} >Save</Button>
-                        </Col>
-                       
-                    </Row> : <Row>
-                        <Col span={8}>
-                            <Button type="primary" disabled={isEditBtnDisabled}  onClick={() => {
-                                setIsEdit(true)
-                                setIsCheckBoxDisabled(false);
-                                }}>Edit</Button>
-                        </Col>
-                    </Row>}
+                    {isEdit ?
+                        <div className="buttonRow">
+
+                            <Row>
+                                <Col span={4}>
+                                    <Button
+                                        type="primary"
+                                        className="viewButton"
+                                        style={{ width: '100%' }}
+                                        onClick={saveTimeslot} >
+                                        Save
+                                    </Button>
+                                </Col>
+                                <Col span={5} offset={1} >
+                                    <Checkbox className="check-all-checkbox" indeterminate={indeterminate} onChange={onCheckAllChange} checked={checkAll} disabled={isCheckBoxDisabled}>
+                                        {isCheckedAll ? 'Uncheck all' : 'Check all'}
+                                    </Checkbox>
+                                </Col>
+
+                            </Row>
+                        </div> : <Row>
+                            <Col span={4} style={{ display: 'flex', alignItems: 'center' }}>
+                                <Button
+                                    type="primary"
+                                    className="viewButton"
+                                    style={{ width: '100%' }}
+                                    disabled={isEditBtnDisabled}
+                                    onClick={() => {
+                                        setIsEdit(true)
+                                        setIsCheckBoxDisabled(false);
+                                    }}>Edit</Button>
+                            </Col>
+                        </Row>}
                 </div>
             </div>
+        </div>
 
-            <div>
-                {checkedList}
-            </div>
+        <div style={{ marginTop: '20px' }}>
+            <h3>Appointment</h3>
+            {/* <Table 
+                columns={columns} 
+                dataSource={historyData}
+                bordered={true}
+                pagination={{pageSize:5}}
+            /> */}
 
+            <Tabs defaultActiveKey="1" items={items} />
         </div>
 
 

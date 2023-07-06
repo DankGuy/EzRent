@@ -90,7 +90,7 @@ function AgentLayout() {
           style={{
             margin: '24px 16px',
             padding: 24,
-            minHeight: 280,
+            minHeight: "80vh",
             marginLeft: (!collapsed ? '250px' : '110px'),
             background: colorBgContainer,
           }}
