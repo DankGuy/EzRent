@@ -225,7 +225,7 @@ function AgentAppointment() {
             if (new Date(appointment.date) >= new Date()) {
                 actData.push({
                     key: index,
-                    date: new Date(appointment.date).toLocaleDateString('en-GB'),
+                    date: appointment.date,
                     timeslot: appointment.timeslot,
                     propertyName: appointment.postID.propertyName,
                     propertyAddress: address,
@@ -240,7 +240,7 @@ function AgentAppointment() {
             else {
                 hisData.push({
                     key: index,
-                    date: new Date(appointment.date).toLocaleDateString('en-GB'),
+                    date: appointment.date,
                     timeslot: appointment.timeslot,
                     propertyName: appointment.postID.propertyName,
                     propertyAddress: address,
@@ -414,13 +414,6 @@ function AgentAppointment() {
 
         <div style={{ marginTop: '20px' }}>
             <h3>Appointment</h3>
-            {/* <Table 
-                columns={columns} 
-                dataSource={historyData}
-                bordered={true}
-                pagination={{pageSize:5}}
-            /> */}
-
             <Tabs defaultActiveKey="1" items={items} />
         </div>
 

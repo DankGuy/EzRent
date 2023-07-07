@@ -30,6 +30,7 @@ import AgentRoomRentalPost from "./Pages/agent/RoomRentalPost/AgentRoomRentalPos
 import { supabase } from "./supabase-client";
 import { useState, useEffect } from "react";
 import AppointmentDetails from "./Pages/agent/Appointment/AppointmentDetails";
+import StudentAppointmentDetails from "./Pages/student/profile/StudentAppointmentDetails";
 
 const root = ReactDOM.createRoot(document.getElementById("root"));
 
@@ -93,13 +94,12 @@ const App = () => {
             <Route path="roommate" element={<Roommate />} />
             <Route path="aboutUs" element={<AboutUs />} />
             <Route path="/student/profile/" element={<Profile />}>
-              <Route
-                path="profileInformation"
-                element={<ProfileInformation />}
-              />
+              <Route path="profileInformation" element={<ProfileInformation />}/>
               <Route path="paymentMethods" element={<PaymentMethods />} />
               <Route path="rentalPayment" element={<RentalPayment />} />
+
               <Route path="appointments" element={<Appointments />} />
+              <Route path="appointments/:id" element={<StudentAppointmentDetails />} />
               <Route path="rentalAgreement" element={<RentalAgreement />} />
               <Route path="editProfile" element={<EditProfile />} />
             </Route>

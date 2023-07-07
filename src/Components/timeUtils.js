@@ -58,11 +58,19 @@ export function getCurrentDateTime() {
     return dateTime;
 }
 
-export function getDateOnly(inputDate){
+export function getDateOnly(inputDate) {
     const date = new Date(inputDate);
     const options = { day: '2-digit', month: '2-digit', year: 'numeric' };
     const formattedDate = date.toLocaleDateString('en-GB', options);
 
     return formattedDate;
 
+}
+
+
+export function convertDate(inputDate) {
+    const parts = inputDate.split('-');
+    const convertedDate = `${parts[2]}-${parts[1]}-${parts[0]}`;
+
+    return convertedDate;
 }

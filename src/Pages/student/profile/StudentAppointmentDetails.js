@@ -6,7 +6,7 @@ import {supabase} from "../../../supabase-client"
 import { useNavigate } from "react-router-dom";
 
 
-function AppointmentDetails() {
+function StudentAppointmentDetails() {
 
     const location = useLocation();
     const { state } = location;
@@ -26,8 +26,14 @@ function AppointmentDetails() {
             console.log(error);
             return;
         }
+        // console.log(new Date(state.date).toLocaleDateString('en-GB'));
 
-        //Change supabase post status to available
+        //Convert date from dd/mm/yyyy to format: YYYY-MM-DD
+        const date = getCurrentDateTime();
+        //Format: YYYY-MM-DD
+        const newDate = new Date(date).toLocaleDateString('en-GB');
+
+
         const { data: data2, error: error2 } = await supabase
             .from('available_timeslot')
             .select('*')
@@ -43,7 +49,7 @@ function AppointmentDetails() {
        
 
         if (data2.length > 0) {
-
+            console.log(data2)
             const newTimeslot = data2.timeslot;
             console.log(newTimeslot);
     
@@ -75,7 +81,7 @@ function AppointmentDetails() {
 
         messageApi.loading('Cancelling appointment...', 1.5)
                                 .then(() => messageApi.success('Appointment cancelled successfully!', 1.5))
-                                .then(() => setTimeout(() => navigate('/agent/appointment'), 1500))
+                                .then(() => setTimeout(() => navigate('/student/profile/appointments'), 1500))
                                 .catch(() => messageApi.error('Error cancelling appointment!', 1.5));
     }               
 
@@ -119,12 +125,12 @@ function AppointmentDetails() {
                 </Descriptions>
                 <br />
                 <Descriptions
-                    title="Student Details"
+                    title="Agent Details"
                     labelStyle={{ fontWeight: "bold", width: "10%" }}
                     bordered>
-                    <Descriptions.Item label="Name" span={3}>{state.studentID.name}</Descriptions.Item>
-                    <Descriptions.Item label="Email" span={3}>{state.studentID.email}</Descriptions.Item>
-                    <Descriptions.Item label="Contact" span={3}>{state.studentID.phone}</Descriptions.Item>
+                    <Descriptions.Item label="Name" span={3}>{state.agentID.name}</Descriptions.Item>
+                    <Descriptions.Item label="Email" span={3}>{state.agentID.email}</Descriptions.Item>
+                    <Descriptions.Item label="Contact" span={3}>{state.agentID.phone}</Descriptions.Item>
                 </Descriptions>
 
             </div>
@@ -146,4 +152,4 @@ function AppointmentDetails() {
         </div>
     );
 }
-export default AppointmentDetails;
+export default StudentAppointmentDetails;
