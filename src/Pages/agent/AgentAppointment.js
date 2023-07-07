@@ -4,7 +4,8 @@ import { useState } from "react";
 import { supabase } from "../../supabase-client";
 import { useEffect } from "react";
 import "./AgentAppointment.css";
-
+import { AiOutlineZoomIn } from 'react-icons/ai'
+import { Link } from "react-router-dom";
 
 
 function AgentAppointment() {
@@ -18,6 +19,7 @@ function AgentAppointment() {
     const [defaultOptions, setDefaultOptions] = useState([]);
     const [isEdit, setIsEdit] = useState(false);
     const [isCheckedAll, setIsCheckedAll] = useState(false);
+
 
 
     useEffect(() => {
@@ -199,7 +201,7 @@ function AgentAppointment() {
 
         const { data, error } = await supabase
             .from('appointment')
-            .select('appointmentID, date, timeslot, postID(propertyName, propertyAddress, propertyPostcode, propertyCity, propertyState), status, student(name)')
+            .select('*, postID(*), student(*), agentID(*)')
             .eq('agentID', userID)
             .order('date', { ascending: false });
 
@@ -230,6 +232,9 @@ function AgentAppointment() {
                     status: appointment.status,
                     studentName: appointment.student.name,
                     appointmentID: appointment.appointmentID,
+                    post: appointment.postID,
+                    studentID: appointment.student,
+                    agentID: appointment.agentID,
                 });
             }
             else {
@@ -242,6 +247,9 @@ function AgentAppointment() {
                     status: appointment.status,
                     studentName: appointment.student.name,
                     appointmentID: appointment.appointmentID,
+                    post: appointment.postID,
+                    studentID: appointment.student,
+                    agentID: appointment.agentID,
                 });
             }
         });
@@ -303,6 +311,14 @@ function AgentAppointment() {
             title: 'Action',
             dataIndex: 'action',
             key: 'action',
+            render: (text, record) => {
+                return (
+                    <Link to={`/agent/appointment/${record.appointmentID}`} state={record}>
+                        <AiOutlineZoomIn size={20} style={{ cursor: 'pointer' }} />
+                    </Link>
+                )
+                
+            }
         },
     ];
 

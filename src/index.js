@@ -29,6 +29,7 @@ import AgentRentalAgreement from "./Pages/agent/AgentRentalAgreement";
 import AgentRoomRentalPost from "./Pages/agent/RoomRentalPost/AgentRoomRentalPost";
 import { supabase } from "./supabase-client";
 import { useState, useEffect } from "react";
+import AppointmentDetails from "./Pages/agent/Appointment/AppointmentDetails";
 
 const root = ReactDOM.createRoot(document.getElementById("root"));
 
@@ -69,6 +70,7 @@ const App = () => {
             />
             <Route path="roomRental" element={<AgentRoomRental />} />
             <Route path="appointment" element={<AgentAppointment />} />
+            <Route path="appointment/:id" element={<AppointmentDetails />} />
             <Route path="rentalAgreement" element={<AgentRentalAgreement />} />
             <Route
               path="roomRental/editPost/:id"

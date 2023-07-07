@@ -35,3 +35,29 @@
 /* .ant-checkbox-inner:after{
     background-color: #fff !important;
 } */
+
+.ant-tabs-tab-active > .ant-tabs-tab-btn{
+    color: #6643b5 !important;
+    font-weight: bold !important;
+}
+
+
+.ant-tabs-ink-bar{
+    background-color: #6643b5 !important;
+}
+
+.ant-table-column-sorter-inner > .active{
+    background-color: transparent !important;
+    color: black !important;
+}
+
+.anticon-caret-up > svg{
+    width: 1.2em !important;
+    height: 1.2em !important;
+}
+
+
+.anticon-caret-down > svg{
+    width: 1.2em !important;
+    height: 1.2em !important;
+}
