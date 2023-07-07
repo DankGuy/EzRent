@@ -1,47 +1,145 @@
 import { useLocation } from "react-router-dom";
 import { useEffect, useState } from 'react';
-import { Descriptions } from "antd";
+import { Button, Descriptions, Popconfirm, message } from "antd";
+import { getCurrentDateTime } from "../../../Components/timeUtils";
+import {supabase} from "../../../supabase-client"
+import { useNavigate } from "react-router-dom";
 
 
 function AppointmentDetails() {
 
     const location = useLocation();
     const { state } = location;
+    const [messageApi, contextHolder] = message.useMessage();
+    const navigate = useNavigate();
+
+    const cancelAppointment = async () => {
+
+        //Change supabase appointment status to cancelled
+        const { data, error } = await supabase
+            .from('appointment')
+            .update({ status: 'Cancelled' })
+            .eq('appointmentID', state.appointmentID)
+            .single();
+
+        if (error) {
+            console.log(error);
+            return;
+        }
+
+        //Change supabase post status to available
+        const { data: data2, error: error2 } = await supabase
+            .from('available_timeslot')
+            .select('timeslotID')
+            .eq('date', state.date)
+
+        if (error2) {
+            console.log(error2);
+            return;
+        }
+        console.log(data2);
+
+       
+
+        if (data2.length > 0) {
+
+            const newTimeslot = data2.timeslot;
+            console.log(newTimeslot);
+    
+            newTimeslot.push(state.timeslot);
+
+            const { data: data3, error: error3 } = await supabase
+                .from('available_timeslot')
+                .update('timeslot', newTimeslot)
+                .eq('date', state.date)
+                .eq('agentID', state.agentID.agentID)
+                .single();
+
+            if (error3) {
+                console.log(error3);
+                return;
+            }
+        } else{
+            const { data: data3, error: error3 } = await supabase
+                .from('available_timeslot')
+                .insert([{ date: state.date, agentID: state.agentID.agentID, timeslot: [state.timeslot] }])
+                .single();
+
+            if (error3) {
+                console.log(error3);
+                return;
+            }
+        }
+
+
+        messageApi.loading('Cancelling appointment...', 1.5)
+                                .then(() => messageApi.success('Appointment cancelled successfully!', 1.5))
+                                .then(() => setTimeout(() => navigate('/agent/appointment'), 1500))
+                                .catch(() => messageApi.error('Error cancelling appointment!', 1.5));
+    }               
+
+    const showButton = () => {
+        if (state.status === "Valid") {
+
+            const date = getCurrentDateTime();
+            //Format: YYYY-MM-DD
+            const newDate = new Date(date).toLocaleDateString('en-GB');
+
+            if (state.date > newDate) {
+                return (
+                    <>
+                        {contextHolder}
+                        <Popconfirm title="Are you sure to cancel this appointment?" onConfirm={() => {
+                            cancelAppointment();
+                        }}>
+
+                            <Button type="primary" className="viewButton" style={{ width: '35%', marginTop: '10em' }}>Cancel Appointment</Button>
+                        </Popconfirm>
+                    </>
+                )
+            }
+        }
+    }
 
     console.log(state);
 
     return (
-        <div style={{display:'flex', flexDirection: 'row'}}>
-            <div style={{width: '50%'}}>
+        <div style={{ display: 'flex', flexDirection: 'row' }}>
+            <div style={{ width: '45%' }}>
+                <Descriptions
+                    title="Property Details"
+                    labelStyle={{ fontWeight: "bold", width: "10%" }}
+                    bordered>
+                    {/* <Descriptions.Item label="Property ID" span={3}>{state.post.postID}</Descriptions.Item> */}
+                    <Descriptions.Item label="Name" span={3}>{state.post.propertyName}</Descriptions.Item>
+                    <Descriptions.Item label="Type" span={3}>{state.post.propertyType}</Descriptions.Item>
+                    <Descriptions.Item label="Location" span={3}>{state.post.propertyAddress},
+                        {state.post.propertyPostcode} {state.post.propertyCity}, {state.post.propertyState}</Descriptions.Item>
+                </Descriptions>
+                <br />
+                <Descriptions
+                    title="Student Details"
+                    labelStyle={{ fontWeight: "bold", width: "10%" }}
+                    bordered>
+                    <Descriptions.Item label="Name" span={3}>{state.studentID.name}</Descriptions.Item>
+                    <Descriptions.Item label="Email" span={3}>{state.studentID.email}</Descriptions.Item>
+                    <Descriptions.Item label="Contact" span={3}>{state.studentID.phone}</Descriptions.Item>
+                </Descriptions>
+
+            </div>
+            <div style={{ marginLeft: '20px', width: '50%' }}>
                 <Descriptions
                     title="Appointment Details"
                     labelStyle={{ fontWeight: "bold", width: "40%" }}
                     contentStyle={{ display: "inline-block" }}
                     bordered>
                     <Descriptions.Item label="Appointment ID" span={3}>{state.appointmentID}</Descriptions.Item>
-                    <Descriptions.Item label="Student Name" span={3}>{state.studentID.name}</Descriptions.Item>
-                    <Descriptions.Item label="Student Email" span={3}>{state.studentID.email}</Descriptions.Item>
-                    <Descriptions.Item label="Student Contact" span={3}>{state.studentID.phone}</Descriptions.Item>
-
-                    <Descriptions.Item label="Agent Name" span={3}>{state.agentID.name}</Descriptions.Item>
-                    <Descriptions.Item label="Agent Email" span={3}>{state.agentID.email}</Descriptions.Item>
-                    <Descriptions.Item label="Agent Contact" span={3}>{state.agentID.phone}</Descriptions.Item>
-
                     <Descriptions.Item label="Appointment Date" span={3}>{state.date}</Descriptions.Item>
                     <Descriptions.Item label="Appointment Time" span={3}>{state.timeslot}</Descriptions.Item>
                     <Descriptions.Item label="Appointment Status" span={3}>{state.status}</Descriptions.Item>
                 </Descriptions>
-            </div>
-            <div style={{marginLeft: '20px', width: '50%'}}>
-                <Descriptions title="Property Details" bordered>
-                    <Descriptions.Item label="Property ID" span={3}>{state.post.postID}</Descriptions.Item>
-                    <Descriptions.Item label="Property Name" span={3}>{state.post.propertyName}</Descriptions.Item>
-                    <Descriptions.Item label="Property Type" span={3}>{state.post.propertyType}</Descriptions.Item>
-                    <Descriptions.Item label="Property Address" span={3}>{state.post.propertyAddress}</Descriptions.Item>
-                    <Descriptions.Item label="Property City" span={3}>{state.post.propertyCity}</Descriptions.Item>
-                    <Descriptions.Item label="Property Postcode" span={3}>{state.post.propertyPostcode}</Descriptions.Item>
-                    <Descriptions.Item label="Property State" span={3}>{state.post.propertyState}</Descriptions.Item>
-                </Descriptions>
+                <br />
+                {showButton()}
             </div>
 
         </div>

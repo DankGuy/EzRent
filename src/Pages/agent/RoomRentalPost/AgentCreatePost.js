@@ -288,6 +288,8 @@ function AgentCreatePost() {
             roomnumber = [{ masterRoomNum }, { mediumRoomNum }, { smallRoomNum }];
         }
 
+        const userID = (await supabase.auth.getUser()).data.user.id;
+
         const { data: postData, error: postError } = await supabase
             .from('property_post')
             .insert([
@@ -300,7 +302,7 @@ function AgentCreatePost() {
                     propertySquareFeet: propertyBuiltupSize,
                     propertyFurnish: propertyFurnish,
                     propertyFacility: propertyFacility,
-                    propertyAgentID: '3f4ac7e4-272b-4b91-bcce-19184ca174ed',
+                    propertyAgentID: userID,
                     propertyAddress: propertyAddress,
                     propertyCity: propertyCity,
                     propertyPostcode: propertyPostcode,

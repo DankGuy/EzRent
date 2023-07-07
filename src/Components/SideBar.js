@@ -1,13 +1,14 @@
 import logo from '../images/icon.png'
 import { CgProfile } from 'react-icons/cg'
 import { BsFileEarmarkPostFill } from 'react-icons/bs'
-import { BiTimeFive } from 'react-icons/bi'
+import { BiTimeFive, BiLogOutCircle } from 'react-icons/bi'
 import { FaFileSignature } from 'react-icons/fa'
 import { MdOutlineDashboard } from 'react-icons/md'
 import { Layout, Menu, Image } from 'antd'
 import '../Pages/agent/AgentHome.css'
 import { useEffect, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
+import { supabase } from '../supabase-client'
 
 
 function Sidebar({ value, setTitle }) {
@@ -42,14 +43,20 @@ function Sidebar({ value, setTitle }) {
                 selectedKeys={[selectedKey]}
                 style={{
                     backgroundColor: '#d5def5',
-                    height: '100%', 
+                    height: '100%',
                     overflowY: 'auto',
                 }}
                 onClick={({ key }) => {
-                    setSelectedKey(key);
-                    localStorage.setItem('selectedKey', key);
-                    setTitle(key)
-                    navigate(key);
+                    if (key === '/logout') {
+                        supabase.auth.signOut();
+                        navigate('/');
+                        return;
+                    } else {
+                        setSelectedKey(key);
+                        localStorage.setItem('selectedKey', key);
+                        setTitle(key)
+                        navigate(key)
+                    }
                 }}
                 items={[
                     {
@@ -83,6 +90,12 @@ function Sidebar({ value, setTitle }) {
                         key: '/agent/profile',
                         icon: <CgProfile style={{ width: '25px', height: 'auto' }} />,
                         label: 'Profile',
+                    },
+                    {
+                        key: '/logout',
+                        icon: <BiLogOutCircle style={{ width: '25px', height: 'auto' }} />,
+                        style: { position: 'absolute', bottom: '0', width: '95%' },
+                        label: 'Logout',
                     },
                 ]}
             />

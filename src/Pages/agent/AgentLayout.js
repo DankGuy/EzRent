@@ -7,6 +7,7 @@ import {
 } from '@ant-design/icons';
 import './AgentHome.css'
 import Sidebar from '../../Components/SideBar'
+import { supabase } from "../../supabase-client";
 
 function AgentLayout() {
 
@@ -46,6 +47,9 @@ function AgentLayout() {
       case '/agent/profile':
         setTitle('Profile')
         localStorage.setItem('navbarTitle', "Profile");
+        break;
+      case '/logout':
+        supabase.auth.signOut();
         break;
     }
   }
