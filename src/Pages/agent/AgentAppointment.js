@@ -330,7 +330,7 @@ function AgentAppointment() {
                 multiple: 2,
             },
             width: '10%',
-            
+
         },
         {
             title: 'Action',
@@ -338,7 +338,7 @@ function AgentAppointment() {
             key: 'action',
             render: (text, record) => {
                 return (
-                    <Link to={`/student/profile/appointments/${record.appointmentID}`} state={record}>
+                    <Link to={`/agent/appointment/${record.appointmentID}`} state={record}>
                         <AiOutlineZoomIn size={20} style={{ cursor: 'pointer' }} />
                     </Link>
                 )

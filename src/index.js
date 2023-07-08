@@ -10,7 +10,7 @@ import StudentLayout from "./Pages/student/StudentLayout";
 import NotFound from "./Pages/Result/NotFound";
 import Home from "./Pages/student/Home";
 import RoomRental from "./Pages/student/roomRental/RoomRental";
-import Roommate from "./Pages/student/Roommate";
+import Roommate from "./Pages/student/roommate/Roommate";
 import AboutUs from "./Pages/student/AboutUs";
 import Profile from "./Pages/student/Profile";
 import ProfileInformation from "./Pages/student/profile/ProfileInformation";
