@@ -2,12 +2,15 @@ import { useState, useEffect } from "react";
 import LoginCard from "../../Components/LoginCard";
 import { supabase } from "../../supabase-client";
 import { Button } from "antd";
+import AgentLayout from "../agent/AgentLayout";
+import StudentLayout from "../student/StudentLayout";
 
 export default function LoginPage({}) {
   const [session, setSession] = useState(null);
   const [metadata, setMetadata] = useState({
     userType: "",
   });
+  const [userType, setUserType] = useState("");
 
   async function getUserMetadata() {
     const {
@@ -43,19 +46,14 @@ export default function LoginPage({}) {
   } else {
     if (metadata.userType === "agent") {
       localStorage.setItem("selectedKey", "/agent");
-      window.location.href = "/agent/";
+      // setUserType("agent");
+      window.location.href = "/agent";
 
     } else if (metadata.userType === "student") {
       localStorage.setItem("selectedKey", "/student/profile/profileInformation");
+      // setUserType("student");
       window.location.href = "/student";
     }
-    return (
-      <>
-        <Button primary danger onClick={logout}>
-          Logout
-        </Button>
-        <h1>Hi</h1>
-      </>
-    );
+    return <div></div>;
   }
 }
