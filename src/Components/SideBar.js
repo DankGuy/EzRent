@@ -49,6 +49,7 @@ function Sidebar({ value, setTitle }) {
                 onClick={({ key }) => {
                     if (key === '/logout') {
                         supabase.auth.signOut();
+                        localStorage.removeItem('selectedKey');
                         navigate('/');
                         return;
                     } else {

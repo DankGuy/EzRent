@@ -30,35 +30,24 @@ function AgentLayout() {
     switch (newTitle) {
       case '/agent':
         setTitle('Dashboard')
-        localStorage.setItem('navbarTitle', "Dashboard");
         break;
       case '/agent/roomRental':
         setTitle('Room Rental Post')
-        localStorage.setItem('navbarTitle', "Room Rental Post");
         break;
       case '/agent/appointment':
         setTitle('Appointment')
-        localStorage.setItem('navbarTitle', "Appointment");
         break;
       case '/agent/rentalAgreement':
         setTitle('Rental Agreement')
-        localStorage.setItem('navbarTitle', "Rental Agreement");
         break;
       case '/agent/profile':
         setTitle('Profile')
-        localStorage.setItem('navbarTitle', "Profile");
-        break;
-      case '/logout':
-        supabase.auth.signOut();
         break;
     }
   }
 
   useEffect(() => {
-    const savedTitle = localStorage.getItem('navbarTitle'); // Retrieve the saved title from localStorage
-    if (savedTitle) {
-      setTitle(savedTitle);
-    }
+    handleTitle(location.pathname);
   }, [location.pathname]);
 
 

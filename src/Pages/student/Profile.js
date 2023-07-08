@@ -26,13 +26,11 @@ function Profile() {
     if (storedKey) {
       setSelectedKey(storedKey);
     }
+
   }, []);
 
   useEffect(() => {
-    const savedTitle = localStorage.getItem('navbarTitle'); // Retrieve the saved title from localStorage
-    if (savedTitle) {
-      setTitle(savedTitle);
-    }
+    handleTitle(location.pathname);
   }, [location.pathname]);
 
 
@@ -45,23 +43,18 @@ function Profile() {
     switch (newTitle) {
       case "/student/profile/profileInformation":
         setTitle("Profile Information");
-        localStorage.setItem('navbarTitle', "Profile Information");
         break;
       case "/student/profile/paymentMethods":
         setTitle("Payment Methods");
-        localStorage.setItem('navbarTitle', "Payment Methods");
         break;
       case "/student/profile/rentalPayment":
         setTitle("Rental Payment");
-        localStorage.setItem('navbarTitle', "Rental Payment");
         break;
       case "/student/profile/appointments":
         setTitle("Appointments");
-        localStorage.setItem('navbarTitle', "Appointments");
         break;
       case "/student/profile/rentalAgreement":
         setTitle("Rental Agreement");
-        localStorage.setItem('navbarTitle', "Rental Agreement");
         break;
     }
   };
@@ -87,9 +80,9 @@ function Profile() {
           <Menu
             onClick={({ key }) => {
               navigate(key);
-              handleTitle(key);
               setSelectedKey(key);
               localStorage.setItem('selectedKey', key);
+              handleTitle(key);
             }}
             style={{
               backgroundColor: "#d5def5",

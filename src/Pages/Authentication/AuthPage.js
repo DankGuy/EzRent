@@ -42,9 +42,11 @@ export default function LoginPage({}) {
     return <LoginCard supabase={supabase} session={session} logout={logout} />;
   } else {
     if (metadata.userType === "agent") {
+      localStorage.setItem("selectedKey", "/agent");
       window.location.href = "/agent/";
 
     } else if (metadata.userType === "student") {
+      localStorage.setItem("selectedKey", "/student/profile/profileInformation");
       window.location.href = "/student";
     }
     return (
