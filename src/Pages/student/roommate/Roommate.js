@@ -1,8 +1,10 @@
-import { Breadcrumb, Button, Col, Form, Row } from "antd";
+import { Breadcrumb, Button, Col, FloatButton, Form, Row } from "antd";
 import GenderSelection from "../../../Components/GenderSelection";
 import RoomResourceSelection from "../../../Components/RoomResourceSelection";
 import { useState } from "react";
 import RoommatePostLayout from "./RoommatePostLayout";
+import { AiOutlineHistory } from "react-icons/ai";
+import { BiEditAlt, BiMenu } from "react-icons/bi";
 
 function Roommate() {
 
@@ -52,9 +54,24 @@ function Roommate() {
                 </Col>
             </Row>
 
-            <RoommatePostLayout />
-            
+
+
         </Form>
+
+        <RoommatePostLayout />
+
+        <FloatButton.Group
+            trigger="click"
+            style={{
+                right: '24',
+            }}
+            size={150}
+            type="primary"
+            icon={<BiMenu />}
+        >
+            <FloatButton type="primary" icon={<BiEditAlt/>}/>
+            <FloatButton type="primary" icon={<AiOutlineHistory />} />
+        </FloatButton.Group>
     </div>
 }
 
