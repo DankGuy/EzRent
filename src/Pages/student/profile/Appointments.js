@@ -4,6 +4,7 @@ import { supabase } from "../../../supabase-client";
 import { useEffect } from "react";
 import { AiOutlineZoomIn } from 'react-icons/ai'
 import { Link } from "react-router-dom";
+import dayjs from 'dayjs';
 
 function Appointments(){
 
@@ -83,28 +84,45 @@ function Appointments(){
             dataIndex: 'no',
             key: 'no',
             render: (text, record, index) => index + 1,
+            width: '4%',
         },
         {
             title: 'Date',
             dataIndex: 'date',
             key: 'date',
-            sorter: (a, b) => a.date.localeCompare(b.date),
+            sorter: {
+                compare: (a, b) => new Date(a.date) - new Date(b.date),
+                multiple: 3,
+            },
+            render: (text, record) => dayjs(record.date).format('DD-MM-YYYY'),
+            width: '10%',
         },
         {
             title: 'Timeslot',
             dataIndex: 'timeslot',
             key: 'timeslot',
+            width: '11%',
+            sorter: {
+                compare: (a, b) => a.timeslot.localeCompare(b.timeslot),
+                multiple: 1,
+            },
+
         },
         {
             title: 'Property Name',
             dataIndex: 'propertyName',
             key: 'propertyName',
-            sorter: (a, b) => a.propertyName.localeCompare(b.propertyName),
+            sorter: {
+                compare: (a, b) => a.propertyName.localeCompare(b.propertyName),
+                multiple: 2,
+            },
+            width: '20%',
         },
         {
             title: 'Property Address',
             dataIndex: 'propertyAddress',
             key: 'propertyAddress',
+            width: '30%',
         },
         {
             title: 'Status',
@@ -117,12 +135,18 @@ function Appointments(){
                 else if (record.status === 'Cancelled') {
                     return <Tag color="red">{record.status}</Tag>;
                 }
-            }
+            },
+            width: '10%',
         },
         {
             title: 'Agent Name',
             dataIndex: 'agentName',
             key: 'agentName',
+            width: '15%',
+            sorter: {
+                compare: (a, b) => a.agentName.localeCompare(b.agentName),
+                multiple: 1,
+            },
         },
         {
             title: 'Action',
@@ -135,7 +159,8 @@ function Appointments(){
                     </Link>
                 )
                 
-            }
+            },
+            width: '5%',
         },
     ];
 

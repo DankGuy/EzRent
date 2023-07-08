@@ -10,13 +10,32 @@ import {
 import { Layout, Menu, theme, Button } from "antd";
 import { useState } from "react";
 import React from "react";
-import { useNavigate, Outlet } from "react-router-dom";
+import { useNavigate, Outlet, useLocation } from "react-router-dom";
+import { useEffect } from "react";
 
 const { Header, Content, Sider } = Layout;
 
 function Profile() {
   const [collapsed, setCollapsed] = useState(false);
   const [title, setTitle] = useState("");
+  const [selectedKey, setSelectedKey] = useState("");
+  const location = useLocation();
+
+  useEffect(() => {
+    const storedKey = localStorage.getItem('selectedKey');
+    if (storedKey) {
+      setSelectedKey(storedKey);
+    }
+  }, []);
+
+  useEffect(() => {
+    const savedTitle = localStorage.getItem('navbarTitle'); // Retrieve the saved title from localStorage
+    if (savedTitle) {
+      setTitle(savedTitle);
+    }
+  }, [location.pathname]);
+
+
 
   const {
     token: { colorBgContainer },
@@ -26,18 +45,23 @@ function Profile() {
     switch (newTitle) {
       case "/student/profile/profileInformation":
         setTitle("Profile Information");
+        localStorage.setItem('navbarTitle', "Profile Information");
         break;
       case "/student/profile/paymentMethods":
         setTitle("Payment Methods");
+        localStorage.setItem('navbarTitle', "Payment Methods");
         break;
       case "/student/profile/rentalPayment":
         setTitle("Rental Payment");
+        localStorage.setItem('navbarTitle', "Rental Payment");
         break;
       case "/student/profile/appointments":
         setTitle("Appointments");
+        localStorage.setItem('navbarTitle', "Appointments");
         break;
       case "/student/profile/rentalAgreement":
         setTitle("Rental Agreement");
+        localStorage.setItem('navbarTitle', "Rental Agreement");
         break;
     }
   };
@@ -64,6 +88,8 @@ function Profile() {
             onClick={({ key }) => {
               navigate(key);
               handleTitle(key);
+              setSelectedKey(key);
+              localStorage.setItem('selectedKey', key);
             }}
             style={{
               backgroundColor: "#d5def5",
@@ -73,6 +99,7 @@ function Profile() {
             theme="light"
             mode="inline"
             defaultSelectedKeys={["/student/profile/profileInformation"]}
+            selectedKeys={[selectedKey]}
             items={[
               {
                 label: "Profile Information",
@@ -113,6 +140,7 @@ function Profile() {
               background: colorBgContainer,
               position: "fixed",
               width: "100%",
+              zIndex: "99",
             }}
           >
             <Button

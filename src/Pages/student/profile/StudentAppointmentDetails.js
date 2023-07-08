@@ -4,6 +4,7 @@ import { Button, Descriptions, Popconfirm, message } from "antd";
 import { convertDate, getCurrentDateTime } from "../../../Components/timeUtils";
 import {supabase} from "../../../supabase-client"
 import { useNavigate } from "react-router-dom";
+import dayjs from 'dayjs';
 
 
 function StudentAppointmentDetails() {
@@ -88,11 +89,11 @@ function StudentAppointmentDetails() {
     const showButton = () => {
         if (state.status === "Valid") {
 
-            const date = getCurrentDateTime();
-            //Format: YYYY-MM-DD
-            const newDate = new Date(date).toLocaleDateString('en-GB');
+           //Get today date
+           const today = dayjs();
+           const formattedDate = today.format('YYYY-MM-DD');
 
-            if (state.date > newDate) {
+           if (state.date > formattedDate) {
                 return (
                     <>
                         {contextHolder}
@@ -117,7 +118,7 @@ function StudentAppointmentDetails() {
                     title="Property Details"
                     labelStyle={{ fontWeight: "bold", width: "10%" }}
                     bordered>
-                    {/* <Descriptions.Item label="Property ID" span={3}>{state.post.postID}</Descriptions.Item> */}
+                    <Descriptions.Item label="Property ID" span={3}>{state.post.postID}</Descriptions.Item>
                     <Descriptions.Item label="Name" span={3}>{state.post.propertyName}</Descriptions.Item>
                     <Descriptions.Item label="Type" span={3}>{state.post.propertyType}</Descriptions.Item>
                     <Descriptions.Item label="Location" span={3}>{state.post.propertyAddress},
@@ -141,9 +142,11 @@ function StudentAppointmentDetails() {
                     contentStyle={{ display: "inline-block" }}
                     bordered>
                     <Descriptions.Item label="Appointment ID" span={3}>{state.appointmentID}</Descriptions.Item>
-                    <Descriptions.Item label="Appointment Date" span={3}>{convertDate(state.date)}</Descriptions.Item>
-                    <Descriptions.Item label="Appointment Time" span={3}>{state.timeslot}</Descriptions.Item>
-                    <Descriptions.Item label="Appointment Status" span={3}>{state.status}</Descriptions.Item>
+                    <Descriptions.Item label="Date" span={3}>{convertDate(state.date)}</Descriptions.Item>
+                    <Descriptions.Item label="Time" span={3}>{state.timeslot}</Descriptions.Item>
+                    <Descriptions.Item label="Status" span={3}>
+                        {state.status === "Valid" ? <span style={{ color: 'green' }}>{state.status}</span> : <span style={{ color: 'red' }}>{state.status}</span>}
+                    </Descriptions.Item>
                 </Descriptions>
                 <br />
                 {showButton()}
