@@ -5,6 +5,7 @@ import { useState } from "react";
 import RoommatePostLayout from "./RoommatePostLayout";
 import { AiOutlineHistory } from "react-icons/ai";
 import { BiEditAlt, BiMenu } from "react-icons/bi";
+import CreateRoommatePost from "./CreateRoommatePost";
 
 function Roommate() {
 
@@ -16,6 +17,12 @@ function Roommate() {
 
     const onFinishFailed = (errorInfo) => {
         console.log(errorInfo);
+    }
+
+    const [postModal, setPostModal] = useState(false);
+
+    const handleCreateModal = () => {
+        setPostModal(true);
     }
 
     return <div style={{ margin: '8.55vh 5% 0px' }}>
@@ -69,9 +76,11 @@ function Roommate() {
             type="primary"
             icon={<BiMenu />}
         >
-            <FloatButton type="primary" icon={<BiEditAlt/>}/>
+            <FloatButton type="primary" icon={<BiEditAlt/>} onClick={handleCreateModal}/>
             <FloatButton type="primary" icon={<AiOutlineHistory />} />
         </FloatButton.Group>
+
+        <CreateRoommatePost value={postModal} onChange={setPostModal} />
     </div>
 }
 

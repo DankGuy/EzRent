@@ -33,20 +33,27 @@ function RoommatePostLayout() {
 
             <Row>
                 <Col span={4}>
-                    description
+                    Rent budget
                 </Col>
                 <Col span={4}>
-                    description
+                    Location
                 </Col>
             </Row>
             <Row>
                 <Col span={4}>
-                    description
+                    Duration
                 </Col>
                 <Col span={4}>
-                    description
+                    Move in date
                 </Col>
             </Row>
+            <Row>
+                <Col span={4}>
+                    Responsibility
+                </Col>
+                
+            </Row>
+
             <Row>
                 <Col span={4}>
                     <Button type="primary" className="viewButton" style={{ width: '80%' }}>

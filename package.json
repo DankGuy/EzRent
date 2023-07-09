@@ -3,6 +3,7 @@
   "version": "0.1.0",
   "private": true,
   "dependencies": {
+    "@ant-design/pro-components": "^2.6.4",
     "@supabase/auth-ui-react": "^0.4.2",
     "@supabase/supabase-js": "^2.25.0",
     "@testing-library/jest-dom": "^5.16.5",

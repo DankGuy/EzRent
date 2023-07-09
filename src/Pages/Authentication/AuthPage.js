@@ -54,6 +54,5 @@ export default function LoginPage({}) {
       // setUserType("student");
       window.location.href = "/student";
     }
-    return <div></div>;
   }
 }
