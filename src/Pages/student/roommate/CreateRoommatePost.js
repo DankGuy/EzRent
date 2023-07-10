@@ -1,57 +1,102 @@
 import { Button, Modal, Steps, theme, message, Form, Input, Select, DatePicker } from "antd";
 import { useState, useRef } from "react";
-import { StepsForm } from "@ant-design/pro-components";
-import { lang } from "moment/moment";
 
 
 function CreateRoommatePost({ value, onChange }) {
 
+    const { Step } = Steps;
+    const [currentStep, setCurrentStep] = useState(0);
+    const [formData, setFormData] = useState({});
 
-    const formRef = useRef();
+    const stepsData = [
+        {
+            title: 'Location & Property Details',
+            formRef: useRef(),
+            content: <div>
+                <Form.Item name="locationSelection" label="Select your preferable location">
+                    <Input placeholder="Location" />
+                </Form.Item>
+                <Form.Item name="propertySelection" label="Select your preferable property type">
+                    <Select placeholder="All Property Type" 
+                        options={[
+                            { value: 'Apartment', label: 'Apartment' },
+                            { value: 'Condominium', label: 'Condominium' },
+                            { value: 'Flat', label: 'Flat' },
+                            { value: 'Terrace house', label: 'Terrace house' },
+                        ]} />
+                </Form.Item>
+            </div>
+        },
+        {
+            title: 'Rental Details',
+            formRef: useRef(),
+            content: <div>
+                <Form.Item name="budgetInput" label="Enter your budget (RM)">
+                    <Input placeholder="Budget" />
+                </Form.Item>
+                <Form.Item name="moveInDate" label="Select your preferable move in month">
+                    <DatePicker placeholder="Move-in Date" picker="month"/>
+                </Form.Item>
+                <Form.Item name="rentDuration" label="Select your preferable rent duration">
+                    <Select placeholder="Rent Duration" options={[
+                        { value: '3 months', label: '3 months' },
+                        { value: '6 months', label: '6 months' },
+                        { value: '12 months', label: '12 months' },
+                    ]} />
+                </Form.Item>
+            </div>
+        },
+    ]
 
-    const waitTime = (time = 100) => {
-        return new Promise((resolve) => {
-          setTimeout(() => {
-            resolve(true);
-          }, time);
+    const handleFormFinish = () => {
+        const currentForm = stepsData[currentStep].formRef.current;
+        currentForm.validateFields().then((values) => {
+            console.log(values);
+            setFormData((prev) => ({ ...prev, ...values }));
         });
-      };
+    };
 
-    let firstStep = (<><div>
-        <Form.Item name="locationSelection">
-            <Input placeholder="Location" />
-        </Form.Item>
-        <Form.Item name="propertySelection">
-            <Select placeholder="All Property Type"
-            
-                options={[
-                    { value: 'Apartment', label: 'Apartment' },
-                    { value: 'Condominium', label: 'Condominium' },
-                    { value: 'Flat', label: 'Flat' },
-                    { value: 'Terrace house', label: 'Terrace house' },
-                ]} />
-        </Form.Item>
-    </div></>)
+    const handleNextStep = () => {
+        const currentForm = stepsData[currentStep].formRef.current;
+        currentForm.validateFields().then((values) => {
+            setFormData((prev) => ({ ...prev, ...values }));
+            setCurrentStep((prev) => prev + 1);
+        });
+    };
 
-    let secondStep = (<><div>
-        <Form.Item name="budgetInput">
-            <Input placeholder="Budget" />
-        </Form.Item>
-        <Form.Item name="moveInDate">
-            <DatePicker placeholder="Move-in Date" />
-        </Form.Item>
-        <Form.Item name="rentDuration">
-            <Select placeholder="Rent Duration" options={[
-                { value: '3 months', label: '3 months' },
-                { value: '6 months', label: '6 months' },
-                { value: '12 months', label: '12 months' },
-            ]} />
-        </Form.Item>
-    </div></>)
+    // let firstStep = (<><div>
+    //     {/* create a form */}
+    //     <Form.Item name="locationSelection">
+    //         <Input placeholder="Location" />
+    //     </Form.Item>
+    //     <Form.Item name="propertySelection">
+    //         <Select placeholder="All Property Type"
 
+    //             options={[
+    //                 { value: 'Apartment', label: 'Apartment' },
+    //                 { value: 'Condominium', label: 'Condominium' },
+    //                 { value: 'Flat', label: 'Flat' },
+    //                 { value: 'Terrace house', label: 'Terrace house' },
+    //             ]} />
+    //     </Form.Item>
+    // </div></>)
 
+    // let secondStep = (<><div>
+    //     <Form.Item name="budgetInput">
+    //         <Input placeholder="Budget" />
+    //     </Form.Item>
+    //     <Form.Item name="moveInDate">
+    //         <DatePicker placeholder="Move-in Date" />
+    //     </Form.Item>
+    //     <Form.Item name="rentDuration">
+    //         <Select placeholder="Rent Duration" options={[
+    //             { value: '3 months', label: '3 months' },
+    //             { value: '6 months', label: '6 months' },
+    //             { value: '12 months', label: '12 months' },
+    //         ]} />
+    //     </Form.Item>
 
-
+    // </div></>)
 
 
     return <>
@@ -63,77 +108,45 @@ function CreateRoommatePost({ value, onChange }) {
             onCancel={() => onChange(false)}
             width={800}
         >
-            <StepsForm
-                formRef={formRef}
-                onFinish={async (values) => {
-                    await waitTime(1000);
-                    message.success('Create successfully');
-                    console.log(values);
-                }}
-                formProps={{
-                    validateMessages: {
-                        required: 'This field is required',
-                    },
-                    lang: 'english',
-                }}
-                // stepsProps={{
-                //     size: 'small',
-                // }}
-                //change button word to english
-                submitter={{
-                    render: (_, dom) => dom.pop(),
-                    submitButtonProps: {
-                        children: 'Create',
-                        style: {
-                            float: 'right',
-                            marginRight: '5%',
-                        },
-                    },
-                }}
 
-            >
-                <StepsForm.StepForm
-                    name="locationAndProperty"
-                    title="Location and Property Details"
-                    //change button word to english
-                    
+            <div>
+                <Steps current={currentStep}>
+                    {stepsData.map((item, index) => (
+                        <Step key={index} title={item.title} />
+                    )
+                    )}
+                </Steps>
+
+                <Form
+                    onFinish={handleFormFinish}
+                    ref={stepsData[currentStep].formRef}
+                    style={{ marginTop: 20 }}
+                    layout="vertical"
                 >
-                    <Form.Item name="locationSelection">
-                        <Input placeholder="Location" />
-                    </Form.Item>
-                    <Form.Item name="propertySelection">
-                        <Select placeholder="All Property Type"
-                        
+                    {stepsData.map((item, index) => (
+                        <div key={index} style={{ display: index === currentStep ? 'block' : 'none' }}>
+                            {item.content}
 
-                            options={[
-                                { value: 'Apartment', label: 'Apartment' },
-                                { value: 'Condominium', label: 'Condominium' },
-                                { value: 'Flat', label: 'Flat' },
-                                { value: 'Terrace house', label: 'Terrace house' },
-                            ]} />
-                    </Form.Item>
+                            {/* Cancel button */}
+                            {index !== 0 && 
+                                <Button
+                                    style={{ marginRight: 10 }}
+                                    onClick={() => setCurrentStep((prev) => prev - 1)}
+                                >
+                                    Back
+                                </Button>
+                            }
 
-                </StepsForm.StepForm>
-                <StepsForm.StepForm
-                    name="RentalDetails"
-                    title="Rental Details"
-                >
-                    <Form.Item name="budgetInput">
-                        <Input placeholder="Budget" />
-                    </Form.Item>
-                    <Form.Item name="moveInDate">
-                        <DatePicker placeholder="Move-in Date" />
-                    </Form.Item>
-                    <Form.Item name="rentDuration">
-                        <Select placeholder="Rent Duration" options={[
-                            { value: '3 months', label: '3 months' },
-                            { value: '6 months', label: '6 months' },
-                            { value: '12 months', label: '12 months' },
-                        ]} />
-                    </Form.Item>
-                </StepsForm.StepForm>
-            </StepsForm>
-
+                            <Button
+                                type="primary"
+                                onClick={index === stepsData.length - 1 ? handleFormFinish : handleNextStep}
+                            >
+                                {index === stepsData.length - 1 ? 'Submit' : 'Next'}
+                            </Button>
+                        </div>
+                    ))}
+                </Form>
+            </div>
 
         </Modal>
     </>
