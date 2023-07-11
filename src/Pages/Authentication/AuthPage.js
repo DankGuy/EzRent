@@ -36,6 +36,9 @@ export default function LoginPage({}) {
       if (_event === "SIGNED_IN") {
         setMetadata(getUserMetadata().then((res) => setMetadata(res)));
       }
+      else {
+        console.log("not signed in");
+      }
     });
 
     return () => subscription.unsubscribe();

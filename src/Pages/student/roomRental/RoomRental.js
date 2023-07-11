@@ -1,5 +1,5 @@
 import SearchInput from '../../../Components/SearchInput';
-import { Col, Row, Button, Form, Image } from 'antd';
+import { Col, Row, Button, Form, Image, Empty } from 'antd';
 import { Link } from 'react-router-dom'
 import { SearchOutlined } from '@ant-design/icons';
 import { useState, useEffect } from 'react';
@@ -88,44 +88,48 @@ function RoomRental() {
     const fetchFromSupabase = async (input) => {
         // Make a query to search your Supabase table based on the provided value
         try {
-            const {
-                searchInput, propertyBuiltupSize, propertyCategory,
-                propertyCity, propertyDescription, propertyFacility,
-                propertyFurnish, propertyFurnishType, propertyImage,
-                propertyName, propertyPostcode, propertyRental,
-                propertyState, propertyType, roomSquareFeet,
-                roomType, masterRoomNum, mediumRoomNum, smallRoomNum } = input;
+
+            console.log(input['searchInput']);
+
 
             let query = supabase.from('property_post').select('*, agent(*)');
 
-            if (!!propertyState) {
-                query = query.eq('propertyState', propertyState);
+            if (!!input['propertyState']) {
+                console.log("testing1")
+                query = query.eq('propertyState', input['propertyState']);
             }
 
-            if (!!searchInput) {
-                query = query.ilike('propertyName', `%${searchInput}%`);
-                query = query.ilike('propertyAddress', `%${searchInput}%`);
-                query = query.ilike('propertyCity', `%${searchInput}%`);
+            if (!!input['searchInput']) {
+                console.log("testing2")
+                const searchInput = input['searchInput'];
+                query = query.or(
+                    `propertyName.eq."${searchInput}",propertyAddress.eq."${searchInput}",propertyCity.eq."${searchInput}"`,
+                );
             }
 
-            if (!!propertyFurnishType) {
-                query = query.eq('propertyFurnishType', propertyFurnishType);
+            if (!!input['propertyFurnishType']) {
+                console.log("testing3")
+                query = query.eq('propertyFurnishType', input['propertyFurnishType']);
             }
 
-            if (!!propertyCategory) {
-                query = query.eq('propertyCategory', propertyCategory);
+            if (!!input['propertyCategory']) {
+                console.log("testing4")
+                query = query.eq('propertyCategory', input['propertyCategory']);
             }
 
-            if (minRent > 0) {
-                query = query.gte('propertyPrice', minRent);
+            if (input["minRent"] > 0) {
+                console.log("testing5")
+                query = query.gte('propertyPrice', input["minRent"]);
             }
 
-            if (maxRent > 0) {
-                query = query.lte('propertyPrice', maxRent);
+            if (input["maxRent"] > 0) {
+                console.log("testing6")
+                query = query.lte('propertyPrice', input["maxRent"]);
             }
 
-            if (propertyBuiltupSize > 0) {
-                query = query.gte('propertySquareFeet', propertyBuiltupSize);
+            if (input["propertyBuildupSize"] > 0) {
+                console.log("testing7")
+                query = query.gte('propertySquareFeet', input["propertyBuildupSize"]);
             }
 
             //Sort by option
@@ -149,7 +153,7 @@ function RoomRental() {
                 console.error('Search failed:', error);
                 return;
             }
-
+            console.log('Search results:', data);
             setPost(data);
 
             // Store the searched posts in local storage
@@ -164,23 +168,23 @@ function RoomRental() {
     useEffect(() => {
         const storedPosts = localStorage.getItem('searchedPosts');
         if (storedPosts) {
-          setPost(JSON.parse(storedPosts));
+            setPost(JSON.parse(storedPosts));
         }
-      
+
         const fetchFirstImages = async () => {
-          await Promise.all(posts.map((post) => getFirstImage(post)));
+            await Promise.all(posts.map((post) => getFirstImage(post)));
         };
-      
+
         fetchFirstImages();
-      }, []);
-      
-      useEffect(() => {
+    }, []);
+
+    useEffect(() => {
         const fetchFirstImages = async () => {
-          await Promise.all(posts.map((post) => getFirstImage(post)));
+            await Promise.all(posts.map((post) => getFirstImage(post)));
         };
-      
+
         fetchFirstImages();
-      }, [posts]);
+    }, [posts]);
 
     // Show the immediate change when choose different sort by option
     useEffect(() => {
@@ -215,15 +219,15 @@ function RoomRental() {
     //Get the first image from supabase storage with id = postID
     const getFirstImage = async (post) => {
         const { data } = await supabase.storage.from('post').list(post.postID);
-    
+
         if (data) {
-          setFirstImages((prevState) => ({
-            ...prevState,
-            [post.postID]: data[0],
-          }));
+            setFirstImages((prevState) => ({
+                ...prevState,
+                [post.postID]: data[0],
+            }));
         }
-      };
-    
+    };
+
 
     const renderedPost = posts.map((post) => {
         let bgColor;
@@ -243,13 +247,13 @@ function RoomRental() {
             <div key={post.postID} className='postContainer'>
                 <Row >
                     <Col span={24} style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', width: "300px", paddingLeft: '10px' }}>
-                        {firstImage && 
-                            <Image 
-                                style={{ justifyContent: 'center' }} 
-                                height={200} 
+                        {firstImage &&
+                            <Image
+                                style={{ justifyContent: 'center' }}
+                                height={200}
                                 src={`https://exsvuquqspmbrtyjdpyc.supabase.co/storage/v1/object/public/post/${post.postID}/${firstImage?.name}`} />
                         }
-                       
+
                     </Col>
                 </Row>
                 <div className='postDescription'>
@@ -378,6 +382,22 @@ function RoomRental() {
                 </Row>
             </Form>
         </div>
+
+        {posts.length === 0 && <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', height: '50vh' }}>
+            <Empty description={<span style={{ color: '#b80606', fontStyle: 'italic', fontSize: '20px' }}>No properties found. Please try refining your search.</span>} />
+        </div>}
+
+        {/* mention how many results found */}
+        {posts.length > 0 && <div style={{ display: 'flex', alignItems: 'center', height: '50px', marginLeft: '10%', marginTop: '10px' }}>
+            <span
+                style={{
+                    fontStyle: 'italic',
+                    fontSize: '20px',
+                    fontFamily: 'sans-serif',
+                }}>
+                {posts.length} results found...
+            </span>
+        </div>}
 
         {renderedPost}
 
