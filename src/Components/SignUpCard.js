@@ -1,6 +1,6 @@
 import loginBg from "../images/loginBg.jpeg";
-import { Button, Form, Input, Select, message } from "antd";
-import { useState } from "react";
+import { Button, Form, Input, Select, message, Radio } from "antd";
+import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 import { supabase } from "../supabase-client";
 
@@ -11,7 +11,7 @@ const formItemLayout = {
       span: 24,
     },
     sm: {
-      span: 8,
+      span: 10,
     },
   },
   wrapperCol: {
@@ -19,7 +19,7 @@ const formItemLayout = {
       span: 24,
     },
     sm: {
-      span: 16,
+      span: 14,
     },
   },
 };
@@ -37,11 +37,20 @@ const tailFormItemLayout = {
 };
 
 function SignUpCard() {
-  let userType = null;
+  const [userType, setUserType] = useState("student");
+  const [isAgent, setIsAgent] = useState(false);
+
   const handleUserChange = (value) => {
-    userType = value;
-    console.log(userType);
+    setUserType(value.target.value);
   };
+
+  useEffect(() => {
+    if (userType === "student") {
+      setIsAgent(false);
+    } else if (userType === "agent") {
+      setIsAgent(true);
+    }
+  }, [userType]);
 
   const formData = {
     name: "",
@@ -49,6 +58,7 @@ function SignUpCard() {
     password: "",
     phone: "",
     gender: "",
+    company: "",
   };
 
   const [isHovered, setIsHovered] = useState(false);
@@ -60,21 +70,39 @@ function SignUpCard() {
     try {
       // signup account
       // the account created will be stored into respective table based on userType using Trigger in Supabase
-      const { data, error } = await supabase.auth.signUp({
-        email: formData.email,
-        password: formData.password,
-        phone: formData.phone,
-        options: {
-          data: {
-            userType: userType,
-            name: formData.name,
-            phone: formData.phone,
-            gender: formData.gender,
+      if (userType === "student") {
+        const { data, error } = await supabase.auth.signUp({
+          email: formData.email,
+          password: formData.password,
+          phone: formData.phone,
+          options: {
+            data: {
+              userType: userType,
+              name: formData.name,
+              phone: formData.phone,
+              gender: formData.gender,
+            },
           },
-        },
-      });
-
-      if (error) throw error;
+        });
+        if (error) throw error;
+      }
+      else {
+        const { data, error } = await supabase.auth.signUp({
+          email: formData.email,
+          password: formData.password,
+          phone: formData.phone,
+          options: {
+            data: {
+              userType: userType,
+              name: formData.name,
+              phone: formData.phone,
+              gender: formData.gender,
+              company: formData.company,
+            },
+          },
+        });
+        if (error) throw error;
+      }
 
       // send email confirmation
       alert("Please check your email for confirmation link!");
@@ -90,23 +118,12 @@ function SignUpCard() {
     formData.name = value.name;
     formData.email = value.email;
     formData.password = value.password;
-    formData.phone = value.prefix + value.phone;
+    formData.phone = value.phone;
     formData.gender = value.gender;
-    console.log(formData.phone);
+    formData.company = value.company ?? "";
+    console.log(formData.email);
     signUp();
   };
-
-  const prefixSelector = (
-    <Form.Item name="prefix" noStyle initialValue={"60"}>
-      <Select
-        style={{
-          width: 70,
-        }}
-      >
-        <Option value="60">+60</Option>
-      </Select>
-    </Form.Item>
-  );
 
   return (
     <div
@@ -133,7 +150,6 @@ function SignUpCard() {
           marginBottom: "50px",
           marginLeft: "0",
           marginRight: "0",
-          padding: "0",
           display: "flex",
           alignItems: "center",
           flexDirection: "column",
@@ -156,7 +172,7 @@ function SignUpCard() {
             marginBottom: "10px",
           }}
           scrollToFirstError
-          colon={false}
+          colon={true}
         >
           <h1 style={{ textAlign: "center" }}>Sign Up</h1>
           <Form.Item
@@ -169,20 +185,10 @@ function SignUpCard() {
               },
             ]}
           >
-            <Select
-              placeholder="Select your user type"
-              onChange={handleUserChange}
-              options={[
-                {
-                  value: "student",
-                  label: "Student",
-                },
-                {
-                  value: "agent",
-                  label: "Agent",
-                },
-              ]}
-            />
+            <Radio.Group onChange={handleUserChange} defaultValue={"student"}>
+              <Radio value={"student"}>Student</Radio>
+              <Radio value={"agent"}>Agent</Radio>
+            </Radio.Group>
           </Form.Item>
 
           <Form.Item
@@ -204,18 +210,18 @@ function SignUpCard() {
             rules={[
               {
                 type: "email",
-                message: "The input is not valid E-mail!",
+                message: "The input is not valid e-mail!",
               },
               {
                 required: true,
-                message: "Please input your E-mail!",
+                message: "Please input your e-mail!",
               },
               {
                 validator(_, value) {
                   if (
                     (userType === "student" &&
-                      value.includes("@student.tarc.edu.my")) ||
-                    value.length === 0 ||
+                      (value ?? "").includes("@student.tarc.edu.my")) ||
+                    (value ?? "").length === 0 ||
                     userType !== "student"
                   ) {
                     return Promise.resolve();
@@ -241,11 +247,11 @@ function SignUpCard() {
               {
                 validator(_, value) {
                   if (
-                    (value.length >= 8 &&
-                      value.match(
+                    ((value ?? "").length >= 8 &&
+                      (value ?? "").match(
                         /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)[a-zA-Z\d]{8,}$/
                       )) ||
-                    value.length === 0
+                    (value ?? "").length === 0
                   ) {
                     return Promise.resolve();
                   }
@@ -298,9 +304,10 @@ function SignUpCard() {
               {
                 validator(_, value) {
                   if (
-                    value.length === 0 ||
-                    ((value.length === 9 || value.length === 10) &&
-                      value.match(/^[0-9]+$/))
+                    (value ?? "").length === 0 ||
+                    (((value ?? "").length === 10 ||
+                      (value ?? "").length === 11) &&
+                      (value ?? "").match(/^[0-9]+$/))
                   ) {
                     return Promise.resolve();
                   }
@@ -312,12 +319,26 @@ function SignUpCard() {
             ]}
           >
             <Input
-              addonBefore={prefixSelector}
               style={{
                 width: "100%",
               }}
             />
           </Form.Item>
+
+          {isAgent && (
+            <Form.Item
+              name="company"
+              label="Company"
+              rules={[
+                {
+                  required: true,
+                  message: "Please input your company name!",
+                },
+              ]}
+            >
+              <Input />
+            </Form.Item>
+          )}
 
           <Form.Item
             name="gender"
@@ -329,11 +350,10 @@ function SignUpCard() {
               },
             ]}
           >
-            <Select placeholder="select your gender">
-              <Option value="male">Male</Option>
-              <Option value="female">Female</Option>
-              <Option value="other">Other</Option>
-            </Select>
+            <Radio.Group name="gender">
+              <Radio value={"Male"}>Male</Radio>
+              <Radio value={"Female"}>Female</Radio>
+            </Radio.Group>
           </Form.Item>
 
           <Form.Item {...tailFormItemLayout}>

@@ -8,6 +8,7 @@ import { useNavigate } from "react-router-dom";
 function ProfileInformation() {
   // get user information from database
   const [userInfo, setUserInfo] = useState(null);
+  const [userAvatar, setUserAvatar] = useState(null);
   const getUserInfo = async () => {
     // get user id from supabase
     const userID = (await supabase.auth.getUser()).data.user.id;
@@ -18,10 +19,26 @@ function ProfileInformation() {
     if (error) console.log("error", error);
     else return student[0];
   };
+  const getAvatar = async () => {
+    const userID = (await supabase.auth.getUser()).data.user.id;
+    const { data } = supabase.storage
+      .from("avatar")
+      .getPublicUrl(`avatar-${userID}`, {
+        select: "metadata",
+        fileFilter: (metadata) => {
+          const fileType = metadata.content_type.split("/")[1];
+          return fileType === "jpg" || fileType === "png";
+        },
+      });
+      console.log(data.publicUrl)
+    return data;
+  };
+
   const navigate = useNavigate();
 
   useEffect(() => {
     getUserInfo().then((student) => setUserInfo(student));
+    getAvatar().then((data) => setUserAvatar(data.publicUrl));
   }, []);
 
   const editProfile = () => {
@@ -38,7 +55,7 @@ function ProfileInformation() {
         }}
       >
         <div className="avatar-div">
-          <Avatar size={64} icon={<UserOutlined />} />
+          <Avatar size={64} src={userAvatar} icon={<UserOutlined />} />
         </div>
       </div>
       <div style={{ textAlign: "center" }}>
