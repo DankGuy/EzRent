@@ -21,6 +21,9 @@ function AgentCreatePost() {
     const [propertyCity, setPropertyCity] = useState('');
     const [roomNum, setRoomNum] = useState(1);
 
+    const [pFurnishType, setPFurnishType] = useState(null);
+    const [pFurnishChecklist, setPFurnishChecklist] = useState([]);
+
 
     const [isRoom, setIsRoom] = useState(false)
 
@@ -128,7 +131,7 @@ function AgentCreatePost() {
     const roomDetailForm = (index) => {
         return (
             <div key={index}>
-                <Divider orientation="left" style={{borderColor: 'gray'}} >Room {index}</Divider>
+                <Divider orientation="left" style={{ borderColor: 'gray' }} >Room {index}</Divider>
                 <Row>
                     <Col span={4}>
                         <Form.Item name={`roomType${index}`} label="Room Type" required rules={[
@@ -223,11 +226,26 @@ function AgentCreatePost() {
         const renderedItemOption = items.map((item) => {
             return (
                 <Col span={6} key={item.value}>
-                    <Checkbox value={item.value}>{item.label}</Checkbox>
+                    <Checkbox value={item.value} >{item.label}</Checkbox>
                 </Col>
             )
         })
         return renderedItemOption
+    }
+
+    const handlePFurnishType = (value) => {
+        setPFurnishType(value);
+        if (value === "Unfurnished") {
+          setPFurnishChecklist([]);
+        } else if (value === "Fully Furnished") {
+            const allValues = furnishOption.map((item) => item.value);
+            setPFurnishChecklist(allValues);        }
+      };
+      
+
+    const handlePFurnishChecklist = (values) => {
+        console.log(values)
+        setPFurnishChecklist(values)
     }
 
     const validatePostcode = (value) => {
@@ -442,7 +460,7 @@ function AgentCreatePost() {
                 propertyDescription: null,
                 propertyType: null,
                 roomType: null,
-                propertyFurnish: null,
+                propertyFurnish: pFurnishChecklist,
                 propertyFacility: null,
                 propertyRental: 1,
                 propertyBuiltupSize: 1,
@@ -525,13 +543,13 @@ function AgentCreatePost() {
 
                     <Col span={4} offset={1}>
                         <Form.Item name="propertyCity" label='Property City'>
-                        <div style={{ paddingLeft: '10px', border: '1px solid #d9d9d9', width: 'auto', height: '30px', borderRadius: '5px', display: 'flex', alignItems: 'center', whiteSpace: 'nowrap', overflow:'hidden', textOverflow:'ellipsis' }}>{propertyCity}</div>
+                            <div style={{ paddingLeft: '10px', border: '1px solid #d9d9d9', width: 'auto', height: '30px', borderRadius: '5px', display: 'flex', alignItems: 'center', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>{propertyCity}</div>
                         </Form.Item>
                     </Col>
 
                     <Col span={5} offset={1}>
                         <Form.Item name="propertyState" label='Property State'>
-                            <div style={{ paddingLeft: '10px', border: '1px solid #d9d9d9', width: 'auto', height: '30px', borderRadius: '5px', display: 'flex', alignItems: 'center', whiteSpace: 'nowrap', overflow:'hidden', textOverflow:'ellipsis' }}>{propertyState}</div>
+                            <div style={{ paddingLeft: '10px', border: '1px solid #d9d9d9', width: 'auto', height: '30px', borderRadius: '5px', display: 'flex', alignItems: 'center', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>{propertyState}</div>
                         </Form.Item>
                     </Col>
                 </Row>
@@ -562,16 +580,7 @@ function AgentCreatePost() {
                             ]} />
                         </Form.Item>
                     </Col>
-                    <Col span={6} offset={1}>
-                        <Form.Item required='true' name="propertyFurnishType" label='Property Furnish Type' rules={[
-                            {
-                                required: true,
-                                message: 'Please choose the property furnish type!',
-                            },
-                        ]}>
-                            <FurnishTypeSelection bordered={true} />
-                        </Form.Item>
-                    </Col>
+
                 </Row>
             </fieldset>
 
@@ -642,6 +651,20 @@ function AgentCreatePost() {
             >
                 <legend style={{ width: 'auto', borderBottom: 'none', marginLeft: '20px', marginBottom: '0px' }}>Property Furnish</legend>
                 <Row>
+                    <Col span={4}>
+                        <Form.Item required='true' name="propertyFurnishType" label='Property Furnish Type' rules={[
+                            {
+                                required: true,
+                                message: 'Please choose the property furnish type!',
+                            },
+                        ]}>
+                            <FurnishTypeSelection bordered={true} value={pFurnishType} onChange={handlePFurnishType}/>
+                        </Form.Item>
+                    </Col>
+
+                </Row>
+
+                <Row>
                     <Col span={24}>
                         <Form.Item
                             name="propertyFurnish"
@@ -650,6 +673,8 @@ function AgentCreatePost() {
                                 style={{
                                     width: '100%',
                                 }}
+                                value={pFurnishChecklist}
+                                onChange={handlePFurnishChecklist}
                             >
                                 <Row>
                                     {renderedItem(furnishOption)}
@@ -697,11 +722,11 @@ function AgentCreatePost() {
                     </Col>
                 </Row>
 
-                <Row style={{marginTop: '0px'}}>
+                <Row style={{ marginTop: '0px' }}>
                     <Col span={20}>
-                        <p style={{fontStyle: 'italic'}}>*Please enter any additional description or information about the property. 
-                            This could include specific details, special features, or any other relevant 
-                            information you would like to highlight. Feel free to provide as much detail as 
+                        <p style={{ fontStyle: 'italic' }}>*Please enter any additional description or information about the property.
+                            This could include specific details, special features, or any other relevant
+                            information you would like to highlight. Feel free to provide as much detail as
                             possible to help potential tenants get a better understanding of the property.</p>
                     </Col>
                 </Row>

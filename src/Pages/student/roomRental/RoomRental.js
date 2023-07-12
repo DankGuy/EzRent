@@ -229,6 +229,7 @@ function RoomRental() {
     };
 
 
+
     const renderedPost = posts.map((post) => {
         let bgColor;
         let addDesc;
@@ -239,8 +240,8 @@ function RoomRental() {
             addDesc = post.propertyRoomType;
         } else {
             bgColor = '#8594e4';
-            const [masterRoom, mediumRoom, smallRoom] = post.propertyRoomNumber;
-            addDesc = `${masterRoom} Master room, ${mediumRoom} Medium room, ${smallRoom} Small room`;
+            // const [masterRoom, mediumRoom, smallRoom] = post.propertyRoomNumber;
+            // addDesc = `${masterRoom} Master room, ${mediumRoom} Medium room, ${smallRoom} Small room`;
         }
 
         return (
