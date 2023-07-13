@@ -2,11 +2,11 @@ import { Select } from 'antd';
 import { useState } from 'react';
 
 function FurnishTypeSelection({ value, onChange, bordered, ...rest }) {
-    const [furnish, setFurnish] = useState(null);
+    const [furnish, setFurnish] = useState(value);
 
     const handleChange = (e) => {
         onChange(e);
-        setFurnish(e);
+        // setFurnish(e);
     }
 
     const furnishOption = [
@@ -20,7 +20,7 @@ function FurnishTypeSelection({ value, onChange, bordered, ...rest }) {
         bordered={bordered}
         style={rest.style}
         options={furnishOption}
-        value={furnish}
+        value={value}
         onChange={handleChange}
     />
 }

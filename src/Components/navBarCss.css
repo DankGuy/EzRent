@@ -11,7 +11,7 @@ body{
     background-color: #6643b5;
 }
 
-li {
+.ulClass > li {
     float: left;
 }
 

@@ -1,11 +1,12 @@
 import { useState, useEffect } from 'react'
 import { PlusOutlined } from '@ant-design/icons';
-import { Modal, Upload, message, Form, Row, Col, Input, Radio, Select, InputNumber, Checkbox, Button, Divider } from 'antd';
+import { Modal, Upload, message, Form, Row, Col, Input, Radio, Select, InputNumber, Checkbox, Button, Divider, Tooltip } from 'antd';
 import FurnishTypeSelection from '../../../Components/FurnishTypeSelection';
 import TextArea from 'antd/es/input/TextArea';
 import { useNavigate } from 'react-router-dom';
 import { getCurrentDateTime } from '../../../Components/timeUtils';
 import { supabase, postCodeSupabase } from '../../../supabase-client';
+import { RiInformationFill } from 'react-icons/ri';
 
 function AgentCreatePost() {
 
@@ -42,6 +43,85 @@ function AgentCreatePost() {
         setPreviewTitle(file.name || file.url.substring(file.url.lastIndexOf('/') + 1));
     };
     const handleChange = ({ fileList: newFileList }) => setFileList(newFileList);
+
+
+    const [form] = Form.useForm();
+
+    const furnishOption = [
+
+        { label: "Clothes hanger", value: "Clothes hanger" },
+        { label: "Clothes rack", value: "Clothes rack" },
+        { label: "Refrigerator", value: "Refrigerator" },
+        { label: "Dining table", value: "Dining table" },
+        { label: "Shoe rack", value: "Shoe rack" },
+        { label: "Sofa", value: "Sofa" },
+        { label: "Television", value: "Television" },
+        { label: "Water dispenser", value: "Water dispenser" },
+        { label: "Water heater", value: "Water heater" },
+        { label: "Washing machine", value: "Washing machine" },
+        { label: "WiFi", value: "WiFi" },
+    ];
+
+    const roomFurnishOption = [
+        { label: "Air-conditioner", value: "Air-conditioner" },
+        { label: "Bed", value: "Bed" },
+        { label: "Bed frame", value: "Bed frame" },
+        { label: "Blanket", value: "Blanket" },
+        { label: "Pillow", value: "Pillow" },
+        { label: "Study desk", value: "Study desk" },
+        { label: "Study chair", value: "Study chair" },
+        { label: "Wardrobe", value: "Wardrobe" },
+        { label: "Window curtain", value: "Window curtain" },
+    ];
+
+
+    const facilityOption = [
+        { label: "24-hours security", value: "24-hours security" },
+        { label: "Badminton court", value: "Badminton court" },
+        { label: "Basketball court", value: "Basketball court" },
+        { label: "Cafeteria", value: "Cafeteria" },
+        { label: "Football court", value: "Football court" },
+        { label: "Smiwimng pool", value: "Smiwimng pool" },
+        { label: "Gym room", value: "Gym room" },
+        { label: "Jogging track", value: "Jogging track" },
+        { label: "Mini market", value: "Mini market" },
+        { label: "Parking area", value: "Parking area" },
+        { label: "Playground", value: "Playground" },
+        { label: "Table tennis court", value: "Table tennis court" },
+        { label: "Wadding pool", value: "Wadding pool" },
+    ];
+
+
+    useEffect(() => {
+        console.log(pFurnishType)
+        if (pFurnishType === 'Unfurnished') {
+            form.setFieldsValue({ propertyFurnish: [] })
+            setPFurnishChecklist([])
+        } else if (pFurnishType === 'Fully Furnished') {
+            form.setFieldsValue({ propertyFurnish: furnishOption.map((item) => item.value) })
+            setPFurnishChecklist(furnishOption)
+        } else if (pFurnishType === 'Partially Furnished') {
+            form.setFieldsValue({ propertyFurnish: ['Refrigerator', 'Washing machine', 'Water heater'] })
+            setPFurnishChecklist(['Refrigerator', 'Washing Machine', 'Water Heater'])
+        }
+    }, [pFurnishType])
+
+    useEffect(() => {
+        console.log(pFurnishChecklist)
+        if (pFurnishChecklist.length === 0) {
+            console.log('unfurnished')
+            form.setFieldsValue({ propertyFurnishType: 'Unfurnished' })
+            setPFurnishType('Unfurnished')
+        } else if (pFurnishChecklist.length === furnishOption.length) {
+            console.log('fully furnished')
+            form.setFieldsValue({ propertyFurnishType: 'Fully Furnished' })
+            setPFurnishType('Fully Furnished')
+        } else {
+            console.log('partially furnished')
+            form.setFieldsValue({ propertyFurnishType: 'Partially Furnished' })
+            setPFurnishType('Partially Furnished')
+        }
+    }, [pFurnishChecklist])
 
     const uploadButton = (
         <div>
@@ -80,54 +160,6 @@ function AgentCreatePost() {
         return value || Upload.LIST_IGNORE;
     };
 
-    const roomType = () => {
-        return (
-            <>
-                <Col span={4} >
-                    <Form.Item name="roomType" label="Room Type" required rules={[
-                        {
-                            required: true,
-                            message: 'Please choose the room type!',
-                        },
-                    ]}>
-                        <Select placeholder="All Room Type" options={[
-                            { value: 'Master Room', label: 'Master Room' },
-                            { value: 'Medium Room', label: 'Medium Room' },
-                            { value: 'Small Room', label: 'Small Room' },
-                        ]} />
-                    </Form.Item>
-                </Col>
-                <Col span={4} offset={1}>
-                    <Form.Item name="roomSquareFeet" label="Room Square Feet (sq.ft.)" required>
-                        <InputNumber min={1} max={1000} style={{ width: '100%' }} />
-                    </Form.Item>
-                </Col>
-            </>
-        )
-    }
-
-    const roomNumber = () => {
-        return (
-            <>
-                <Col span={4}>
-                    <Form.Item name="masterRoomNum" label="Master Room Number">
-                        <InputNumber min={0} max={2} />
-                    </Form.Item>
-                </Col>
-                <Col span={4} offset={1}>
-                    <Form.Item name="mediumRoomNum" label="Medium Room Number">
-                        <InputNumber min={0} max={2} />
-                    </Form.Item>
-                </Col>
-                <Col span={4} offset={1}>
-                    <Form.Item name="smallRoomNum" label="Small Room Number">
-                        <InputNumber min={0} max={2} />
-                    </Form.Item>
-                </Col>
-            </>
-        )
-    }
-
     const roomDetailForm = (index) => {
         return (
             <div key={index}>
@@ -155,78 +187,148 @@ function AgentCreatePost() {
                 </Row>
                 <Row>
                     <Col span={24}>
-                        <Form.Item name={`roomFurnish${index}`} label="Room Furnish" required={true}>
+                        <Form.Item
+                            name={`roomFurnish${index}`}
+                            label={
+                                <div style={{ display: 'flex' }}>
+                                    <span>Room Furnish</span>
+                                    <Tooltip
+                                        title="Room Furnish: Select checkboxes to indicate the 
+                                                    furnishings present in your room. Tick all that apply 
+                                                    to showcase your room's setup"
+                                        placement='right'
+                                        overlayStyle={{ maxWidth: '400px' }}
+                                    >
+                                        <div>
+                                            <RiInformationFill style={{ marginLeft: '5px', color: 'gray' }} />
+                                        </div>
+                                    </Tooltip>
+                                </div>
+                            }
+                            required={true}>
                             <Checkbox.Group
                                 style={{
                                     width: '100%',
                                 }}
                             >
-                                <Row>
-                                    {renderedItem(roomFurnishOption)}
+                                <Row >
+                                    {renderedRoomFurnish(index)}
                                 </Row>
                             </Checkbox.Group>
                         </Form.Item>
                     </Col>
                 </Row>
-
-
-
             </div>
         )
     }
 
 
+    const renderedFurnishOption = () => {
 
-    const furnishOption = [
+        let disabled = false;
+        if (pFurnishType === 'Fully Furnished' || pFurnishType === 'Partially Furnished') {
+            disabled = true;
+        }
 
-        { label: "Clothes hanger", value: "Clothes hanger" },
-        { label: "Clothes rack", value: "Clothes rack" },
-        { label: "Refrigerator", value: "Refrigerator" },
-        { label: "Dining table", value: "Dining table" },
-        { label: "Shoe rack", value: "Shoe rack" },
-        { label: "Sofa", value: "Sofa" },
-        { label: "Television", value: "Television" },
-        { label: "Water dispenser", value: "Water dispenser" },
-        { label: "Water heater", value: "Water heater" },
-        { label: "Washing machine", value: "Washing machine" },
-        { label: "WiFi", value: "WiFi" },
-    ];
+        const renderedFurnishOption = furnishOption.map((item) => {
 
-    const roomFurnishOption = [
-        { label: "Air-conditioner", value: "Air-conditioner" },
-        { label: "Bed", value: "Bed" },
-        { label: "Bed frame", value: "Bed frame" },
-        { label: "Blanket", value: "Blanket" },
-        { label: "Pillow", value: "Pillow" },
-        { label: "Study desk", value: "Study desk" },
-        { label: "Study chair", value: "Study chair" },
-        { label: "Toilet", value: "Toilet" },
-        { label: "Wardrobe", value: "Wardrobe" },
-        { label: "Window curtain", value: "Window curtain" },
-    ];
+            if (item.value === 'Refrigerator' || item.value === 'Washing machine' || item.value === 'Water heater') {
+
+                return (
+                    <Col span={6} key={item.value}
+                    >
+                        <Checkbox style={{
+                            border: '1px solid #d9d9d9',
+                            borderRadius: '5px',
+                            marginBottom: '10px',
+                            padding: '5px',
+                            width: '80%',
+
+                        }} value={item.value} disabled={disabled}>{item.label}</Checkbox>
+                    </Col>
+                )
+            } else {
+                return (
+                    <Col span={6} key={item.value}
+                    >
+                        <Checkbox
+                            style={{
+                                width: '80%',
+                                border: '1px solid #d9d9d9',
+                                borderRadius: '5px',
+                                marginBottom: '10px',
+                                padding: '5px',
+                            }}
+                            value={item.value} >{item.label}</Checkbox>
+                    </Col>
+                )
+            }
+
+        })
+        return renderedFurnishOption
+    }
+
+    const [checkedItems, setCheckedItems] = useState([]);
+
+    const handleCheckboxChange = (value) => {
+        if (checkedItems.includes(value)) {
+            setCheckedItems(checkedItems.filter(item => item !== value));
+        } else {
+            setCheckedItems([...checkedItems, value]);
+        }
+    };
 
 
-    const facilityOption = [
-        { label: "24-hours security", value: "24-hours security" },
-        { label: "Badminton court", value: "Badminton court" },
-        { label: "Basketball court", value: "Basketball court" },
-        { label: "Cafeteria", value: "Cafeteria" },
-        { label: "Football court", value: "Football court" },
-        { label: "Smiwimng pool", value: "Smiwimng pool" },
-        { label: "Gym room", value: "Gym room" },
-        { label: "Jogging track", value: "Jogging track" },
-        { label: "Mini market", value: "Mini market" },
-        { label: "Parking area", value: "Parking area" },
-        { label: "Playground", value: "Playground" },
-        { label: "Table tennis court", value: "Table tennis court" },
-        { label: "Wadding pool", value: "Wadding pool" },
-    ];
-
-    const renderedItem = (items) => {
-        const renderedItemOption = items.map((item) => {
+    const renderedRoomFurnish = (index) => {
+        const renderedRoomFurnish = roomFurnishOption.map((item) => {
             return (
-                <Col span={6} key={item.value}>
-                    <Checkbox value={item.value} >{item.label}</Checkbox>
+                <div key={`${item.value}${index}`}>
+                    <Col span={4} 
+                        style={{
+                            border: '1px solid #d9d9d9',
+                            borderRadius: '5px',
+                            marginBottom: '10px',
+                            padding: '5px',
+
+                        }}>
+                        <Checkbox
+                            value={item.value}
+                            checked={checkedItems.includes(item.value)}
+                            onChange={() => handleCheckboxChange(item.value)}
+                        >
+                            {item.label}
+                        </Checkbox>
+
+                    </Col>
+                    <Col span={2} key={item.value}>
+                        {checkedItems.includes(item.value) &&
+                            <InputNumber min={1} max={3} style={{ width: '50%' }} defaultValue={1} />
+                        }
+                    </Col>
+                </div>
+
+            )
+        })
+        return renderedRoomFurnish
+    }
+
+
+
+    const renderedFacility = () => {
+        const renderedItemOption = facilityOption.map((item) => {
+
+            return (
+                <Col span={6} key={item.value}
+                >
+                    <Checkbox
+                        style={{
+                            width: '80%',
+                            border: '1px solid #d9d9d9',
+                            borderRadius: '5px',
+                            marginBottom: '10px',
+                            padding: '5px',
+
+                        }} value={item.value} >{item.label}</Checkbox>
                 </Col>
             )
         })
@@ -235,13 +337,8 @@ function AgentCreatePost() {
 
     const handlePFurnishType = (value) => {
         setPFurnishType(value);
-        if (value === "Unfurnished") {
-          setPFurnishChecklist([]);
-        } else if (value === "Fully Furnished") {
-            const allValues = furnishOption.map((item) => item.value);
-            setPFurnishChecklist(allValues);        }
-      };
-      
+    };
+
 
     const handlePFurnishChecklist = (values) => {
         console.log(values)
@@ -448,28 +545,30 @@ function AgentCreatePost() {
 
 
         <Form
+            form={form}
             layout='vertical'
             size='middle'
             onFinish={onFinish}
             onFinishFailed={onFinishFailed}
+            scrollToFirstError={true}
             initialValues={{
                 // propertyState: propertyState,
-                propertyFurnishType: null,
-                propertyCategory: 'Unit',
-                roomSquareFeet: 1,
-                propertyDescription: null,
+                propertyImage: null,
+                propertyName: null,
+                propertyAddress: null,
+                propertyPostcode: null,
+                propertyBuiltupSize: 1,
                 propertyType: null,
-                roomType: null,
+                propertyCategory: 'Unit',
+                propertyRoomNumber: 1,
+                rentalPrice: 1,
+                propertyFurnishType: null,
                 propertyFurnish: pFurnishChecklist,
                 propertyFacility: null,
-                propertyRental: 1,
-                propertyBuiltupSize: 1,
-                propertyAddress: null,
-                // propertyCity: null,
-                propertyPostcode: null,
-                propertyName: null,
-                propertyImage: null,
-                propertyRoomNumber: 1,
+                propertyDescription: null,
+                roomSquareFeet: 1,
+                roomType: null,
+                roomFurnish: null,
 
             }}
         >
@@ -651,14 +750,41 @@ function AgentCreatePost() {
             >
                 <legend style={{ width: 'auto', borderBottom: 'none', marginLeft: '20px', marginBottom: '0px' }}>Property Furnish</legend>
                 <Row>
-                    <Col span={4}>
-                        <Form.Item required='true' name="propertyFurnishType" label='Property Furnish Type' rules={[
-                            {
-                                required: true,
-                                message: 'Please choose the property furnish type!',
-                            },
-                        ]}>
-                            <FurnishTypeSelection bordered={true} value={pFurnishType} onChange={handlePFurnishType}/>
+                    <Col span={6}>
+                        <Form.Item
+                            required='true'
+                            name="propertyFurnishType"
+                            label={
+                                <>
+                                    <span>Property Furnish Type</span>
+                                    <Tooltip
+                                        title={
+                                            <>
+                                                <p>Property Furnish: Choose the appropriate furnishing type for the property.</p>
+                                                <ul style={{ marginInlineStart: '-20px' }}>
+                                                    <li>Unfurnished: No furnishings provided.</li>
+                                                    <li>Partially Furnished: Essential furnishings included.</li>
+                                                    <li>Fully Furnished: All furnishings provided.</li>
+                                                </ul>
+                                            </>
+
+                                        }
+                                        placement='right'
+                                        overlayStyle={{ maxWidth: '1000px' }}
+                                    >
+                                        <div>
+                                            <RiInformationFill style={{ marginLeft: '5px', color: 'gray' }} />
+                                        </div>
+                                    </Tooltip>
+                                </>
+                            }
+                            rules={[
+                                {
+                                    required: true,
+                                    message: 'Please choose the property furnish type!',
+                                },
+                            ]}>
+                            <FurnishTypeSelection style={{ width: '70%' }} bordered={true} value={pFurnishType} onChange={handlePFurnishType} />
                         </Form.Item>
                     </Col>
 
@@ -670,14 +796,11 @@ function AgentCreatePost() {
                             name="propertyFurnish"
                         >
                             <Checkbox.Group
-                                style={{
-                                    width: '100%',
-                                }}
                                 value={pFurnishChecklist}
                                 onChange={handlePFurnishChecklist}
                             >
-                                <Row>
-                                    {renderedItem(furnishOption)}
+                                <Row >
+                                    {renderedFurnishOption()}
                                 </Row>
 
 
@@ -695,14 +818,9 @@ function AgentCreatePost() {
                         <Form.Item
                             name="propertyFacility"
                         >
-                            <Checkbox.Group
-                                style={{
-                                    width: '100%',
-                                }}
-                            // options={furnishOption}
-                            >
+                            <Checkbox.Group>
                                 <Row>
-                                    {renderedItem(facilityOption)}
+                                    {renderedFacility()}
                                 </Row>
                             </Checkbox.Group>
                         </Form.Item>

@@ -52,12 +52,12 @@ function NavBar() {
                 </Link>
               </li>
               <div style={{float: 'right'}}>
-                <li>
+                <li style={{float: 'left'}}>
                   <Link className="link active" to={profileSelectedKey} onClick={remainSelectedKey}>
                     Profile
                   </Link>
                 </li>
-                <li>
+                <li style={{float: 'left'}}>
                   <Link className="link active" to="/" onClick={logout}>
                     Logout
                   </Link>
