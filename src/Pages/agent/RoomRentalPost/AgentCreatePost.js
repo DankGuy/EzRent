@@ -505,9 +505,21 @@ function AgentCreatePost() {
 
     //Funtion to upload propertyImage to supabase storage
     const uploadImage = async (e, id) => {
+        console.log(id)
+
+        const propertyImage = e["propertyImage"];
+
+        const roomImage = {};
+
+        //iterate through the roomNum and get the image array
+        Array.from({ length: roomNum }, (_, i) => i + 1).forEach((index) => {
+            roomImage[index] = e[`roomImage${index}`];
+        }
+        )
+
 
         //Get the length of the image array and upload the image to supabase storage
-        e.fileList.forEach(async (image) => {
+        propertyImage.fileList.forEach(async (image) => {
             const { data, error } = await supabase.storage
                 .from('post')
                 .upload(`${id}/${image.name}`, image.originFileObj, {
@@ -519,6 +531,29 @@ function AgentCreatePost() {
                 console.log(error)
                 return;
             }
+        }
+        )
+
+        //upload room image
+        Array.from({ length: roomNum }, (_, i) => i + 1).forEach((index) => {
+            const roomType = e[`roomType${index}`];
+
+            console.log(roomImage[index])
+
+            roomImage[index].fileList.forEach(async (image) => {
+                const { data, error } = await supabase.storage
+                    .from('post')
+                    .upload(`${id}/${roomType}/${image.name}`, image.originFileObj, {
+                        cacheControl: '3600',
+                        upsert: false
+                    })
+
+                if (error) {
+                    console.log(error)
+                    return;
+                }
+            }
+            )
         }
         )
 
@@ -633,32 +668,31 @@ function AgentCreatePost() {
             ])
             .select('postID');
 
+       
+
         if (postError) {
             console.log(postError)
-        } 
-        console.log(postData)
-
-        // if (postError) {
-        //     console.log(postError)
-        // } else {
-        //     if (postData && postData.length > 0) {
-        //         uploadImage(propertyImage, postData[0].postID);
-        //     } else {
-        //         console.log("No data returned after insert");
-        //     }
-        // }
+        } else {
+            if (postData && postData.length > 0) {
+                uploadImage(e, postData[0].postID);
+            } else {
+                console.log("No data returned after insert");
+            }
+        }
 
 
-        // setIsButtonDisabled(true);
+        setIsButtonDisabled(true);
 
-        // messageApi.open({
-        //     type: 'success',
-        //     content: 'Create successful. You will be redirected to the previous page within 3 seconds...',
-        // });
+        messageApi.loading('Creating post...', 0);
+        
+        setTimeout(() => {
+            messageApi.success('Create successful. You will be redirected to the previous page within 3 seconds...', 3);
+        }, 1000);
 
-        // setTimeout(() => {
-        //     navigate("/agent/roomRental")
-        // }, 3000);
+        setTimeout(() => {
+            navigate("/agent/roomRental")
+        }, 3000);
+
     }
 
     const onFinishFailed = (e) => {
