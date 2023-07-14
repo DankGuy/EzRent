@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react'
+import { useState, useEffect, Fragment } from 'react'
 import { PlusOutlined } from '@ant-design/icons';
 import { Modal, Upload, message, Form, Row, Col, Input, Radio, Select, InputNumber, Checkbox, Button, Divider, Tooltip } from 'antd';
 import FurnishTypeSelection from '../../../Components/FurnishTypeSelection';
@@ -123,6 +123,15 @@ function AgentCreatePost() {
         }
     }, [pFurnishChecklist])
 
+    useEffect(() => {
+        //iterate through the roomNum and set initial value for roomSquareFeet
+        Array.from({ length: roomNum }, (_, i) => i + 1).forEach((index) => {
+            form.setFieldsValue({ [`roomSquareFeet${index}`]: 1 })
+        }
+        )
+
+    }, [roomNum])
+
     const uploadButton = (
         <div>
             <PlusOutlined />
@@ -161,6 +170,9 @@ function AgentCreatePost() {
     };
 
     const roomDetailForm = (index) => {
+
+        //set initial value for roomsquarefeet
+
         return (
             <div key={index}>
                 <Divider orientation="left" style={{ borderColor: 'gray' }} >Room {index}</Divider>
@@ -194,8 +206,7 @@ function AgentCreatePost() {
                                     <span>Room Furnish</span>
                                     <Tooltip
                                         title="Room Furnish: Select checkboxes to indicate the 
-                                                    furnishings present in your room. Tick all that apply 
-                                                    to showcase your room's setup"
+                                                    furnishings present in your room and enter the quantity."
                                         placement='right'
                                         overlayStyle={{ maxWidth: '400px' }}
                                     >
@@ -268,49 +279,88 @@ function AgentCreatePost() {
         return renderedFurnishOption
     }
 
-    const [checkedItems, setCheckedItems] = useState([]);
+    const [checkedItems, setCheckedItems] = useState({});
 
-    const handleCheckboxChange = (value) => {
-        if (checkedItems.includes(value)) {
-            setCheckedItems(checkedItems.filter(item => item !== value));
+    const handleCheckboxChange = (index, value) => {
+        if (checkedItems[index] && checkedItems[index].includes(value)) {
+            // Remove the checked item from the array
+            const updatedItems = {
+                ...checkedItems,
+                [index]: checkedItems[index].filter((item) => item !== value),
+            };
+            setCheckedItems(updatedItems);
         } else {
-            setCheckedItems([...checkedItems, value]);
+            // Set the checked item to the given index
+            const updatedItems = {
+                ...checkedItems,
+                [index]: checkedItems[index] ? [...checkedItems[index], value] : [value],
+            };
+            setCheckedItems(updatedItems);
         }
     };
 
-
     const renderedRoomFurnish = (index) => {
         const renderedRoomFurnish = roomFurnishOption.map((item) => {
+            const inputName = `roomFurnish${index}_${item.value}`;
+
             return (
-                <div key={`${item.value}${index}`}>
-                    <Col span={4} 
+                <Fragment key={`${item.value}${index}`}>
+                    <Col
+                        span={7}
                         style={{
                             border: '1px solid #d9d9d9',
                             borderRadius: '5px',
                             marginBottom: '10px',
+                            marginRight: '40px',
                             padding: '5px',
-
-                        }}>
+                            width: '50%',
+                            display: 'flex',
+                            alignItems: 'center',
+                            justifyContent: 'space-between',
+                            height: '40px',
+                        }}
+                    >
                         <Checkbox
                             value={item.value}
-                            checked={checkedItems.includes(item.value)}
-                            onChange={() => handleCheckboxChange(item.value)}
+                            checked={checkedItems[index] && checkedItems[index].includes(item.value)}
+                            onChange={() => handleCheckboxChange(index, item.value)}
                         >
                             {item.label}
                         </Checkbox>
 
+                        {checkedItems[index] && checkedItems[index].includes(item.value) && (
+                            <Form.Item
+                                name={inputName}
+                                style={{
+                                    marginBottom: '0px',
+                                }}
+                                rules={[
+                                    {
+                                        required: true,
+                                        message: 'Please enter the quantity!',
+                                    },
+                                ]}
+                            >
+                                <InputNumber
+                                    placeholder="Quantity"
+                                    min={1}
+                                    max={3}
+                                    bordered={false}
+                                    style={{
+                                        width: '50%',
+                                        borderBottom: '1px solid #d9d9d9',
+                                        marginBottom: '0px',
+                                    }}
+                                />
+                            </Form.Item>
+                        )}
                     </Col>
-                    <Col span={2} key={item.value}>
-                        {checkedItems.includes(item.value) &&
-                            <InputNumber min={1} max={3} style={{ width: '50%' }} defaultValue={1} />
-                        }
-                    </Col>
-                </div>
+                </Fragment>
+            );
+        });
 
-            )
-        })
-        return renderedRoomFurnish
-    }
+        return renderedRoomFurnish;
+    };
 
 
 
@@ -566,7 +616,6 @@ function AgentCreatePost() {
                 propertyFurnish: pFurnishChecklist,
                 propertyFacility: null,
                 propertyDescription: null,
-                roomSquareFeet: 1,
                 roomType: null,
                 roomFurnish: null,
 
@@ -660,7 +709,7 @@ function AgentCreatePost() {
                                 message: 'Please enter the property built-up size!',
                             },
                         ]}>
-                            <Input placeholder='Built-up size (sq.ft.)' style={{ width: '100%' }} />
+                            <InputNumber min={1} max={10000} style={{ width: '100%' }} />
                         </Form.Item>
                     </Col>
 
