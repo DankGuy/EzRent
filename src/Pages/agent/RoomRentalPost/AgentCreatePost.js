@@ -33,6 +33,7 @@ function AgentCreatePost() {
     const navigate = useNavigate();
 
     const [fileList, setFileList] = useState([]);
+
     const handleCancel = () => setPreviewOpen(false);
     const handlePreview = async (file) => {
         if (!file.url && !file.preview) {
@@ -42,7 +43,18 @@ function AgentCreatePost() {
         setPreviewOpen(true);
         setPreviewTitle(file.name || file.url.substring(file.url.lastIndexOf('/') + 1));
     };
+
     const handleChange = ({ fileList: newFileList }) => setFileList(newFileList);
+
+    const [roomFileList, setRoomFileList] = useState([]);
+
+    const handleRoomChange = (index, { fileList: newFileList }) => {
+        const newRoomFileList = [...roomFileList];
+        newRoomFileList[index] = newFileList;
+        setRoomFileList(newRoomFileList);
+    };
+
+
 
 
     const [form] = Form.useForm();
@@ -170,9 +182,6 @@ function AgentCreatePost() {
     };
 
     const roomDetailForm = (index) => {
-
-        //set initial value for roomsquarefeet
-
         return (
             <div key={index}>
                 <Divider orientation="left" style={{ borderColor: 'gray' }} >Room {index}</Divider>
@@ -194,6 +203,35 @@ function AgentCreatePost() {
                     <Col span={4} offset={1}>
                         <Form.Item name={`roomSquareFeet${index}`} label="Room Square Feet (sq.ft.)" required>
                             <InputNumber min={1} max={1000} style={{ width: '100%' }} />
+                        </Form.Item>
+                    </Col>
+                </Row>
+                <Row>
+                    <Col span={24}>
+                        <Form.Item
+                            name={`roomImage${index}`}
+                            label="Room Image"
+                            rules={[
+                                {
+                                    required: true,
+                                    message: 'Please upload at least one image!',
+                                },
+                            ]}
+
+
+                        >
+                            <Upload
+                                listType="picture-card"
+                                fileList={roomFileList[index]}
+                                onPreview={handlePreview}
+                                onChange={handleRoomChange.bind(this, index)}
+                                multiple={true}
+                                beforeUpload={beforeUpload}
+                                customRequest={dummyRequest}
+                            >
+                                {roomFileList[index]?.length >= 10 ? null : uploadButton}
+                            </Upload>
+
                         </Form.Item>
                     </Col>
                 </Row>
@@ -492,58 +530,113 @@ function AgentCreatePost() {
 
         console.log(e);
         console.log(e["propertyName"])
-        let {
-            propertyAddress, propertyBuiltupSize, propertyCategory,
-            propertyCity, propertyDescription, propertyFacility,
-            propertyFurnish, propertyFurnishType, propertyImage,
-            propertyName, propertyPostcode, propertyRental,
-            propertyState, propertyType, roomSquareFeet,
-            roomType, masterRoomNum, mediumRoomNum, smallRoomNum } = e;
+
+        let propertyState = '';
+        let propertyCity = '';
 
         const { data, error } = await postCodeSupabase
             .from('malaysia_postcode')
-            .select('postcode, state_code, state(state_name)')
-            .eq('postcode', propertyPostcode);
+            .select('postcode, post_office, state_code, state(state_name)')
+            .eq('postcode', e["propertyPostcode"])
+            .limit(1);
 
         if (error) {
             console.log(error)
             return;
         }
 
-        if (data.length > 1) {
+        if (data.length == 1) {
             propertyState = data[0].state.state_name;
+            propertyCity = data[0].post_office;
         }
         const dateTime = getCurrentDateTime();
 
         const userID = (await supabase.auth.getUser()).data.user.id;
 
-        // const { data: postData, error: postError } = await supabase
-        //     .from('property_post')
-        //     .insert([
-        //         {
-        //             postDate: dateTime,
-        //             postType: 'Property',
-        //             propertyType: propertyType,
-        //             propertyName: propertyName,
-        //             propertyPrice: propertyRental,
-        //             propertySquareFeet: propertyBuiltupSize,
-        //             propertyFurnish: propertyFurnish,
-        //             propertyFacility: propertyFacility,
-        //             propertyAgentID: userID,
-        //             propertyAddress: propertyAddress,
-        //             propertyCity: propertyCity,
-        //             propertyPostcode: propertyPostcode,
-        //             propertyState: propertyState,
-        //             propertyFurnishType: propertyFurnishType,
-        //             propertyCategory: propertyCategory,
-        //             propertyRoomType: roomType,
-        //             propertyRoomNumber: roomnumber,
-        //             propertyRoomSquareFeet: roomSquareFeet,
-        //             propertyDescription: propertyDescription,
-        //             lastModifiedDate: dateTime,
-        //         },
-        //     ])
-        //     .select('postID');
+        // let roomType = [];
+        // let roomSquareFeet = [];
+        // const roomFurnish = {};
+
+        const roomDetails = {};
+
+        //iterate and push the value into the array
+        Array.from({ length: roomNum }, (_, i) => i + 1).forEach((index) => {
+
+            const roomFurnishArray = e[`roomFurnish${index}`];
+            const roomType = e[`roomType${index}`];
+            const roomSquareFeet = e[`roomSquareFeet${index}`];
+
+            const roomFurnishQuantites = {};
+
+            roomFurnishArray.forEach((furnish) => {
+                const furnishQuantity = e[`roomFurnish${index}_${furnish}`];
+                roomFurnishQuantites[furnish] = furnishQuantity;
+            });
+
+            roomDetails[index] = {
+                roomType: roomType,
+                roomSquareFeet: roomSquareFeet,
+                roomFurnish: roomFurnishQuantites,
+            }
+
+
+
+            // roomType.push(e[`roomType${index}`]);
+            // roomSquareFeet.push(e[`roomSquareFeet${index}`]);
+
+            // const roomFurnishArray = e[`roomFurnish${index}`];
+            // const roomFurnishQuantites = {};
+
+            // roomFurnishArray.forEach((furnish) => {
+            //     const furnishQuantity = e[`roomFurnish${index}_${furnish}`];
+            //     roomFurnishQuantites[furnish] = furnishQuantity;
+            // });
+
+            // roomFurnish[e[`roomType${index}`]] = roomFurnishQuantites;
+
+        }
+        )
+
+        console.log(roomDetails)
+
+
+        // console.log(roomType);
+        // console.log(roomSquareFeet);
+        // console.log(roomFurnish);
+
+
+
+        const { data: postData, error: postError } = await supabase
+            .from('property_post')
+            .insert([
+                {
+                    postDate: dateTime,
+                    postType: 'Property',
+                    propertyType: e["propertyType"],
+                    propertyName: e["propertyName"],
+                    propertyPrice: e["rentalPrice"],
+                    propertySquareFeet: e["propertyBuiltupSize"],
+                    propertyFurnish: e["propertyFurnish"],
+                    propertyFurnishType: e["propertyFurnishType"],
+                    propertyFacility: e["propertyFacility"],
+                    propertyAgentID: userID,
+                    propertyAddress: e["propertyAddress"],
+                    propertyCity: propertyCity,
+                    propertyPostcode: e["propertyPostcode"],
+                    propertyState: propertyState,
+                    propertyCategory: e["propertyCategory"],
+                    propertyDescription: e["propertyDescription"],
+                    lastModifiedDate: dateTime,
+                    propertyRoomNumber: e["propertyRoomNumber"],
+                    propertyRoomDetails: roomDetails,
+                },
+            ])
+            .select('postID');
+
+        if (postError) {
+            console.log(postError)
+        } 
+        console.log(postData)
 
         // if (postError) {
         //     console.log(postError)
@@ -622,39 +715,40 @@ function AgentCreatePost() {
             }}
         >
 
-            <Row>
-                <Col span={24}>
-                    <Form.Item
-                        name="propertyImage"
-                        label="Property Image"
-                        rules={[
-                            {
-                                required: true,
-                                message: 'Please upload at least one image!',
-                            },
-                        ]}
 
-
-                    >
-                        <Upload
-                            listType="picture-card"
-                            fileList={fileList}
-                            onPreview={handlePreview}
-                            onChange={handleChange}
-                            multiple={true}
-                            beforeUpload={beforeUpload}
-                            customRequest={dummyRequest}
-                        >
-                            {fileList.length >= 10 ? null : uploadButton}
-                        </Upload>
-
-                    </Form.Item>
-                </Col>
-            </Row>
             <fieldset
                 style={{ border: '1px solid gray', padding: '10px', borderRadius: '10px' }}
             >
                 <legend style={{ width: 'auto', borderBottom: 'none', marginLeft: '20px', marginBottom: '0px' }}>Property Details</legend>
+                <Row>
+                    <Col span={24}>
+                        <Form.Item
+                            name="propertyImage"
+                            label="Property Image"
+                            rules={[
+                                {
+                                    required: true,
+                                    message: 'Please upload at least one image!',
+                                },
+                            ]}
+
+
+                        >
+                            <Upload
+                                listType="picture-card"
+                                fileList={fileList}
+                                onPreview={handlePreview}
+                                onChange={handleChange}
+                                multiple={true}
+                                beforeUpload={beforeUpload}
+                                customRequest={dummyRequest}
+                            >
+                                {fileList.length >= 10 ? null : uploadButton}
+                            </Upload>
+
+                        </Form.Item>
+                    </Col>
+                </Row>
                 <Row>
                     <Col span={24}>
                         <Form.Item required='true' name="propertyName" label='Property Name' rules={[
