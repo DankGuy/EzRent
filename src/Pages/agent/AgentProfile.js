@@ -21,6 +21,7 @@ function AgentProfile() {
   };
   const getAvatar = async () => {
     const userID = (await supabase.auth.getUser()).data.user.id;
+    const timestamp = new Date().getTime(); // Generate a timestamp to serve as the cache-busting query parameter
     const { data } = supabase.storage
       .from("avatar")
       .getPublicUrl(`avatar-${userID}`, {
@@ -30,19 +31,23 @@ function AgentProfile() {
           return fileType === "jpg" || fileType === "png";
         },
       });
-    console.log(data.publicUrl);
-    return data;
+
+    const avatarUrlWithCacheBuster = `${data.publicUrl}?timestamp=${timestamp}`; // Append the cache-busting query parameter
+
+    return avatarUrlWithCacheBuster;
   };
 
   const navigate = useNavigate();
 
   useEffect(() => {
     getUserInfo().then((agent) => setUserInfo(agent));
-    // getAvatar().then((data) => setUserAvatar(data.publicUrl));
   }, []);
 
   useEffect(() => {
-    console.log(userInfo);
+    let avatar = getAvatar();
+    avatar.then((url) => {
+      setUserAvatar(url);
+    });
   }, [userInfo]);
 
   const editProfile = () => {
@@ -60,7 +65,7 @@ function AgentProfile() {
         }}
       >
         <div className="avatar-div">
-          <Avatar size={64} icon={<UserOutlined />} />
+          <Avatar size={64} src={userAvatar} icon={<UserOutlined />} />
         </div>
       </div>
       <div
@@ -139,7 +144,9 @@ function AgentProfile() {
             </p>
           </Col>
           <Col flex="auto">
-            <p style={{ textAlign: "left" }}>{userInfo?.properties_rented_out}</p>
+            <p style={{ textAlign: "left" }}>
+              {userInfo?.properties_rented_out}
+            </p>
           </Col>
         </Row>
       </div>

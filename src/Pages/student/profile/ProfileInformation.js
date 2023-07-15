@@ -19,10 +19,10 @@ function ProfileInformation() {
     if (error) console.log("error", error);
     else return student[0];
   };
-// ...
 
 const getAvatar = async () => {
   const userID = (await supabase.auth.getUser()).data.user.id;
+  // to speed up the process, browser will use cached data instead of fetching from the server
   const timestamp = new Date().getTime(); // Generate a timestamp to serve as the cache-busting query parameter
   const { data } = supabase.storage
     .from("avatar")
@@ -38,8 +38,6 @@ const getAvatar = async () => {
 
   return avatarUrlWithCacheBuster;
 };
-
-// ...
 
   const navigate = useNavigate();
 

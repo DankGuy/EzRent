@@ -22,6 +22,7 @@ import EditProfile from "./Pages/student/profile/EditProfile";
 import RoomRentalPost from "./Pages/student/roomRental/RoomRentalPost";
 import AgentHome from "./Pages/agent/AgentHome";
 import AgentProfile from "./Pages/agent/AgentProfile";
+import AgentEditProfile from "./Pages/agent/Profile/EditProfile";
 import AgentCreatePost from "./Pages/agent/RoomRentalPost/AgentCreatePost";
 import AgentRoomRental from "./Pages/agent/RoomRentalPost/AgentRoomRental";
 import AgentAppointment from "./Pages/agent/AgentAppointment";
@@ -65,6 +66,7 @@ const App = () => {
           <Route path="/agent/" element={<AgentLayout />}>
             <Route index element={<AgentHome />} />
             <Route path="profile" element={<AgentProfile />} />
+            <Route path="profile/editProfile" element={<AgentEditProfile />} />
             <Route
               path="roomRental/createNewPost"
               element={<AgentCreatePost />}
