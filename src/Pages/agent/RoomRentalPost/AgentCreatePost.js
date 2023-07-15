@@ -712,7 +712,7 @@ function AgentCreatePost() {
 
         <Modal open={previewOpen} title={previewTitle} footer={null} onCancel={handleCancel}>
             <img
-                alt="example"
+                alt="Property Image"
                 style={{
                     width: '100%',
                 }}
@@ -743,8 +743,7 @@ function AgentCreatePost() {
                 propertyFurnish: pFurnishChecklist,
                 propertyFacility: null,
                 propertyDescription: null,
-                roomType: null,
-                roomFurnish: null,
+
 
             }}
         >

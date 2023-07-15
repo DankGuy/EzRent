@@ -72,6 +72,12 @@ function AgentRoomRental() {
             .from('property_post')
             .select('*');
 
+        if (error) {
+            console.log(error);
+            return;
+        }
+
+        console.log(data);
         setPosts(data);
     }
 
