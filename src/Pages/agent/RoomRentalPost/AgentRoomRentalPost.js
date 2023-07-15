@@ -156,7 +156,7 @@ function AgentRoomRentalPost() {
                 form.setFieldsValue({ [`roomImage${index}`]: roomFileList[index] })
             }
             )
-            
+
 
         }
 
@@ -313,12 +313,12 @@ function AgentRoomRentalPost() {
         if (isDuplicate) {
             message.error('File name already exists!');
         }
-        
+
         const value = isJpgOrPng && isLt2M && !isDuplicate;
         return value || Upload.LIST_IGNORE;
     };
 
-    
+
 
     const beforeUploadRoom = (index) => (file) => {
         console.log(file)
@@ -342,7 +342,7 @@ function AgentRoomRentalPost() {
         if (isDuplicate) {
             message.error('File name already exists!');
         }
-        
+
         const value = isJpgOrPng && isLt2M && !isDuplicate;
         return value || Upload.LIST_IGNORE;
     };
@@ -379,12 +379,14 @@ function AgentRoomRentalPost() {
                             label="Room Image"
                             rules={[
                                 {
-                                    required: true,
-                                    message: 'Please upload at least one image!',
-                                },
+                                    validator: () => {
+                                        if (roomFileList[index]?.length === 0) {
+                                            return Promise.reject('Please upload at least one image!');
+                                        }
+                                        return Promise.resolve();
+                                    }
+                                }
                             ]}
-
-
                         >
                             <Upload
                                 listType="picture-card"
@@ -716,8 +718,7 @@ function AgentRoomRentalPost() {
     const uploadImage = async (e, id) => {
         console.log(id);
 
-        const propertyImage = e["propertyImage"];
-        const roomImage = {};
+        console.log(fileList);
 
         try {
 
@@ -761,7 +762,7 @@ function AgentRoomRentalPost() {
             }
 
             // Get the length of the image array and upload the images to supabase storage
-            for (const image of propertyImage.fileList) {
+            for (const image of fileList) {
                 const { data, error } = await supabase.storage
                     .from('post')
                     .upload(`${id}/Property/${image.name}`, image.originFileObj, {
@@ -775,19 +776,15 @@ function AgentRoomRentalPost() {
                 }
             }
 
-            // Iterate through the roomNum and get the image array
-            Array.from({ length: roomNum }, (_, i) => i + 1).forEach((index) => {
-                roomImage[index] = e[`roomImage${index}`];
-            });
+            
 
             // Upload room images
             for (const index of Array.from({ length: roomNum }, (_, i) => i + 1)) {
                 const roomType = e[`roomType${index}`];
 
-                console.log(roomImage[index]);
 
-                if (Array.isArray(roomImage[index]?.fileList)) {
-                    for (const image of roomImage[index].fileList) {
+                if (roomFileList[index].length > 0) {
+                    for (const image of roomFileList[index]) {
                         const { data, error } = await supabase.storage
                             .from('post')
                             .upload(`${id}/${roomType}/${image.name}`, image.originFileObj, {
@@ -903,6 +900,7 @@ function AgentRoomRentalPost() {
         }
         else {
 
+
             uploadImage(e, post.postID);
 
 
@@ -920,6 +918,9 @@ function AgentRoomRentalPost() {
     }
 
     const onFinishFailed = (e) => {
+        //display error message
+        messageApi.error('Please fill in all the required fields!');
+
         console.log(e)
     }
 
@@ -1047,7 +1048,21 @@ function AgentRoomRentalPost() {
                 <legend style={{ width: 'auto', borderBottom: 'none', marginLeft: '20px', marginBottom: '0px' }}>Property Details</legend>
                 <Row>
                     <Col span={24}>
-                        <Form.Item name="propertyImage" label="Property Image">
+                        <Form.Item
+                            name="propertyImage"
+                            label="Property Image"
+                            //rules to validate if the filelist is empty
+                            rules={[
+                                {
+                                    validator: () => {
+                                        if (fileList.length === 0) {
+                                            return Promise.reject('Please upload at least one image!');
+                                        }
+                                        return Promise.resolve();
+                                    }
+                                }
+                            ]}
+                        >
                             <Upload
                                 listType="picture-card"
                                 fileList={fileList}
