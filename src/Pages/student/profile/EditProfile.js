@@ -15,19 +15,6 @@ function EditProfile() {
   const [avatar, setAvatar] = useState();
   const [avatarUrl, setAvatarUrl] = useState();
 
-  // prefix for phone number
-  const prefixSelector = (
-    <Form.Item name="prefix" noStyle initialValue={"60"}>
-      <Select
-        style={{
-          width: 70,
-        }}
-      >
-        <Option value="60">+60</Option>
-      </Select>
-    </Form.Item>
-  );
-
   const uploadButton = (
     <div>
       {loading ? <LoadingOutlined /> : <PlusOutlined />}
@@ -91,7 +78,6 @@ function EditProfile() {
 
   // handle form submission
   const onFinish = (value) => {
-    formData.phone = value.prefix + formData.phone;
     if (avatar) {
       uploadImage(avatar);
     }
@@ -129,7 +115,7 @@ function EditProfile() {
       name: userInfo?.name,
       gender: userInfo?.gender,
       email: userInfo?.email,
-      phone: userInfo?.phone.slice(2),
+      phone: userInfo?.phone,
     });
   }, [userInfo]);
 
@@ -147,7 +133,9 @@ function EditProfile() {
           alignItems: "center",
         }}
       >
-        <Form layout="vertical" onFinish={onFinish}>
+        <Form layout="vertical" onFinish={onFinish} style={{
+          width: "30%"
+        }}>
           <Form.Item>
             <div
               style={{
@@ -212,9 +200,9 @@ function EditProfile() {
                   handleInfoChange({ target: { name: "gender", value } })
                 }
               >
-                <Option value="male">Male</Option>
-                <Option value="female">Female</Option>
-                <Option value="other">Other</Option>
+                <Option value="Male">Male</Option>
+                <Option value="Female">Female</Option>
+                <Option value="Other">Other</Option>
               </Select>
             </div>
           </Form.Item>
@@ -235,9 +223,10 @@ function EditProfile() {
               {
                 validator(_, value) {
                   if (
-                    value.length === 0 ||
-                    ((value.length === 9 || value.length === 10) &&
-                      value.match(/^[0-9]+$/))
+                    (value ?? "").length === 0 ||
+                    (((value ?? "").length === 10 ||
+                      (value ?? "").length === 11) &&
+                      (value ?? "").match(/^[0-9]+$/))
                   ) {
                     return Promise.resolve();
                   }
@@ -249,7 +238,6 @@ function EditProfile() {
             ]}
           >
             <Input
-              addonBefore={prefixSelector}
               onChange={handleInfoChange}
               name="phone"
             />

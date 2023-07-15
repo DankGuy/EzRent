@@ -19,27 +19,40 @@ function ProfileInformation() {
     if (error) console.log("error", error);
     else return student[0];
   };
-  const getAvatar = async () => {
-    const userID = (await supabase.auth.getUser()).data.user.id;
-    const { data } = supabase.storage
-      .from("avatar")
-      .getPublicUrl(`avatar-${userID}`, {
-        select: "metadata",
-        fileFilter: (metadata) => {
-          const fileType = metadata.content_type.split("/")[1];
-          return fileType === "jpg" || fileType === "png";
-        },
-      });
-      console.log(data.publicUrl)
-    return data;
-  };
+// ...
+
+const getAvatar = async () => {
+  const userID = (await supabase.auth.getUser()).data.user.id;
+  const timestamp = new Date().getTime(); // Generate a timestamp to serve as the cache-busting query parameter
+  const { data } = supabase.storage
+    .from("avatar")
+    .getPublicUrl(`avatar-${userID}`, {
+      select: "metadata",
+      fileFilter: (metadata) => {
+        const fileType = metadata.content_type.split("/")[1];
+        return fileType === "jpg" || fileType === "png";
+      },
+    });
+
+  const avatarUrlWithCacheBuster = `${data.publicUrl}?timestamp=${timestamp}`; // Append the cache-busting query parameter
+
+  return avatarUrlWithCacheBuster;
+};
+
+// ...
 
   const navigate = useNavigate();
 
   useEffect(() => {
     getUserInfo().then((student) => setUserInfo(student));
-    getAvatar().then((data) => setUserAvatar(data.publicUrl));
   }, []);
+
+  useEffect(() => {
+    let avatar = getAvatar();
+    avatar.then((url) => {
+      setUserAvatar(url);
+    });
+  }, [userInfo]);
 
   const editProfile = () => {
     navigate("/student/profile/editProfile");

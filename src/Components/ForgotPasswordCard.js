@@ -93,7 +93,6 @@ function ForgotPasswordCard() {
               onChange={(e) => setEmail(e.target.value)}
               name="email"
               placeholder="Enter your email"
-              prefix={<UserOutlined className="site-form-item-icon" />}
               suffix={
                 <Tooltip title="email@domain.com">
                   <InfoCircleOutlined

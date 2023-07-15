@@ -5,6 +5,7 @@ import { useState } from "react";
 import { Link } from "react-router-dom";
 import { supabase } from "../supabase-client";
 import { InfoCircleOutlined, UserOutlined } from "@ant-design/icons";
+import "./auth.css";
 
 function LoginCard(props) {
   const [isHoveredForgot, setIsHoveredForgot] = useState(false);
@@ -34,7 +35,7 @@ function LoginCard(props) {
       });
       if (error) throw error;
     } catch (error) {
-      message.error(error.error_description || error.message)
+      message.error(error.error_description || error.message);
     }
   }
   return (
@@ -54,7 +55,7 @@ function LoginCard(props) {
         className="login-card"
         style={{
           backgroundColor: "#f0f2f5",
-          height: "60%",
+          height: "auto",
           width: "40%",
           margin: "0",
           padding: "0",
@@ -86,24 +87,11 @@ function LoginCard(props) {
           autoComplete="off"
         >
           <h1 style={{ textAlign: "center" }}>Login</h1>
-          <Form.Item
-            label="Email"
-            rules={[
-              {
-                required: true,
-                message: "Please input your email!",
-              },
-              {
-                type: "email",
-                message: "Please enter a valid email address!",
-              },
-            ]}
-          >
+          <Form.Item label="Email" className="emailInput">
             <Input
               name="email"
               onChange={handleChange}
               placeholder="Enter your email"
-              prefix={<UserOutlined className="site-form-item-icon" />}
               suffix={
                 <Tooltip title="email@domain.com">
                   <InfoCircleOutlined
@@ -116,16 +104,7 @@ function LoginCard(props) {
             />
           </Form.Item>
 
-          <Form.Item
-            label="Password"
-            name="password"
-            rules={[
-              {
-                required: true,
-                message: "Please input your password!",
-              },
-            ]}
-          >
+          <Form.Item label="Password" name="password">
             <Input.Password
               className="passwordInput"
               name="password"
@@ -147,7 +126,7 @@ function LoginCard(props) {
         <Button
           type="primary"
           block
-          style={{ width: "80%" }}
+          style={{ width: "80%", fontSize: "1.2rem", height: "auto" }}
           onClick={handleSubmit}
         >
           Login

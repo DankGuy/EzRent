@@ -3,12 +3,13 @@ import { Button, Form, Input, Select, message, Radio } from "antd";
 import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 import { supabase } from "../supabase-client";
+import "./auth.css";
 
 const { Option } = Select;
 const formItemLayout = {
   labelCol: {
     xs: {
-      span: 24,
+      span: 10,
     },
     sm: {
       span: 10,
@@ -16,7 +17,7 @@ const formItemLayout = {
   },
   wrapperCol: {
     xs: {
-      span: 24,
+      span: 18,
     },
     sm: {
       span: 14,
@@ -67,6 +68,7 @@ function SignUpCard() {
   };
 
   const signUp = async () => {
+    let emailIsTaken = false;
     try {
       // signup account
       // the account created will be stored into respective table based on userType using Trigger in Supabase
@@ -84,9 +86,11 @@ function SignUpCard() {
             },
           },
         });
+        // Currently the response of signUp returns a fake user object instead of an error.
+        // For now we check the identities object which would be empty if a user already exits.
+        emailIsTaken = data.user && data.user.identities?.length === 0;
         if (error) throw error;
-      }
-      else {
+      } else {
         const { data, error } = await supabase.auth.signUp({
           email: formData.email,
           password: formData.password,
@@ -101,14 +105,14 @@ function SignUpCard() {
             },
           },
         });
+        emailIsTaken = data.user && data.user.identities?.length === 0;
         if (error) throw error;
-      }
 
-      // send email confirmation
-      alert("Please check your email for confirmation link!");
-      window.location.href = "/login";
+        message.success("Please check your email for confirmation link!");
+        window.location.href = "/login";
+      }
     } catch (error) {
-      message.error(error.error_description || error.message);
+      message.error(error.error_description ?? error.message);
     }
   };
 
@@ -121,7 +125,6 @@ function SignUpCard() {
     formData.phone = value.phone;
     formData.gender = value.gender;
     formData.company = value.company ?? "";
-    console.log(formData.email);
     signUp();
   };
 
@@ -129,8 +132,9 @@ function SignUpCard() {
     <div
       className="signup-container"
       style={{
+        minHeight: "100vh",
         height: "auto",
-        width: "98.93vw",
+        width: "100vw",
         display: "flex",
         alignItems: "center",
         justifyContent: "center",
@@ -175,18 +179,11 @@ function SignUpCard() {
           colon={true}
         >
           <h1 style={{ textAlign: "center" }}>Sign Up</h1>
-          <Form.Item
-            name="user-type"
-            label="User Type"
-            rules={[
-              {
-                required: true,
-                message: "Please select user type!",
-              },
-            ]}
-          >
+          <Form.Item name="user-type" label="User Type">
             <Radio.Group onChange={handleUserChange} defaultValue={"student"}>
-              <Radio value={"student"}>Student</Radio>
+              <Radio value={"student"} defaultChecked>
+                Student
+              </Radio>
               <Radio value={"agent"}>Agent</Radio>
             </Radio.Group>
           </Form.Item>
@@ -357,7 +354,9 @@ function SignUpCard() {
           </Form.Item>
 
           <Form.Item {...tailFormItemLayout}>
-            <Button type="primary" htmlType="submit">
+            <Button type="primary" htmlType="submit" style={{
+              width: "50%",
+            }}>
               Register
             </Button>
           </Form.Item>

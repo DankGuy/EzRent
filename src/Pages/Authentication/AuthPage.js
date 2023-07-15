@@ -10,7 +10,6 @@ export default function LoginPage({}) {
   const [metadata, setMetadata] = useState({
     userType: "",
   });
-  const [userType, setUserType] = useState("");
 
   async function getUserMetadata() {
     const {
