@@ -21,11 +21,14 @@ function CurrentPost({post, deletePost, contextHolder}) {
         const { data, error } = await supabase
             .storage
             .from('post')
-            .list(`${post.postID}/`);
+            .list(`${post.postID}/Property`);
 
         if (error) {
             console.log(error)
         }
+
+        console.log(post.postID);
+        console.log(data);
 
         setFirstImage(data[0]);
     }
@@ -47,7 +50,7 @@ function CurrentPost({post, deletePost, contextHolder}) {
                 </Row>
                 <Row >
                     {firstImage && <Col span={24} style={{ display: 'flex', justifyContent: 'center', marginBottom: '10px' }}>
-                        <Image style={{ justifyContent: 'center' }} height={200} src={`https://exsvuquqspmbrtyjdpyc.supabase.co/storage/v1/object/public/post/${post.postID}/${firstImage?.name}`} />
+                        <Image style={{ justifyContent: 'center' }} height={200} src={`https://exsvuquqspmbrtyjdpyc.supabase.co/storage/v1/object/public/post/${post.postID}/Property/${firstImage?.name}`} />
                     </Col>}
                 </Row>
                 <Row>

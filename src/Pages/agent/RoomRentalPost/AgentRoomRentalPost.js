@@ -1,12 +1,13 @@
-import { useState, useEffect } from 'react'
+import { useState, useEffect, Fragment } from 'react'
 import { PlusOutlined } from '@ant-design/icons';
-import { Modal, Upload, message, Form, Row, Col, Input, Radio, Select, InputNumber, Checkbox, Button, Popconfirm } from 'antd';
+import { Modal, Upload, message, Form, Row, Col, Input, Radio, Select, InputNumber, Checkbox, Button, Popconfirm, Divider, Tooltip } from 'antd';
 import TextArea from 'antd/es/input/TextArea';
 import { Link, useLocation, useNavigate } from 'react-router-dom';
 import "./AgentRoomRentalPost.css"
 import FurnishTypeSelection from '../../../Components/FurnishTypeSelection';
 import { getCurrentDateTime } from '../../../Components/timeUtils';
 import { supabase, postCodeSupabase } from '../../../supabase-client';
+import { RiInformationFill } from 'react-icons/ri';
 
 
 function AgentRoomRentalPost() {
@@ -26,8 +27,20 @@ function AgentRoomRentalPost() {
     });
 
     const [propertyState, setPropertyState] = useState(post.propertyState);
-    const [isRoom, setIsRoom] = useState(true)
+    const [propertyCity, setPropertyCity] = useState(post.propertyCity);
+    const [roomNum, setRoomNum] = useState(post.propertyRoomNumber);
+
+    const [pFurnishType, setPFurnishType] = useState(post.propertyFurnishType);
+    const [pFurnishChecklist, setPFurnishChecklist] = useState(post.propertyFurnish);
+
+    const [isRoom, setIsRoom] = useState(post.category === 'Room' ? true : false);
     const [fileList, setFileList] = useState([]);
+
+
+    const [roomFileList, setRoomFileList] = useState({});
+    const handleRoomChange = (index, { fileList: newFileList }) => {
+        setRoomFileList(prev => ({ ...prev, [index]: newFileList }));
+    };
 
 
     useEffect(() => {
@@ -38,11 +51,11 @@ function AgentRoomRentalPost() {
 
     //Get the image list from supabase storage and set it to fileList
     useEffect(() => {
-        const fetchImages = async () => {
+        const fetchPropertyImages = async () => {
             const { data: images, error } = await supabase
                 .storage
                 .from('post')
-                .list(`${post.postID}`);
+                .list(`${post.postID}/Property`);
 
             if (error) {
                 console.log(error)
@@ -52,17 +65,114 @@ function AgentRoomRentalPost() {
                         uid: image.id,
                         name: image.name,
                         status: 'done',
-                        url: `https://exsvuquqspmbrtyjdpyc.supabase.co/storage/v1/object/public/post/${post.postID}/${image.name}`
+                        url: `https://exsvuquqspmbrtyjdpyc.supabase.co/storage/v1/object/public/post/${post.postID}/Property/${image.name}`
                     }
                 })
                 setFileList(urls)
             }
+
+            //set fields value
+            form.setFieldsValue({ propertyImage: fileList })
         }
-        fetchImages()
+
+
+        const setRoomDetails = () => {
+            const roomDetails = post.propertyRoomDetails;
+
+            //iterate through the roomNum and set initial value for roomSquareFeet, roomType and roomFurnish
+            Array.from({ length: roomNum }, (_, i) => i + 1).forEach((index) => {
+                form.setFieldsValue({ [`roomSquareFeet${index}`]: roomDetails[index].roomSquareFeet })
+                form.setFieldsValue({ [`roomType${index}`]: roomDetails[index].roomType })
+
+                const roomFurnish = roomDetails[index].roomFurnish;
+
+                const roomFurnishArray = [];
+
+                for (const [key, value] of Object.entries(roomFurnish)) {
+                    roomFurnishArray.push(key);
+                    form.setFieldsValue({ [`roomFurnish${index}_${key}`]: value })
+                }
+
+                form.setFieldsValue({ [`roomFurnish${index}`]: roomFurnishArray })
+            }
+            )
+
+            //set the checkedItems
+            const checkedItems = {};
+
+            Array.from({ length: roomNum }, (_, i) => i + 1).forEach((index) => {
+                const roomFurnishArray = form.getFieldValue(`roomFurnish${index}`);
+
+                const checkedItem = roomFurnishArray.map((item) => {
+                    return item
+                })
+
+                checkedItems[index] = checkedItem;
+            }
+            )
+
+            setCheckedItems(checkedItems);
+
+        }
+
+        const fetchRoomImages = async () => {
+            //iterate through the roomdetails and get room type
+            Array.from({ length: roomNum }, (_, i) => i + 1).forEach(async (index) => {
+                const roomType = post.propertyRoomDetails[index].roomType;
+
+                console.log(roomType);
+                console.log(post.postID);
+
+                const { data: images, error } = await supabase
+                    .storage
+                    .from('post')
+                    .list(`${post.postID}/${roomType}`);
+
+                if (error) {
+                    console.log(error)
+                } else {
+                    console.log(images)
+                    const urls = images.map(image => {
+                        return {
+                            uid: image.id,
+                            name: image.name,
+                            status: 'done',
+                            url: `https://exsvuquqspmbrtyjdpyc.supabase.co/storage/v1/object/public/post/${post.postID}/${roomType}/${image.name}`
+                        }
+                    })
+
+                    console.log(urls)
+
+                    setRoomFileList(prev => ({ ...prev, [index]: urls }))
+
+                }
+
+
+            }
+            )
+
+            //Iterate and set fields value
+            Array.from({ length: roomNum }, (_, i) => i + 1).forEach((index) => {
+                form.setFieldsValue({ [`roomImage${index}`]: roomFileList[index] })
+            }
+            )
+            
+
+        }
+
+        fetchPropertyImages();
+        setRoomDetails();
+        fetchRoomImages();
+
+        console.log(roomFileList)
+
     }, [])
 
 
 
+    useEffect(() => {
+        console.log(roomFileList)
+    }, [roomFileList])
 
 
 
@@ -78,6 +188,8 @@ function AgentRoomRentalPost() {
     };
     const handleChange = ({ fileList: newFileList }) => setFileList(newFileList);
 
+
+
     const uploadButton = (
         <div>
             <PlusOutlined />
@@ -91,89 +203,31 @@ function AgentRoomRentalPost() {
         </div>
     );
 
-
-
-    const getBase64 = (file) =>
-        new Promise((resolve, reject) => {
-            const reader = new FileReader();
-            reader.readAsDataURL(file);
-            reader.onload = () => resolve(reader.result);
-            reader.onerror = (error) => reject(error);
-        });
-
-    const beforeUpload = (file) => {
-        const isJpgOrPng = file.type === 'image/jpeg' || file.type === 'image/png';
-        if (!isJpgOrPng) {
-            message.error('You can only upload JPG/PNG file!');
-        }
-        const isLt2M = file.size / 1024 / 1024 < 2;
-        if (!isLt2M) {
-            message.error('Image must smaller than 2MB!');
-        }
-
-        const value = isJpgOrPng && isLt2M;
-        return value || Upload.LIST_IGNORE;
-    };
-
-    const roomType = () => {
-        return (
-            <>
-                <Col span={4} offset={1}>
-                    <Form.Item name="roomType" label="Room Type" required rules={[
-                        {
-                            required: true,
-                            message: 'Please choose the room type!',
-                        },
-                    ]}>
-                        <Select placeholder="All Room Type" options={[
-                            { value: 'Master Room', label: 'Master Room' },
-                            { value: 'Medium Room', label: 'Medium Room' },
-                            { value: 'Small Room', label: 'Small Room' },
-                        ]} />
-                    </Form.Item>
-                </Col>
-                <Col span={4} offset={1}>
-                    <Form.Item name="roomSquareFeet" label="Room Square Feet (sq.ft.)" required>
-                        <InputNumber min={1} max={1000} style={{ width: '100%' }} />
-                    </Form.Item>
-                </Col>
-            </>
-        )
-    }
-
-    const roomNumber = () => {
-        return (
-            <>
-                <Col span={4} offset={1}>
-                    <Form.Item name="masterRoomNum" label="Master Room Number">
-                        <InputNumber min={0} max={2} />
-                    </Form.Item>
-                </Col>
-                <Col span={4} offset={1}>
-                    <Form.Item name="mediumRoomNum" label="Medium Room Number">
-                        <InputNumber min={0} max={2} />
-                    </Form.Item>
-                </Col>
-                <Col span={4} offset={1}>
-                    <Form.Item name="smallRoomNum" label="Small Room Number">
-                        <InputNumber min={0} max={2} />
-                    </Form.Item>
-                </Col>
-            </>
-        )
-    }
-
     const furnishOption = [
-        { label: "Air-conditioner", value: "Air-conditioner" },
-        { label: "Clothes hanger stand", value: "Clothes hanger stand" },
+
+        { label: "Clothes hanger", value: "Clothes hanger" },
+        { label: "Clothes rack", value: "Clothes rack" },
         { label: "Refrigerator", value: "Refrigerator" },
+        { label: "Dining table", value: "Dining table" },
+        { label: "Shoe rack", value: "Shoe rack" },
         { label: "Sofa", value: "Sofa" },
-        { label: "Study desk and table", value: "Study desk and table" },
-        { label: "Wardrobe", value: "Wardrobe" },
+        { label: "Television", value: "Television" },
         { label: "Water dispenser", value: "Water dispenser" },
         { label: "Water heater", value: "Water heater" },
         { label: "Washing machine", value: "Washing machine" },
         { label: "WiFi", value: "WiFi" },
+    ];
+
+    const roomFurnishOption = [
+        { label: "Air-conditioner", value: "Air-conditioner" },
+        { label: "Bed", value: "Bed" },
+        { label: "Bed frame", value: "Bed frame" },
+        { label: "Blanket", value: "Blanket" },
+        { label: "Pillow", value: "Pillow" },
+        { label: "Study desk", value: "Study desk" },
+        { label: "Study chair", value: "Study chair" },
+        { label: "Wardrobe", value: "Wardrobe" },
+        { label: "Window curtain", value: "Window curtain" },
     ];
 
 
@@ -193,27 +247,370 @@ function AgentRoomRentalPost() {
         { label: "Wadding pool", value: "Wadding pool" },
     ];
 
-    const renderedItem = (items) => {
-        const renderedItemOption = items.map((item) => {
+
+    useEffect(() => {
+        console.log(pFurnishType)
+        if (pFurnishType === 'Unfurnished') {
+            form.setFieldsValue({ propertyFurnish: [] })
+            setPFurnishChecklist([])
+        } else if (pFurnishType === 'Fully Furnished') {
+            form.setFieldsValue({ propertyFurnish: furnishOption.map((item) => item.value) })
+            setPFurnishChecklist(furnishOption)
+        } else if (pFurnishType === 'Partially Furnished') {
+            form.setFieldsValue({ propertyFurnish: ['Refrigerator', 'Washing machine', 'Water heater'] })
+            setPFurnishChecklist(['Refrigerator', 'Washing Machine', 'Water Heater'])
+        }
+    }, [pFurnishType])
+
+    useEffect(() => {
+        console.log(pFurnishChecklist)
+        if (pFurnishChecklist.length === 0) {
+            console.log('unfurnished')
+            form.setFieldsValue({ propertyFurnishType: 'Unfurnished' })
+            setPFurnishType('Unfurnished')
+        } else if (pFurnishChecklist.length === furnishOption.length) {
+            console.log('fully furnished')
+            form.setFieldsValue({ propertyFurnishType: 'Fully Furnished' })
+            setPFurnishType('Fully Furnished')
+        } else {
+            console.log('partially furnished')
+            form.setFieldsValue({ propertyFurnishType: 'Partially Furnished' })
+            setPFurnishType('Partially Furnished')
+        }
+    }, [pFurnishChecklist])
+
+    // useEffect(() => {
+    //     //iterate through the roomNum and set initial value for roomSquareFeet
+    //     Array.from({ length: roomNum }, (_, i) => i + 1).forEach((index) => {
+    //         form.setFieldsValue({ [`roomSquareFeet${index}`]: 1 })
+    //     }
+    //     )
+
+    // }, [roomNum])
+
+
+    const getBase64 = (file) =>
+        new Promise((resolve, reject) => {
+            const reader = new FileReader();
+            reader.readAsDataURL(file);
+            reader.onload = () => resolve(reader.result);
+            reader.onerror = (error) => reject(error);
+        });
+
+    const beforeUploadProperty = (file) => {
+        const isJpgOrPng = file.type === 'image/jpeg' || file.type === 'image/png';
+        if (!isJpgOrPng) {
+            message.error('You can only upload JPG/PNG file!');
+        }
+        const isLt2M = file.size / 1024 / 1024 < 2;
+        if (!isLt2M) {
+            message.error('Image must smaller than 2MB!');
+        }
+
+        //Check if the file name already exists in the fileList
+        const isDuplicate = fileList.some((item) => item.name === file.name);
+
+        if (isDuplicate) {
+            message.error('File name already exists!');
+        }
+        
+        const value = isJpgOrPng && isLt2M && !isDuplicate;
+        return value || Upload.LIST_IGNORE;
+    };
+
+    
+
+    const beforeUploadRoom = (index) => (file) => {
+        console.log(file)
+        console.log(index)
+
+
+        const isJpgOrPng = file.type === 'image/jpeg' || file.type === 'image/png';
+        if (!isJpgOrPng) {
+            message.error('You can only upload JPG/PNG file!');
+        }
+        const isLt2M = file.size / 1024 / 1024 < 2;
+        if (!isLt2M) {
+            message.error('Image must smaller than 2MB!');
+        }
+
+        //Check if the file name already exists in the roomFileList of the index
+
+        const isDuplicate = roomFileList[index]?.some((item) => item.name === file.name);
+
+
+        if (isDuplicate) {
+            message.error('File name already exists!');
+        }
+        
+        const value = isJpgOrPng && isLt2M && !isDuplicate;
+        return value || Upload.LIST_IGNORE;
+    };
+
+    const roomDetailForm = (index) => {
+        return (
+            <div key={index}>
+                <Divider orientation="left" style={{ borderColor: 'gray' }} >Room {index}</Divider>
+                <Row>
+                    <Col span={4}>
+                        <Form.Item name={`roomType${index}`} label="Room Type" required rules={[
+                            {
+                                required: true,
+                                message: 'Please choose the room type!',
+                            },
+                        ]}>
+                            <Select placeholder="All Room Type" options={[
+                                { value: 'Master Room', label: 'Master Room' },
+                                { value: 'Medium Room', label: 'Medium Room' },
+                                { value: 'Small Room', label: 'Small Room' },
+                            ]} />
+                        </Form.Item>
+                    </Col>
+                    <Col span={4} offset={1}>
+                        <Form.Item name={`roomSquareFeet${index}`} label="Room Square Feet (sq.ft.)" required>
+                            <InputNumber min={1} max={1000} style={{ width: '100%' }} />
+                        </Form.Item>
+                    </Col>
+                </Row>
+                <Row>
+                    <Col span={24}>
+                        <Form.Item
+                            name={`roomImage${index}`}
+                            label="Room Image"
+                            rules={[
+                                {
+                                    required: true,
+                                    message: 'Please upload at least one image!',
+                                },
+                            ]}
+
+
+                        >
+                            <Upload
+                                listType="picture-card"
+                                fileList={roomFileList[index]}
+                                onPreview={handlePreview}
+                                onChange={handleRoomChange.bind(this, index)}
+                                multiple={true}
+                                beforeUpload={beforeUploadRoom(index)}
+                                customRequest={dummyRequest}
+                            >
+                                {roomFileList[index]?.length >= 10 ? null : uploadButton}
+                            </Upload>
+
+                        </Form.Item>
+                    </Col>
+                </Row>
+                <Row>
+                    <Col span={24}>
+                        <Form.Item
+                            name={`roomFurnish${index}`}
+                            label={
+                                <div style={{ display: 'flex' }}>
+                                    <span>Room Furnish</span>
+                                    <Tooltip
+                                        title="Room Furnish: Select checkboxes to indicate the 
+                                                    furnishings present in your room and enter the quantity."
+                                        placement='right'
+                                        overlayStyle={{ maxWidth: '400px' }}
+                                    >
+                                        <div>
+                                            <RiInformationFill style={{ marginLeft: '5px', color: 'gray' }} />
+                                        </div>
+                                    </Tooltip>
+                                </div>
+                            }
+                            required={true}>
+                            <Checkbox.Group
+                                style={{
+                                    width: '100%',
+                                }}
+                            >
+                                <Row >
+                                    {renderedRoomFurnish(index)}
+                                </Row>
+                            </Checkbox.Group>
+                        </Form.Item>
+                    </Col>
+                </Row>
+            </div>
+        )
+    }
+
+    const renderedFurnishOption = () => {
+
+        let disabled = false;
+        if (pFurnishType === 'Fully Furnished' || pFurnishType === 'Partially Furnished') {
+            disabled = true;
+        }
+
+        const renderedFurnishOption = furnishOption.map((item) => {
+
+            if (item.value === 'Refrigerator' || item.value === 'Washing machine' || item.value === 'Water heater') {
+
+                return (
+                    <Col span={6} key={item.value}
+                    >
+                        <Checkbox style={{
+                            border: '1px solid #d9d9d9',
+                            borderRadius: '5px',
+                            marginBottom: '10px',
+                            padding: '5px',
+                            width: '80%',
+
+                        }} value={item.value} disabled={disabled}>{item.label}</Checkbox>
+                    </Col>
+                )
+            } else {
+                return (
+                    <Col span={6} key={item.value}
+                    >
+                        <Checkbox
+                            style={{
+                                width: '80%',
+                                border: '1px solid #d9d9d9',
+                                borderRadius: '5px',
+                                marginBottom: '10px',
+                                padding: '5px',
+                            }}
+                            value={item.value} >{item.label}</Checkbox>
+                    </Col>
+                )
+            }
+
+        })
+        return renderedFurnishOption
+    }
+
+    const [checkedItems, setCheckedItems] = useState({});
+
+    const handleCheckboxChange = (index, value) => {
+        if (checkedItems[index] && checkedItems[index].includes(value)) {
+            // Remove the checked item from the array
+            const updatedItems = {
+                ...checkedItems,
+                [index]: checkedItems[index].filter((item) => item !== value),
+            };
+            setCheckedItems(updatedItems);
+        } else {
+            // Set the checked item to the given index
+            const updatedItems = {
+                ...checkedItems,
+                [index]: checkedItems[index] ? [...checkedItems[index], value] : [value],
+            };
+            setCheckedItems(updatedItems);
+        }
+    };
+
+    const renderedRoomFurnish = (index) => {
+        const renderedRoomFurnish = roomFurnishOption.map((item) => {
+            const inputName = `roomFurnish${index}_${item.value}`;
+
             return (
-                <Col span={6} key={item.value}>
-                    <Checkbox value={item.value}>{item.label}</Checkbox>
+                <Fragment key={`${item.value}${index}`}>
+                    <Col
+                        span={7}
+                        style={{
+                            border: '1px solid #d9d9d9',
+                            borderRadius: '5px',
+                            marginBottom: '10px',
+                            marginRight: '40px',
+                            padding: '5px',
+                            width: '50%',
+                            display: 'flex',
+                            alignItems: 'center',
+                            justifyContent: 'space-between',
+                            height: '40px',
+                        }}
+                    >
+                        <Checkbox
+                            value={item.value}
+                            checked={checkedItems[index] && checkedItems[index].includes(item.value)}
+                            onChange={() => handleCheckboxChange(index, item.value)}
+                        >
+                            {item.label}
+                        </Checkbox>
+
+                        {checkedItems[index] && checkedItems[index].includes(item.value) && (
+                            <Form.Item
+                                name={inputName}
+                                style={{
+                                    marginBottom: '0px',
+                                }}
+                                rules={[
+                                    {
+                                        required: true,
+                                        message: 'Please enter the quantity!',
+                                    },
+                                ]}
+                            >
+                                <InputNumber
+                                    placeholder="Quantity"
+                                    min={1}
+                                    max={3}
+                                    bordered={false}
+                                    style={{
+                                        width: '50%',
+                                        borderBottom: '1px solid #d9d9d9',
+                                        marginBottom: '0px',
+                                    }}
+                                />
+                            </Form.Item>
+                        )}
+                    </Col>
+                </Fragment>
+            );
+        });
+
+        return renderedRoomFurnish;
+    };
+
+
+
+    const renderedFacility = () => {
+        const renderedItemOption = facilityOption.map((item) => {
+
+            return (
+                <Col span={6} key={item.value}
+                >
+                    <Checkbox
+                        style={{
+                            width: '80%',
+                            border: '1px solid #d9d9d9',
+                            borderRadius: '5px',
+                            marginBottom: '10px',
+                            padding: '5px',
+
+                        }} value={item.value} >{item.label}</Checkbox>
                 </Col>
             )
         })
         return renderedItemOption
     }
 
+    const handlePFurnishType = (value) => {
+        setPFurnishType(value);
+    };
+
+
+    const handlePFurnishChecklist = (values) => {
+        console.log(values)
+        setPFurnishChecklist(values)
+    }
+
+
     const validatePostcode = (value) => {
         if (value.length == 0) {
             setPropertyState('');
+            setPropertyCity('');
             return {
                 validateStatus: 'error',
-                errorMsg: 'Please enter valid xxxpostcode!',
+                errorMsg: 'Please enter valid postcode!',
             }
         }
         else {
             setPropertyState(value[0].state.state_name);
+            setPropertyCity(value[0].state.post_office);
             return {
                 validateStatus: 'success',
                 errorMsg: null,
@@ -230,6 +627,7 @@ function AgentRoomRentalPost() {
                 errorMsg: 'Please enter the property postcode!',
             });
             setPropertyState('');
+            setPropertyCity('');
             return;
         } else {
             const postcodeRegex = /^\d{5}$/;
@@ -241,11 +639,13 @@ function AgentRoomRentalPost() {
                     errorMsg: 'Incorrect format!',
                 });
                 setPropertyState('');
+                setPropertyCity('');
             } else {
                 const { data, error } = await postCodeSupabase
                     .from('malaysia_postcode')
-                    .select('postcode, state_code, state(state_name)')
+                    .select('postcode, post_office, state_code, state(state_name)')
                     .eq('postcode', e.target.value);
+
 
                 if (error) {
                     console.log(error)
@@ -260,99 +660,237 @@ function AgentRoomRentalPost() {
 
                 if (validationResult.validateStatus === 'success') {
                     setPropertyState(data[0].state.state_name);
+                    setPropertyCity(data[0].post_office);
                 } else {
                     setPropertyState('');
+                    setPropertyCity('');
                 }
             }
         }
     };
 
-    const updatePostImage = async (postID, images) => {
-        //Get all images from supabase storage
-        const { data: allData, error: allError } = await supabase
-            .storage
+    const deleteAllImages = async (id) => {
+        // Get all folders in supabase storage
+        const { data: folders, error: folderError } = await supabase.storage
             .from('post')
-            .list(`${postID}/`);
+            .list(`${id}`);
 
-        if (allError) {
-            console.log("Error failed: " + allError)
+        if (folderError) {
+            console.log(folderError);
         }
 
-        allData.forEach(async (data) => {
-            await supabase
-                .storage
-                .from('post')
-                .remove([`${postID}/${data.name}`]);
-        })
+        console.log(folders);
 
-        //Upload new images to supabase storage
-        images.fileList.forEach(async (image) => {
-            const { data, error } = await supabase
-                .storage
-                .from('post')
-                .upload(`${postID}/${image.name}`, image.originFileObj, {
-                    cacheControl: '3600',
-                    upsert: false
-                })
+        // Iterate the folders and delete all the files in each folder
+        for (const folder of folders) {
+            const folderName = folder.name;
 
-            if (error) {
-                console.log("Error failed: " + error)
+            const { data: files, error: fileError } = await supabase.storage
+                .from('post')
+                .list(`${id}/${folderName}`);
+
+            if (fileError) {
+                console.log(fileError);
+            }
+
+            console.log(files);
+
+            for (const file of files) {
+                const filename = file.name;
+
+                const { data, error } = await supabase.storage
+                    .from('post')
+                    .remove([`${id}/${folderName}/${filename}`]);
+
+                if (error) {
+                    console.log(error);
+                    return;
+                }
             }
         }
-        )
+    };
 
-    }
+
+
+    //Funtion to upload propertyImage to supabase storage
+    const uploadImage = async (e, id) => {
+        console.log(id);
+
+        const propertyImage = e["propertyImage"];
+        const roomImage = {};
+
+        try {
+
+            // Get all folders in supabase storage
+            const { data: folders, error: folderError } = await supabase.storage
+                .from('post')
+                .list(`${id}`);
+
+            if (folderError) {
+                console.log(folderError);
+            }
+
+            console.log(folders);
+
+            // Iterate the folders and delete all the files in each folder
+            for (const folder of folders) {
+                const folderName = folder.name;
+
+                const { data: files, error: fileError } = await supabase.storage
+                    .from('post')
+                    .list(`${id}/${folderName}`);
+
+                if (fileError) {
+                    console.log(fileError);
+                }
+
+                console.log(files);
+
+                for (const file of files) {
+                    const filename = file.name;
+
+                    const { data, error } = await supabase.storage
+                        .from('post')
+                        .remove([`${id}/${folderName}/${filename}`]);
+
+                    if (error) {
+                        console.log(error);
+                        return;
+                    }
+                }
+            }
+
+            // Get the length of the image array and upload the images to supabase storage
+            for (const image of propertyImage.fileList) {
+                const { data, error } = await supabase.storage
+                    .from('post')
+                    .upload(`${id}/Property/${image.name}`, image.originFileObj, {
+                        cacheControl: '3600',
+                        upsert: false,
+                    });
+
+                if (error) {
+                    console.log(error);
+                    return;
+                }
+            }
+
+            // Iterate through the roomNum and get the image array
+            Array.from({ length: roomNum }, (_, i) => i + 1).forEach((index) => {
+                roomImage[index] = e[`roomImage${index}`];
+            });
+
+            // Upload room images
+            for (const index of Array.from({ length: roomNum }, (_, i) => i + 1)) {
+                const roomType = e[`roomType${index}`];
+
+                console.log(roomImage[index]);
+
+                if (Array.isArray(roomImage[index]?.fileList)) {
+                    for (const image of roomImage[index].fileList) {
+                        const { data, error } = await supabase.storage
+                            .from('post')
+                            .upload(`${id}/${roomType}/${image.name}`, image.originFileObj, {
+                                cacheControl: '3600',
+                                upsert: false,
+                            });
+
+                        if (error) {
+                            console.log(error);
+                            return;
+                        }
+                    }
+                }
+            }
+        } catch (error) {
+            console.log(error);
+            // Handle any other unexpected errors
+        }
+    };
+
+
+
+
 
 
     const onFinish = async (e) => {
-        let {
-            propertyAddress, propertyBuiltupSize, propertyCategory,
-            propertyCity, propertyDescription, propertyFacility,
-            propertyFurnish, propertyFurnishType, propertyImage,
-            propertyName, propertyPostcode, propertyRental,
-            propertyState, propertyType, roomSquareFeet,
-            roomType, masterRoomNum, mediumRoomNum, smallRoomNum } = e;
+
+        console.log(fileList);
+        console.log(e);
+        console.log(e["propertyName"])
+
+        let propertyState = '';
+        let propertyCity = '';
 
         const { data, error } = await postCodeSupabase
             .from('malaysia_postcode')
-            .select('postcode, state_code, state(state_name)')
-            .eq('postcode', propertyPostcode);
+            .select('postcode, post_office, state_code, state(state_name)')
+            .eq('postcode', e["propertyPostcode"])
+            .limit(1);
 
-        if (data.length > 1) {
-            propertyState = data[0].state.state_name;
+        if (error) {
+            console.log(error)
+            return;
         }
 
-
+        if (data.length == 1) {
+            propertyState = data[0].state.state_name;
+            propertyCity = data[0].post_office;
+        }
         const dateTime = getCurrentDateTime();
 
-        let roomnumber = [];
-        if (masterRoomNum === undefined) {
-            roomnumber = null
+        const userID = (await supabase.auth.getUser()).data.user.id;
+
+        const roomDetails = {};
+
+        //iterate and push the value into the array
+        Array.from({ length: roomNum }, (_, i) => i + 1).forEach((index) => {
+
+            const roomFurnishArray = e[`roomFurnish${index}`];
+            const roomType = e[`roomType${index}`];
+            const roomSquareFeet = e[`roomSquareFeet${index}`];
+
+            const roomFurnishQuantites = {};
+
+            roomFurnishArray.forEach((furnish) => {
+                const furnishQuantity = e[`roomFurnish${index}_${furnish}`];
+                roomFurnishQuantites[furnish] = furnishQuantity;
+            });
+
+            roomDetails[index] = {
+                roomType: roomType,
+                roomSquareFeet: roomSquareFeet,
+                roomFurnish: roomFurnishQuantites,
+            }
+
         }
-        else {
-            roomnumber = [{ masterRoomNum }, { mediumRoomNum }, { smallRoomNum }];
-        }
+        )
+
+        console.log(roomDetails)
 
         const { data: postData, error: postError } = await supabase
             .from('property_post')
             .update(
                 {
+                    postDate: dateTime,
                     postType: 'Property',
-                    propertyType: propertyType,
-                    propertyPrice: propertyRental,
-                    propertySquareFeet: propertyBuiltupSize,
-                    propertyFurnish: propertyFurnish,
-                    propertyFacility: propertyFacility,
-                    propertyAgentID: '3f4ac7e4-272b-4b91-bcce-19184ca174ed',
-                    propertyAddress: `${propertyAddress},${propertyPostcode},${propertyCity},${propertyState}`,
+                    propertyType: e["propertyType"],
+                    propertyName: e["propertyName"],
+                    propertyPrice: e["rentalPrice"],
+                    propertySquareFeet: e["propertyBuiltupSize"],
+                    propertyFurnish: e["propertyFurnish"],
+                    propertyFurnishType: e["propertyFurnishType"],
+                    propertyFacility: e["propertyFacility"],
+                    propertyAgentID: userID,
+                    propertyAddress: e["propertyAddress"],
+                    propertyCity: propertyCity,
+                    propertyPostcode: e["propertyPostcode"],
                     propertyState: propertyState,
-                    propertyFurnishType: propertyFurnishType,
-                    propertyCategory: propertyCategory,
-                    propertyRoomType: roomType,
-                    propertyRoomNumber: roomnumber,
-                    propertyRoomSquareFeet: roomSquareFeet,
-                    propertyDescription: propertyDescription,
+                    propertyCategory: e["propertyCategory"],
+                    propertyDescription: e["propertyDescription"],
                     lastModifiedDate: dateTime,
+                    propertyRoomNumber: e["propertyRoomNumber"],
+                    propertyRoomDetails: roomDetails,
                 })
             .eq('postID', post.postID);
 
@@ -365,16 +903,19 @@ function AgentRoomRentalPost() {
         }
         else {
 
-            updatePostImage(post.postID, propertyImage);
+            uploadImage(e, post.postID);
 
-            messageApi.open({
-                type: 'success',
-                content: 'Edit successful. You will be redirected to previous page within 3 seconds...',
-            });
+
+            messageApi.loading('Editing post...', 3);
 
             setTimeout(() => {
-                navigate("/agent/roomRental")
+                messageApi.success('Edit successful. You will be redirected to the previous page within 1 second...', 1);
+
+                setTimeout(() => {
+                    navigate("/agent/roomRental");
+                }, 1000);
             }, 3000);
+
         }
     }
 
@@ -392,6 +933,9 @@ function AgentRoomRentalPost() {
         if (error) {
             console.log(error)
         }
+
+        //Delete images from storage
+        deleteAllImages(post.postID);
 
         messageApi.open({
             type: 'success',
@@ -461,7 +1005,7 @@ function AgentRoomRentalPost() {
 
         <Modal open={previewOpen} title={previewTitle} footer={null} onCancel={handleCancel}>
             <img
-                alt="example"
+                alt="Property Image"
                 style={{
                     width: '100%',
                 }}
@@ -478,211 +1022,297 @@ function AgentRoomRentalPost() {
             onFinish={onFinish}
             onFinishFailed={onFinishFailed}
             initialValues={{
-                propertyFurnishType: post.propertyFurnishType,
-                propertyCategory: post.propertyCategory,
-                masterRoomNum: (!post.propertyRoomNumber ? 1 : post.propertyRoomNumber[0]),
-                mediumRoomNum: (!post.propertyRoomNumber ? 1 : post.propertyRoomNumber[1]),
-                smallRoomNum: (!post.propertyRoomNumber ? 1 : post.propertyRoomNumber[2]),
-                propertyRental: post.propertyPrice,
-                roomSquareFeet: post.propertyRoomSquareFeet,
-                propertyDescription: post.propertyDescription,
-                propertyType: post.propertyType,
-                roomType: post.propertyRoomType,
                 propertyName: post.propertyName,
                 propertyAddress: post.propertyAddress,
-                propertyCity: post.propertyCity,
                 propertyPostcode: post.propertyPostcode,
                 propertyBuiltupSize: post.propertySquareFeet,
+                propertyType: post.propertyType,
+                propertyCategory: post.propertyCategory,
+                propertyRoomNumber: post.propertyRoomNumber,
+                rentalPrice: post.propertyPrice,
+                propertyFurnishType: post.propertyFurnishType,
                 propertyFurnish: post.propertyFurnish,
                 propertyFacility: post.propertyFacility,
+                propertyDescription: post.propertyDescription,
+
             }}
         >
-            <Row>
-                <Col span={24}>
-                    <Form.Item name="propertyImage" label="Property Image">
-                        <Upload
-                            listType="picture-card"
-                            fileList={fileList}
-                            onPreview={handlePreview}
-                            onChange={handleChange}
-                            multiple={true}
-                            beforeUpload={beforeUpload}
-                            customRequest={dummyRequest}
-                        >
-                            {fileList.length >= 10 ? null : uploadButton}
-                        </Upload>
+            <fieldset
+                style={{
+                    border: '1px solid #d9d9d9',
+                    borderRadius: '5px',
+                    padding: '10px',
+                }}
+            >
+                <legend style={{ width: 'auto', borderBottom: 'none', marginLeft: '20px', marginBottom: '0px' }}>Property Details</legend>
+                <Row>
+                    <Col span={24}>
+                        <Form.Item name="propertyImage" label="Property Image">
+                            <Upload
+                                listType="picture-card"
+                                fileList={fileList}
+                                onPreview={handlePreview}
+                                onChange={handleChange}
+                                multiple={true}
+                                beforeUpload={beforeUploadProperty}
+                                customRequest={dummyRequest}
+                            >
+                                {fileList.length >= 10 ? null : uploadButton}
+                            </Upload>
 
-                    </Form.Item>
-                </Col>
-            </Row>
-            <Row>
-                <Col span={24}>
-                    <Form.Item required='true' name="propertyName" label='Property Name' rules={[
-                        {
-                            required: true,
-                            message: 'Please enter the property name!',
-                        },
-                    ]}>
-                        <Input disabled={true} placeholder='Enter your property name here' style={{ width: '50%' }} />
-                    </Form.Item>
-                </Col>
-            </Row>
-            <Row>
-                <Col span={7}>
-                    <Form.Item required='true' name="propertyAddress" label='Property Address' rules={[
-                        {
-                            required: true,
-                            message: 'Please enter the property address!',
-                        },
-                    ]}>
-                        <Input placeholder='Enter property address here' style={{ width: '100%' }} />
-                    </Form.Item>
-                </Col>
-                <Col span={4} offset={1}>
-                    <Form.Item required='true' name="propertyCity" label='Property City' rules={[
-                        {
-                            required: true,
-                            message: 'Please enter the property city!',
-                        },
-                    ]}>
-                        <Input placeholder='Enter property city here' style={{ width: '100%' }} />
-                    </Form.Item>
-                </Col>
-                <Col span={4} offset={1}>
-                    <Form.Item required='true' name="propertyPostcode" label='Property Postcode' help={postCode.errorMsg} validateStatus={postCode.validateStatus} rules={[
-                        {
-                            required: true,
-                            message: 'Please enter the property postcode!',
-                        },
-                    ]}>
-                        <Input placeholder='Postcode' maxLength={5} style={{ width: '100%' }} onChange={handlePostCode} value={postCode.value} />
-                    </Form.Item>
-                </Col>
-                <Col span={5} offset={1}>
-                    <Form.Item name="propertyState" label='Property State'>
-                        {/* <Input value={propertyState} disabled={false} display={propertyState}  /> */}
-                        <div style={{ paddingLeft: '10px', border: '1px solid #d9d9d9', width: 'auto', height: '30px', borderRadius: '5px', display: 'flex', alignItems: 'center' }}>{propertyState}</div>
-                    </Form.Item>
-                </Col>
-            </Row>
-            <Row>
-                <Col span={6} >
-                    <Form.Item required='true' name="propertyBuiltupSize" label='Property Built-up Size (sq.ft.)' rules={[
-                        {
-                            required: true,
-                            message: 'Please enter the property built-up size!',
-                        },
-                    ]}>
-                        <Input placeholder='Built-up size (sq.ft.)' style={{ width: '100%' }} />
-                    </Form.Item>
-                </Col>
-
-                <Col span={6} offset={1}>
-                    <Form.Item required='true' name="propertyType" label='Property Type' rules={[
-                        {
-                            required: true,
-                            message: 'Please choose the property type!',
-                        },
-                    ]}>
-                        <Select placeholder="All Property Type" options={[
-                            { value: 'Apartment', label: 'Apartment' },
-                            { value: 'Condominium', label: 'Condominium' },
-                            { value: 'Flat', label: 'Flat' },
-                            { value: 'Terrace house', label: 'Terrace house' },
-                        ]} />
-                    </Form.Item>
-                </Col>
-                <Col span={6} offset={1}>
-                    <Form.Item required='true' name="propertyFurnishType" label='Property Furnish Type' rules={[
-                        {
-                            required: true,
-                            message: 'Please choose the property furnish type!',
-                        },
-                    ]}>
-                        <FurnishTypeSelection value={post.propertyFurnishType} bordered={true} />
-                    </Form.Item>
-                </Col>
-            </Row>
-            <Row>
-                <Col span={4}>
-                    <Form.Item
-                        name="propertyCategory"
-                        label='Property Category'
-                        rules={[
+                        </Form.Item>
+                    </Col>
+                </Row>
+                <Row>
+                    <Col span={24}>
+                        <Form.Item required='true' name="propertyName" label='Property Name' rules={[
                             {
                                 required: true,
-                                message: 'Please choose one category!',
+                                message: 'Please enter the property name!',
                             },
                         ]}>
-                        <Radio.Group onChange={() => { setIsRoom(!isRoom) }} disabled={true}>
-                            <Radio value='Room'>Room</Radio>
-                            <Radio value='Unit'>Unit</Radio>
-                        </Radio.Group>
-                    </Form.Item>
-                </Col>
-                {isRoom ? roomType() : roomNumber()}
-            </Row>
-            <Row>
-                <Col span={24}>
-                    <Form.Item
-                        name="propertyRental"
-                        label="Property Rental (RM)"
-                        rules={[
+                            <Input disabled={true} placeholder='Enter your property name here' style={{ width: '50%' }} />
+                        </Form.Item>
+                    </Col>
+                </Row>
+                <Row>
+                    <Col span={7}>
+                        <Form.Item required='true' name="propertyAddress" label='Property Address' rules={[
                             {
                                 required: true,
-                                message: 'Please enter the property rental!',
+                                message: 'Please enter the property address!',
                             },
                         ]}>
-                        <InputNumber min={0} max={5000} style={{ width: '20%' }} />
-                    </Form.Item>
-                </Col>
-            </Row>
-            <Row>
-                <Col span={24}>
-                    <Form.Item
-                        name="propertyFurnish"
-                        label="Property Furnish"
-                    >
-                        <Checkbox.Group
-                            style={{
-                                width: '100%',
-                            }}
+                            <Input placeholder='Enter property address here' style={{ width: '100%' }} />
+                        </Form.Item>
+                    </Col>
+                    <Col span={4} offset={1}>
+                        <Form.Item required='true' name="propertyPostcode" label='Property Postcode' help={postCode.errorMsg} validateStatus={postCode.validateStatus} rules={[
+                            {
+                                required: true,
+                                message: 'Please enter the property postcode!',
+                            },
+                        ]}>
+                            <Input placeholder='Postcode' maxLength={5} style={{ width: '100%' }} onChange={handlePostCode} value={postCode.value} />
+                        </Form.Item>
+                    </Col>
+
+                    <Col span={4} offset={1}>
+                        <Form.Item name="propertyCity" label='Property City'>
+                            <div style={{ paddingLeft: '10px', border: '1px solid #d9d9d9', width: 'auto', height: '30px', borderRadius: '5px', display: 'flex', alignItems: 'center', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>{propertyCity}</div>
+                        </Form.Item>
+                    </Col>
+
+                    <Col span={5} offset={1}>
+                        <Form.Item name="propertyState" label='Property State'>
+                            <div style={{ paddingLeft: '10px', border: '1px solid #d9d9d9', width: 'auto', height: '30px', borderRadius: '5px', display: 'flex', alignItems: 'center', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>{propertyState}</div>
+                        </Form.Item>
+                    </Col>
+                </Row>
+                <Row>
+                    <Col span={6} >
+                        <Form.Item required='true' name="propertyBuiltupSize" label='Property Built-up Size (sq.ft.)' rules={[
+                            {
+                                required: true,
+                                message: 'Please enter the property built-up size!',
+                            },
+                        ]}>
+                            <InputNumber min={1} max={10000} style={{ width: '100%' }} />
+                        </Form.Item>
+                    </Col>
+
+                    <Col span={6} offset={1}>
+                        <Form.Item required='true' name="propertyType" label='Property Type' rules={[
+                            {
+                                required: true,
+                                message: 'Please choose the property type!',
+                            },
+                        ]}>
+                            <Select placeholder="All Property Type" options={[
+                                { value: 'Apartment', label: 'Apartment' },
+                                { value: 'Condominium', label: 'Condominium' },
+                                { value: 'Flat', label: 'Flat' },
+                                { value: 'Terrace house', label: 'Terrace house' },
+                            ]} />
+                        </Form.Item>
+                    </Col>
+                    {/* <Col span={6} offset={1}>
+                        <Form.Item required='true' name="propertyFurnishType" label='Property Furnish Type' rules={[
+                            {
+                                required: true,
+                                message: 'Please choose the property furnish type!',
+                            },
+                        ]}>
+                            <FurnishTypeSelection value={post.propertyFurnishType} bordered={true} />
+                        </Form.Item>
+                    </Col> */}
+                </Row>
+            </fieldset>
+            <fieldset
+                style={{ border: '1px solid gray', padding: '10px', borderRadius: '10px', marginTop: '20px' }}
+            >
+                <legend style={{ width: 'auto', borderBottom: 'none', marginLeft: '20px', marginBottom: '0px' }}>Unit/Room Details</legend>
+                <Row>
+                    <Col span={4}>
+                        <Form.Item
+                            name="propertyCategory"
+                            label='Property Category'
+                            rules={[
+                                {
+                                    required: true,
+                                    message: 'Please choose one category!',
+                                },
+                            ]}>
+                            <Radio.Group onChange={() => { setIsRoom(!isRoom) }} disabled={true}>
+                                <Radio value='Unit'>Unit</Radio>
+                                <Radio value='Room'>Room</Radio>
+                            </Radio.Group>
+                        </Form.Item>
+                    </Col>
+                    {!isRoom ?
+                        <Col span={6} offset={1}>
+                            <Form.Item
+                                name="propertyRoomNumber"
+                                label='Property Room Number'
+                                rules={[
+                                    {
+                                        required: true,
+                                        message: 'Please enter the room number!',
+                                    },
+                                ]}>
+                                <InputNumber
+                                    min={1}
+                                    max={10}
+                                    style={{ width: '60%' }}
+                                    onChange={(value) => { setRoomNum(value) }}
+                                    value={roomNum}
+                                />
+                            </Form.Item>
+                        </Col>
+
+                        : null}
+                    <Col span={4} offset={1}>
+                        <Form.Item
+                            name="rentalPrice"
+                            label={isRoom ? 'Room Rental Price (RM)' : 'Unit Rental Price (RM)'}
+                            rules={[
+                                {
+                                    required: true,
+                                    message: 'Please enter the rental price!',
+                                },
+                            ]}>
+
+                            <InputNumber min={1} max={5000} style={{ width: '100%' }} />
+                        </Form.Item>
+                    </Col>
+
+                </Row>
+                {isRoom ? roomDetailForm(1) : Array.from({ length: roomNum }, (_, i) => roomDetailForm(i + 1))}
+            </fieldset>
+            <fieldset
+                style={{ border: '1px solid gray', padding: '10px', borderRadius: '10px', marginTop: '20px' }}
+            >
+                <legend style={{ width: 'auto', borderBottom: 'none', marginLeft: '20px', marginBottom: '0px' }}>Property Furnish</legend>
+                <Row>
+                    <Col span={6}>
+                        <Form.Item
+                            required='true'
+                            name="propertyFurnishType"
+                            label={
+                                <>
+                                    <span>Property Furnish Type</span>
+                                    <Tooltip
+                                        title={
+                                            <>
+                                                <p>Property Furnish: Choose the appropriate furnishing type for the property.</p>
+                                                <ul style={{ marginInlineStart: '-20px' }}>
+                                                    <li>Unfurnished: No furnishings provided.</li>
+                                                    <li>Partially Furnished: Essential furnishings included.</li>
+                                                    <li>Fully Furnished: All furnishings provided.</li>
+                                                </ul>
+                                            </>
+
+                                        }
+                                        placement='right'
+                                        overlayStyle={{ maxWidth: '1000px' }}
+                                    >
+                                        <div>
+                                            <RiInformationFill style={{ marginLeft: '5px', color: 'gray' }} />
+                                        </div>
+                                    </Tooltip>
+                                </>
+                            }
+                            rules={[
+                                {
+                                    required: true,
+                                    message: 'Please choose the property furnish type!',
+                                },
+                            ]}>
+                            <FurnishTypeSelection style={{ width: '70%' }} bordered={true} value={pFurnishType} onChange={handlePFurnishType} />
+                        </Form.Item>
+                    </Col>
+
+                </Row>
+
+                <Row>
+                    <Col span={24}>
+                        <Form.Item
+                            name="propertyFurnish"
                         >
-                            <Row>
-                                {renderedItem(furnishOption)}
-                            </Row>
+                            <Checkbox.Group
+                                value={pFurnishChecklist}
+                                onChange={handlePFurnishChecklist}
+                            >
+                                <Row >
+                                    {renderedFurnishOption()}
+                                </Row>
 
 
-                        </Checkbox.Group>
-                    </Form.Item>
-                </Col>
-            </Row>
-            <Row>
-                <Col span={24}>
-                    <Form.Item
-                        name="propertyFacility"
-                        label="Property Facility"
-                    >
-                        <Checkbox.Group
-                            style={{
-                                width: '100%',
-                            }}
-                        // options={furnishOption}
+                            </Checkbox.Group>
+                        </Form.Item>
+                    </Col>
+                </Row>
+            </fieldset>
+            <fieldset
+                style={{ border: '1px solid gray', padding: '10px', borderRadius: '10px', marginTop: '20px' }}
+            >
+                <legend style={{ width: 'auto', borderBottom: 'none', marginLeft: '20px', marginBottom: '0px' }}>Property Facility</legend>
+                <Row>
+                    <Col span={24}>
+                        <Form.Item
+                            name="propertyFacility"
                         >
-                            <Row>
-                                {renderedItem(facilityOption)}
-                            </Row>
-                        </Checkbox.Group>
-                    </Form.Item>
-                </Col>
-            </Row>
-            <Row>
-                <Col span={20}>
-                    <Form.Item name="propertyDescription" label="Other description">
-                        <TextArea maxLength={1000} style={{ resize: 'none', height: 'auto' }} allowClear={true} autoSize={true} placeholder='Enter other description here...' />
-                    </Form.Item>
-                </Col>
-            </Row>
+                            <Checkbox.Group>
+                                <Row>
+                                    {renderedFacility()}
+                                </Row>
+                            </Checkbox.Group>
+                        </Form.Item>
+                    </Col>
+                </Row>
+            </fieldset>
+            <fieldset
+                style={{ border: '1px solid gray', padding: '10px', borderRadius: '10px', marginTop: '20px' }}
+            >
+                <legend style={{ width: 'auto', borderBottom: 'none', marginLeft: '20px', marginBottom: '0px' }}>Additional description</legend>
+
+                <Row>
+                    <Col span={20}>
+                        <Form.Item name="propertyDescription">
+                            <TextArea maxLength={1000} style={{ resize: 'none', height: '100px' }} allowClear={true} autoSize={true} placeholder='Enter other description here...' />
+                        </Form.Item>
+                    </Col>
+                </Row>
+
+                <Row style={{ marginTop: '0px' }}>
+                    <Col span={20}>
+                        <p style={{ fontStyle: 'italic' }}>*Please enter any additional description or information about the property.
+                            This could include specific details, special features, or any other relevant
+                            information you would like to highlight. Feel free to provide as much detail as
+                            possible to help potential tenants get a better understanding of the property.</p>
+                    </Col>
+                </Row>
+            </fieldset>
         </Form>
         {showButton()}
 
