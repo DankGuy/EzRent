@@ -1,25 +1,63 @@
-h1 {
+.login-container h1 {
     font-size: 2em;
 }
 
-:where(.css-dev-only-do-not-override-12jzuas).ant-form-item .ant-form-item-label >label {
+
+.signup-container .ant-form-item-label > label {
+    font-size: 1.3em;
+}
+.login-container .ant-form-item-label > label {
     font-size: 1.3em;
 }
 
-:where(.css-dev-only-do-not-override-12jzuas).ant-input-affix-wrapper >input.ant-input {
+.forgotpw-container .ant-form-item-label > label {
+    font-size: 1.3em;
+}
+
+
+.signup-container .ant-input-affix-wrapper >input.ant-input {
     font-size: 1.3em;
     width: 300px;
+
 }
 
-a {
+.login-container .ant-input-affix-wrapper >input.ant-input {
+    font-size: 1.3em;
+    width: 300px;
+
+}
+
+.forgotpw-container .ant-input-affix-wrapper >input.ant-input {
+    font-size: 1.3em;
+    width: 300px;
+
+}
+
+.login-container a {
     font-size: 1.3em;
 }
 
-:where(.css-dev-only-do-not-override-12jzuas).ant-btn {
-    font-size: 1.2rem;
+.signup-container a {
+    font-size: 1.3em;
+}
+
+.forgotpw-container a {
+    font-size: 1.3em;
+}
+
+.login-container .ant-btn {
+    font-size: 1.3em;
     height: auto;
 }
 
-:where(.css-dev-only-do-not-override-12jzuas).ant-form label {
-    font-size: 1.2rem;
+.signup-container .ant-btn {
+    font-size: 1.3em;
+    height: auto;
 }
+
+.forgotpw-container .ant-btn {
+    font-size: 1.3em;
+    height: auto;
+}
+
+
