@@ -61,7 +61,7 @@ function Profile() {
 
   const navigate = useNavigate();
   return (
-    <div style={{ marginTop: "8.55vh" }}>
+    <div style={{ marginTop: "6.5vh"}}>
       <Layout>
         <Sider
           trigger={null}

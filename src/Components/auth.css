@@ -1,63 +1,37 @@
 .login-container h1 {
-    font-size: 2em;
+  font-size: 2em;
 }
 
-
-.signup-container .ant-form-item-label > label {
-    font-size: 1.3em;
-}
-.login-container .ant-form-item-label > label {
-    font-size: 1.3em;
-}
-
+.signup-container .ant-form-item-label > label,
+.login-container .ant-form-item-label > label,
 .forgotpw-container .ant-form-item-label > label {
-    font-size: 1.3em;
+  font-size: 1.3em;
 }
 
-
-.signup-container .ant-input-affix-wrapper >input.ant-input {
-    font-size: 1.3em;
-    width: 300px;
-
+.signup-container .ant-input-affix-wrapper > input.ant-input {
+  font-size: 1.3em;
+  width: 300px;
 }
 
-.login-container .ant-input-affix-wrapper >input.ant-input {
-    font-size: 1.3em;
-    width: 300px;
-
+.login-container .ant-input-affix-wrapper > input.ant-input {
+  font-size: 1.3em;
+  width: 300px;
 }
 
-.forgotpw-container .ant-input-affix-wrapper >input.ant-input {
-    font-size: 1.3em;
-    width: 300px;
-
+.forgotpw-container .ant-input-affix-wrapper > input.ant-input {
+  font-size: 1.3em;
+  width: 100%;
 }
 
-.login-container a {
-    font-size: 1.3em;
-}
-
-.signup-container a {
-    font-size: 1.3em;
-}
-
+.login-container a,
+.signup-container a,
 .forgotpw-container a {
-    font-size: 1.3em;
+  font-size: 1.3em;
 }
 
-.login-container .ant-btn {
-    font-size: 1.3em;
-    height: auto;
-}
-
-.signup-container .ant-btn {
-    font-size: 1.3em;
-    height: auto;
-}
-
+.login-container .ant-btn,
+.signup-container .ant-btn,
 .forgotpw-container .ant-btn {
-    font-size: 1.3em;
-    height: auto;
+  font-size: 1.3em;
+  height: auto;
 }
-
-

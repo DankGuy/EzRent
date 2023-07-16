@@ -37,7 +37,7 @@ function ForgotPasswordCard() {
     const { data, error } = await supabase.auth.getUser();
     if (error) {
       // Handle error case
-      message.error(error.error_description || error.message)
+      message.error(error.error_description || error.message);
     } else {
       const email = data.user.email;
       setEmail(email);
@@ -118,7 +118,6 @@ function ForgotPasswordCard() {
           maxWidth: "100%",
         }}
       >
-        <h1 style={{ textAlign: "center" }}>Update Password</h1>
         <Form
           style={{
             maxWidth: "65%",
@@ -126,6 +125,8 @@ function ForgotPasswordCard() {
           }}
           {...formItemLayout}
         >
+          <h1 style={{ textAlign: "center" }}>Update Password</h1>
+
           <Form.Item label="Email" name="email" initialValue={email}>
             <Input
               disabled
@@ -171,7 +172,7 @@ function ForgotPasswordCard() {
             ]}
             hasFeedback
           >
-            <Input.Password onChange={handleChange}/>
+            <Input.Password onChange={handleChange} />
           </Form.Item>
 
           <Form.Item style={{ display: "flex", justifyContent: "center" }}>

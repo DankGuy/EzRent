@@ -64,17 +64,18 @@ function ForgotPasswordCard() {
           maxWidthL: "100%",
         }}
       >
-        <h1 style={{ textAlign: "center" }}>Forgot Password</h1>
-        <p style={{ textAlign: "center" }}>
-          Enter your email address and we will send you a link to reset your
-          password.
-        </p>
         <Form
           style={{
             maxWidth: 800,
             marginBottom: "10px",
           }}
         >
+          <h1 style={{ textAlign: "center" }}>Forgot Password</h1>
+          <p style={{ textAlign: "center" }}>
+            Enter your email address and we will send you a link to reset your
+            password.
+          </p>
+
           <Form.Item
             label="Email"
             name="email"

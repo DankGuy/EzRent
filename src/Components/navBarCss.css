@@ -44,9 +44,8 @@ body{
 }
 
 .logoClass{
-    object-fit: contain;
+    object-fit: co ntain;
     height: 51px;
-    margin-left: 10px;
 }
 
 .nav-container{
