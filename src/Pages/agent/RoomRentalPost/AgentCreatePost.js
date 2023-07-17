@@ -522,7 +522,7 @@ function AgentCreatePost() {
         propertyImage.fileList.forEach(async (image) => {
             const { data, error } = await supabase.storage
                 .from('post')
-                .upload(`${id}/${image.name}`, image.originFileObj, {
+                .upload(`${id}/Property/${image.name}`, image.originFileObj, {
                     cacheControl: '3600',
                     upsert: false
                 })
