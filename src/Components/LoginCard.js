@@ -40,7 +40,7 @@ function LoginCard(props) {
       if (user && session) {
         if (user.user_metadata.userType === "agent") {
           localStorage.setItem("selectedKey", "/agent");
-          window.location.href = "/agent";
+          navigate("/agent");
         }
         else if (user.user_metadata.userType === "student") {
           localStorage.setItem("selectedKey", "/student/profile/profileInformation");

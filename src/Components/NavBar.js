@@ -11,7 +11,7 @@ function NavBar() {
   const logout = () => {
     supabase.auth.signOut();
     localStorage.removeItem("selectedKey");
-    navigate("/");
+    // navigate("/");
   };
 
   const [profileSelectedKey, setProfileSelectedKey] = useState("");

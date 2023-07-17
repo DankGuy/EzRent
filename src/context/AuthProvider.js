@@ -53,16 +53,36 @@ const AuthProvider = ({ children }) => {
       console.log(loading)
     };
     getUser();
+
+
+    //get user session
+    const getSession = async () => {
+      const { data } = await supabase.auth.getSession();
+      const { session: currentSession } = data;
+      setUserSession(currentSession ?? null);
+      console.log(currentSession)
+    };
+
+    getSession();
+
+
     const { data } = supabase.auth.onAuthStateChange(async (event, session) => {
         console.log(`Supabase auth event: ${event}`);
+        console.log(session)
       if (event == "PASSWORD_RECOVERY") {
         setAuth(false);
+        setUserSession(session);
+        setLoading(false);
       } else if (event === "SIGNED_IN") {
         setUser(session.user);
         setAuth(true);
+        setUserSession(session);
+        setLoading(false);
       } else if (event === "SIGNED_OUT") {
         setAuth(false);
         setUser(null);
+        setUserSession(null);
+        setLoading(false);
       }
       console.log(user)
       console.log(loading)
@@ -79,6 +99,7 @@ const AuthProvider = ({ children }) => {
       value={{
         auth,
         user,
+        userSession,
         login,
         signOut,
         passwordReset,

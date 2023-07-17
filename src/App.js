@@ -47,31 +47,13 @@ import NotFoundBlue from "./Pages/Result/NotFoundBlue";
 
 function App() {
 
-    const { user } = useAuth();
+    const { user, userSession } = useAuth();
 
-    const [session, setSession] = useState();
-
-    console.log(user);
-
-    useEffect(()=>{
-
-        const getSession = async () => {
-            
-            const { data, error } = await supabase.auth.getSession()
-            console.log(data);
-            setSession(data);
-        }
-
-        getSession();
-    }, [user])
-
-
-    useEffect(()=>{
-        console.log(session);
-    }, [session]);
+    console.log(user)
+    console.log(userSession)
 
     const userTypeRoutes = () => {
-        if (user && session) {
+        if (user && userSession) {
             if (user.user_metadata.userType === "agent") {
                 return (
                     <>
@@ -105,7 +87,7 @@ function App() {
 
                 return (
                     <>
-                        <Route path="/student/" element={<StudentLayout />}>
+                        <Route path="/student" element={<StudentLayout />}>
                             <Route index element={<Home />} />
                             <Route path="roomRental" element={<RoomRental />} />
                             <Route path="roommate" element={<Roommate />} />
