@@ -234,16 +234,13 @@ function RoomRental() {
 
     const renderedPost = posts.map((post) => {
         let bgColor;
-        let addDesc;
         const firstImage = firstImages[post.postID];
 
         if (post.propertyCategory === 'Room') {
             bgColor = '#d5def5';
-            addDesc = post.propertyRoomType;
         } else {
             bgColor = '#8594e4';
-            // const [masterRoom, mediumRoom, smallRoom] = post.propertyRoomNumber;
-            // addDesc = `${masterRoom} Master room, ${mediumRoom} Medium room, ${smallRoom} Small room`;
+          
         }
 
         return (
@@ -270,10 +267,6 @@ function RoomRental() {
                         </Row>
                         <Row>
                             <Col span={24} style={{ fontSize: '20px', marginTop: '5px', fontStyle: 'italic' }}>RM{post.propertyPrice}/month </Col>
-                        </Row>
-
-                        <Row>
-                            <Col span={24} style={{ fontSize: '18px', marginTop: '5px' }}>{addDesc}</Col>
                         </Row>
                         <Row>
                             <Col span={24} style={{ fontSize: '16px', marginTop: '5px', fontStyle: 'italic' }}>

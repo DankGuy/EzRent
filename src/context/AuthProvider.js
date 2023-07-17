@@ -105,10 +105,7 @@ const AuthProvider = ({ children }) => {
         passwordReset,
         updatePassword
       }}>
-      {loading === true ? 
-        <LoadingPage/>
-        :
-        children}
+      {!loading && children}
     </AuthContext.Provider>
   );
 };

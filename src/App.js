@@ -44,13 +44,11 @@ import NotFoundGreen from "./Pages/Result/NotFoundGreen";
 import NotFoundYellow from "./Pages/Result/NotFoundYellow";
 import NotFoundBlue from "./Pages/Result/NotFoundBlue";
 
-
 function App() {
-
     const { user, userSession } = useAuth();
 
-    console.log(user)
-    console.log(userSession)
+    console.log(user);
+    console.log(userSession);
 
     const userTypeRoutes = () => {
         if (user && userSession) {
@@ -60,7 +58,10 @@ function App() {
                         <Route path="/agent/" element={<AgentLayout />}>
                             <Route index element={<AgentHome />} />
                             <Route path="profile" element={<AgentProfile />} />
-                            <Route path="profile/editProfile" element={<AgentEditProfile />} />
+                            <Route
+                                path="profile/editProfile"
+                                element={<AgentEditProfile />}
+                            />
                             <Route
                                 path="roomRental/createNewPost"
                                 element={<AgentCreatePost />}
@@ -68,7 +69,10 @@ function App() {
                             <Route path="roomRental" element={<AgentRoomRental />} />
                             <Route path="appointment" element={<AgentAppointment />} />
                             <Route path="appointment/:id" element={<AppointmentDetails />} />
-                            <Route path="rentalAgreement" element={<AgentRentalAgreement />} />
+                            <Route
+                                path="rentalAgreement"
+                                element={<AgentRentalAgreement />}
+                            />
                             <Route
                                 path="roomRental/editPost/:id"
                                 element={<AgentRoomRentalPost />}
@@ -77,14 +81,12 @@ function App() {
                                 path="roomRental/viewPost/:id"
                                 element={<AgentRoomRentalPost />}
                             />
-                            <Route path="*" element={<NotFoundGreen />} />
+                            <Route path="*" element={<NotFound />} />
                         </Route>
-                        <Route path="*" element={<NotFoundYellow />} />
-
+                        <Route path="*" element={<NotFound />} />
                     </>
                 );
             } else if (user.user_metadata.userType === "student") {
-
                 return (
                     <>
                         <Route path="/student" element={<StudentLayout />}>
@@ -93,55 +95,49 @@ function App() {
                             <Route path="roommate" element={<Roommate />} />
                             <Route path="aboutUs" element={<AboutUs />} />
                             <Route path="/student/profile/" element={<Profile />}>
-                                <Route path="profileInformation" element={<ProfileInformation />} />
+                                <Route
+                                    path="profileInformation"
+                                    element={<ProfileInformation />}
+                                />
                                 <Route path="paymentMethods" element={<PaymentMethods />} />
                                 <Route path="rentalPayment" element={<RentalPayment />} />
 
                                 <Route path="appointments" element={<Appointments />} />
-                                <Route path="appointments/:id" element={<StudentAppointmentDetails />} />
+                                <Route
+                                    path="appointments/:id"
+                                    element={<StudentAppointmentDetails />}
+                                />
                                 <Route path="rentalAgreement" element={<RentalAgreement />} />
                                 <Route path="editProfile" element={<EditProfile />} />
                             </Route>
                             <Route path="roomRental/:id" element={<RoomRentalPost />} />
-                            <Route path="*" element={<NotFoundRed />} />
+                            <Route path="*" element={<NotFound />} />
                         </Route>
-                        {/* <Route path="/student" element={<Home/>}/> */}
-                        <Route path="*" element={<NotFoundBlue />} />
-
+                        <Route path="*" element={<NotFound />} />
                     </>
                 );
             }
-
-        } else {
-            return (
-                <>
-                    <Route path="/signup" element={<SignupCard />} />
-                    <Route path="/" element={<LoginCard />} />
-                    <Route path="/login" element={<LoginCard />} />
-                    <Route path="/forgot-password" element={<ForgotPasswordCard />} />
-                    <Route path="/update-password" element={<UpdatePasswordCard />} />
-                    <Route path="*" element={<NotFound />} />
-                </>
-            );
         }
-    }
-
-
-
+    };
 
     return (
         <Routes>
             {/* Authentication routes */}
             <Route element={<AuthRoute />} />
-                {userTypeRoutes()}
+
+            {userTypeRoutes()}
+
+            <Route path="/signup" element={<SignupCard />} />
+            <Route path="/login" element={<LoginCard />} />
+            <Route path="/forgot-password" element={<ForgotPasswordCard />} />
+            <Route path="/update-password" element={<UpdatePasswordCard />} />
+            <Route path="*" element={<NotFound />} />
+            <Route path="/" element={<LoginCard />} />
             {/* <Route path="*" element={<NotFound />} /> */}
-
-
-
 
             {/* 404 Not Found route */}
         </Routes>
-    )
+    );
 }
 
 export default App;

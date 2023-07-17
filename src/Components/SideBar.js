@@ -50,7 +50,7 @@ function Sidebar({ value, setTitle }) {
                     if (key === '/logout') {
                         supabase.auth.signOut();
                         localStorage.removeItem('selectedKey');
-                        // navigate('/');
+                        navigate('/');
                         return;
                     } else {
                         setSelectedKey(key);

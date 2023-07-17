@@ -7,11 +7,9 @@ import { useEffect, useState } from "react";
 
 function NavBar() {
 
-  const navigate = useNavigate();
   const logout = () => {
     supabase.auth.signOut();
     localStorage.removeItem("selectedKey");
-    // navigate("/");
   };
 
   const [profileSelectedKey, setProfileSelectedKey] = useState("");
