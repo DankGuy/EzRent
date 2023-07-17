@@ -21,7 +21,9 @@ function PostCarousel({ post }) {
 
     //Get the first image from supabase storage with id = postID
     const getFirstImage = async (post) => {
-        const { data, error } = await supabase.storage.from('post').list(post.postID);
+        const { data, error } = await supabase.storage
+            .from('post')
+            .list(`%${post.postID}/Property`);
 
         if (error) {
             console.log(error);
@@ -55,7 +57,7 @@ function PostCarousel({ post }) {
             {firstImage && 
             <Col span={24} style={{ display: 'flex', justifyContent: 'center' }}>
                 <Image style={{ justifyContent: 'center' }} height={200} 
-                    src={`https://exsvuquqspmbrtyjdpyc.supabase.co/storage/v1/object/public/post/${post.postID}/${firstImage?.name}`} 
+                    src={`https://exsvuquqspmbrtyjdpyc.supabase.co/storage/v1/object/public/post/${post.postID}/Property/${firstImage?.name}`} 
                     onError={()=>{console.log("error")}}/>
             </Col>}
         </Row>

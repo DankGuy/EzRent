@@ -32,105 +32,18 @@ import { supabase } from "./supabase-client";
 import { useState, useEffect } from "react";
 import AppointmentDetails from "./Pages/agent/Appointment/AppointmentDetails";
 import StudentAppointmentDetails from "./Pages/student/profile/StudentAppointmentDetails";
-
-const root = ReactDOM.createRoot(document.getElementById("root"));
-
-const App = () => {
-
-  const [userType, setUserType] = useState("");
-
-  async function getUserMetadata() {
-    const {
-      data: { user },
-    } = await supabase.auth.getUser();
-    return user.user_metadata;
-  }
-
-  useEffect(() => {
-    supabase.auth.onAuthStateChange((_event, session) => {
-      if (session) {
-        getUserMetadata().then((res) => {
-          setUserType(res.userType)
-          // console.log(res.userType)
-        });
-        
-      }
-    });
-  }, []);
+import AuthRoute from "./Components/AuthRoute";
+import AuthProvider, { useAuth } from "./context/AuthProvider";
+import LoginCard from "./Components/LoginCard";
+import App from "./App";
 
 
-  const userTypeRoutes = () => {
-    if (userType === "agent") {
-        return (
-          <>
-          <Route path="/agent/" element={<AgentLayout />}>
-            <Route index element={<AgentHome />} />
-            <Route path="profile" element={<AgentProfile />} />
-            <Route path="profile/editProfile" element={<AgentEditProfile />} />
-            <Route
-              path="roomRental/createNewPost"
-              element={<AgentCreatePost />}
-            />
-            <Route path="roomRental" element={<AgentRoomRental />} />
-            <Route path="appointment" element={<AgentAppointment />} />
-            <Route path="appointment/:id" element={<AppointmentDetails />} />
-            <Route path="rentalAgreement" element={<AgentRentalAgreement />} />
-            <Route
-              path="roomRental/editPost/:id"
-              element={<AgentRoomRentalPost />}
-            />
-            <Route
-              path="roomRental/viewPost/:id"
-              element={<AgentRoomRentalPost />}
-            />
-          </Route>
-          </>
-        );
-    } else if (userType === "student") {
-
-      return (
-        <>
-          <Route path="/student/" element={<StudentLayout />}>
-            <Route index element={<Home />} />
-            <Route path="roomRental" element={<RoomRental />} />
-            <Route path="roommate" element={<Roommate />} />
-            <Route path="aboutUs" element={<AboutUs />} />
-            <Route path="/student/profile/" element={<Profile />}>
-              <Route path="profileInformation" element={<ProfileInformation />}/>
-              <Route path="paymentMethods" element={<PaymentMethods />} />
-              <Route path="rentalPayment" element={<RentalPayment />} />
-
-              <Route path="appointments" element={<Appointments />} />
-              <Route path="appointments/:id" element={<StudentAppointmentDetails />} />
-              <Route path="rentalAgreement" element={<RentalAgreement />} />
-              <Route path="editProfile" element={<EditProfile />} />
-            </Route>
-            <Route path="roomRental/:id" element={<RoomRentalPost />} />
-          </Route>
-        </>
-      );
-    }
-  };
-
-  return (
-    <React.StrictMode>
-      <BrowserRouter>
-        <Routes>
-          {/* Authentication routes */}
-          <Route path="/" element={<AuthPage />} />
-          <Route path="/login" element={<AuthPage />} />
-          <Route path="/signup" element={<SignupCard />} />
-          <Route path="/forgot-password" element={<ForgotPasswordCard />} />
-          <Route path="/update-password" element={<UpdatePasswordCard />} />
-          
-          {userTypeRoutes()}
-
-          {/* 404 Not Found route */}
-          <Route path="*" element={<NotFound />} />
-        </Routes>
-      </BrowserRouter>
-    </React.StrictMode>
-  );
-};
-
-root.render(<App />);
+ReactDOM.createRoot(document.getElementById("root")).render(
+  <React.StrictMode>
+    <BrowserRouter>
+      <AuthProvider>
+        <App />
+      </AuthProvider>
+    </BrowserRouter>
+  </React.StrictMode>
+);

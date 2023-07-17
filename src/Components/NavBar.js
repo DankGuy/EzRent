@@ -1,4 +1,4 @@
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import logo from "../images/logoIcon.png";
 import "./navBarCss.css";
 import { supabase } from "../supabase-client";
@@ -6,9 +6,12 @@ import { useEffect, useState } from "react";
 
 
 function NavBar() {
+
+  const navigate = useNavigate();
   const logout = () => {
-    localStorage.removeItem("selectedKey");
     supabase.auth.signOut();
+    localStorage.removeItem("selectedKey");
+    navigate("/");
   };
 
   const [profileSelectedKey, setProfileSelectedKey] = useState("");

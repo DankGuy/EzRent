@@ -33,6 +33,8 @@ function ReportModalForm({ buttonContent, postID }) {
         });
 
         const { reportDescription, reportReason } = e;
+
+        const userID = (await supabase.auth.getUser()).data.user.id;
         
         const {data, error } =await supabase
             .from('report')
@@ -40,7 +42,7 @@ function ReportModalForm({ buttonContent, postID }) {
                 {
                     reportReason: reportReason ,
                     reportDescription: reportDescription ,
-                    reportedBy: 'f47ac10b-58cc-4372-a567-0e02b2c3d479',
+                    reportedBy: userID,
                     postID: postID,
                     reportStatus: 'Pending',
                 },

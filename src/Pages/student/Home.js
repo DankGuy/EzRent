@@ -86,8 +86,8 @@ function Home() {
                 onFinish={onFinish}
                 initialValues={
                     {
-                        stateSelection: 'null',
-                        furnishType: 'null',
+                        stateSelection: null,
+                        furnishType: null,
                         minRent: null,
                         maxRent: null,
                         builtUpSize: 0,

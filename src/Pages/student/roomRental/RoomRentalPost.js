@@ -1,16 +1,17 @@
 import { Link, useNavigate, useLocation } from 'react-router-dom'
 import { useState, useEffect, useCallback } from 'react'
-import { Col, Row, Button, Modal, Select, Input, Form, Image, Breadcrumb, Avatar } from 'antd';
+import { Col, Row, Button, Modal, Select, Input, Form, Image, Breadcrumb, Avatar, Divider } from 'antd';
 import { TfiLocationPin, TfiBasketball } from 'react-icons/tfi'
 import { BsHouseFill, BsCurrencyDollar } from 'react-icons/bs'
 import { FaBed, FaShower, FaCar, FaSwimmer, FaRunning, FaSwimmingPool, FaDumbbell, FaTableTennis, FaShoppingCart } from 'react-icons/fa'
 import { TbAirConditioning, TbResize } from 'react-icons/tb'
 import { GoReport } from 'react-icons/go'
 import { CgSmartHomeRefrigerator } from 'react-icons/cg'
-import { MdOutlineTableRestaurant, MdWaterDrop } from 'react-icons/md'
+import { MdCurtains, MdOutlineTableRestaurant, MdTableRestaurant, MdWaterDrop } from 'react-icons/md'
 import { PiCoatHanger, PiTelevisionBold } from 'react-icons/pi'
-import { BiCloset, BiWifi, BiFootball, BiBuildingHouse } from 'react-icons/bi'
-import { GiSofa, GiClothesline, GiKidSlide, GiWashingMachine, GiShuttlecock, GiCoffeeCup, GiCctvCamera, GiBed, GiConverseShoe } from 'react-icons/gi'
+import { BiCloset, BiWifi, BiFootball, BiBuildingHouse, BiSolidBlanket } from 'react-icons/bi'
+import { LiaChairSolid } from 'react-icons/lia'
+import { GiSofa, GiClothesline, GiKidSlide, GiWashingMachine, GiShuttlecock, GiCoffeeCup, GiCctvCamera, GiBed, GiConverseShoe, GiPillow } from 'react-icons/gi'
 
 import { supabase } from '../../../supabase-client'
 import { DatePicker } from 'antd';
@@ -24,7 +25,8 @@ import Carousel from "react-multi-carousel";
 import 'react-multi-carousel/lib/styles.css';
 import { getDateOnly, getElapsedTime } from '../../../Components/timeUtils';
 import AppointmentModalForm from './AppointmentModalForm';
-import {UserOutlined} from '@ant-design/icons';
+import { UserOutlined } from '@ant-design/icons';
+import { Fragment } from 'react';
 
 function RoomRentalPost() {
     const location = useLocation();
@@ -32,8 +34,13 @@ function RoomRentalPost() {
     const navigate = useNavigate();
 
 
-    const [images, setImages] = useState([]);
+    const [propertyImages, setPropertyImages] = useState([]);
+    const [roomImages, setRoomImages] = useState({});
+
     const [agentAvatar, setAgentAvatar] = useState(null);
+
+    const [loadingImages, setLoadingImages] = useState(true);
+
 
     const responsive = {
         desktop: {
@@ -67,72 +74,46 @@ function RoomRentalPost() {
 
     const getAgentAvatar = async () => {
         const { data } = supabase.storage
-          .from("avatar")
-          .getPublicUrl(`avatar-${post.agent.agent_id}`, {
-            select: "metadata",
-            fileFilter: (metadata) => {
-              const fileType = metadata.content_type.split("/")[1];
-              return fileType === "jpg" || fileType === "png";
-            },
-          });
-          console.log(data.publicUrl)
+            .from("avatar")
+            .getPublicUrl(`avatar-${post.agent.agent_id}`, {
+                select: "metadata",
+                fileFilter: (metadata) => {
+                    const fileType = metadata.content_type.split("/")[1];
+                    return fileType === "jpg" || fileType === "png";
+                },
+            });
         return data;
-      };
+    };
 
 
-    let roomNum = '';
-    let roomType = '';
 
-    if (post.propertyCategory === 'Room') {
-        roomType = (
-            <>
-                <FaBed size={15} /> Room type: {post.propertyRoomType}
-            </>
-        );
-    } else {
-        const [masterRoom, mediumRoom, smallRoom] = post.propertyRoomNumber;
-        roomNum = (
-            <>
-                <FaBed size={15} />{masterRoom} Master room, {mediumRoom} Medium room, {smallRoom} Small room
-            </>
-        );
-
-    }
 
     const getFurnishIcon = (value) => {
         switch (value) {
-            case 'Air-conditioner':
-                return TbAirConditioning;
-            case 'Bed frame':
-                return GiBed;
-            case 'Bed':
-                return FaBed;
-            case 'Dining table':
-                return MdOutlineTableRestaurant;
-            case 'Water heater':
-                return FaShower;
-            case 'Refrigerator':
-                return CgSmartHomeRefrigerator;
-            case 'Study desk and table':
-                return MdOutlineTableRestaurant;
-            case 'Wardrobe':
-                return BiCloset;
-            case 'Sofa':
-                return GiSofa;
-            case 'Shoe rack':
-                return GiConverseShoe;
             case 'Clothes hanger':
                 return PiCoatHanger;
             case 'Clothes rack':
                 return GiClothesline;
+            case 'Refrigerator':
+                return CgSmartHomeRefrigerator;
+            case 'Dining table':
+                return MdOutlineTableRestaurant;
+
+            case 'Shoe rack':
+                return GiConverseShoe;
+            case 'Sofa':
+                return GiSofa;
             case 'Television':
                 return PiTelevisionBold;
+            case 'Water dispenser':
+                return MdWaterDrop;
+            case 'Water heater':
+                return FaShower;
             case 'Washing machine':
                 return GiWashingMachine;
             case 'WiFi':
                 return BiWifi;
-            case 'Water dispenser':
-                return MdWaterDrop;
+
             default:
                 return null;
         }
@@ -141,7 +122,7 @@ function RoomRentalPost() {
 
     const renderedFurnish = post.propertyFurnish.map((furnish, index) => {
         const IconComponent = getFurnishIcon(furnish);
-        return <Col span={6}
+        return <Col span={8}
             className='iconComponent'
             key={index}
         >
@@ -184,7 +165,7 @@ function RoomRentalPost() {
 
     const renderedFacility = post.propertyFacility.map((facility, index) => {
         const IconComponent = getFacilityIcon(facility);
-        return <Col span={6}
+        return <Col span={8}
             className='iconComponent'
             key={index}
         >
@@ -192,29 +173,173 @@ function RoomRentalPost() {
         </Col>
     });
 
-    const getImages = async () => {
-        //Get all images from supabase storage with id = postID 
-        const { data, error } = await supabase.storage.from('post').list(post.postID);
-
-        if (data) {
-            setImages(data);
-        }
-
-        if (error) {
-            console.log(error)
+    const getRoomFurnishIcon = (value) => {
+        switch (value) {
+            case 'Air-conditioner':
+                return TbAirConditioning;
+            case 'Bed':
+                return FaBed;
+            case 'Bed frame':
+                return GiBed;
+            case 'Blanket':
+                return BiSolidBlanket;
+            case 'Pillow':
+                return GiPillow;
+            case 'Study desk':
+                return MdTableRestaurant;
+            case 'Study chair':
+                return LiaChairSolid;
+            case 'Wardrobe':
+                return BiCloset;
+            case 'Window curtain':
+                return MdCurtains;
+            default:
+                return null;
         }
     }
 
+    const getRoomFurnish = (currentNum) => {
+
+        const roomFurnish = post.propertyRoomDetails[currentNum].roomFurnish;
+        console.log(roomFurnish);
+
+        const furnishLabels = Object.keys(roomFurnish);
+        const renderedRoomFurnish = furnishLabels.map((furnish, index) => {
+            const IconComponent = getRoomFurnishIcon(furnish);
+            const quantity = roomFurnish[furnish];
+            return <Col span={7}
+                className='iconComponent'
+                style={
+                    {
+                        marginLeft: '30px',
+                    }
+                }
+                key={index}
+            >
+                {IconComponent && <IconComponent style={{ verticalAlign: 'middle', marginRight: '5px' }} />} {furnish} x {quantity}
+            </Col>
+        });
+
+        return <Fragment>
+            <Row>
+                <Col span={24} style={{marginLeft: '20px'}}>
+                    <h3 style={{ fontFamily: 'arial', fontWeight: 'normal', marginBottom: '1em' }}>Room Furnish:</h3>
+                </Col>
+            </Row>
+            <Row>
+                {renderedRoomFurnish}
+            </Row>
+        </Fragment>
+    }
+
+
+    const getImages = async () => {
+        console.log(post.postID);
+        setLoadingImages(true);
+
+
+        // Get all images from supabase storage with id = postID 
+        const { data: propertyData, error: propertyError } = await supabase.storage
+            .from("post")
+            .list(`${post.postID}/Property`);
+
+        if (propertyData) {
+            setPropertyImages(propertyData);
+        }
+
+        if (propertyError) {
+            console.log(propertyError);
+        }
+
+        console.log(post.propertyRoomNumber);
+        console.log(typeof post.propertyRoomNumber);
+
+        // Create an array of room numbers
+        const roomNumbers = Array.from({ length: post.propertyRoomNumber }, (_, i) => i + 1);
+
+        // Map over the room numbers and retrieve room images for each
+        await Promise.all(
+            roomNumbers.map(async (roomNumber) => {
+                console.log(roomNumber);
+
+                const roomType = post.propertyRoomDetails[roomNumber].roomType;
+                console.log(roomType);
+
+                const { data: roomData, error: roomError } = await supabase.storage
+                    .from("post")
+                    .list(`${post.postID}/${roomType}`);
+
+                if (roomData) {
+                    console.log(roomData);
+                    setRoomImages((prevState) => {
+                        const updatedState = { ...prevState };
+                        updatedState[roomType] = roomData;
+                        return updatedState;
+                    });
+                }
+
+                if (roomError) {
+                    console.log(roomError);
+                }
+            })
+        );
+
+        console.log(roomImages);
+        setLoadingImages(false);
+
+    };
+
+
+
     //Display all images
     const displayImages = () => {
-        return images.map((image) => {
-            const publicURL = `https://exsvuquqspmbrtyjdpyc.supabase.co/storage/v1/object/public/post/${post.postID}/${image.name}`;
+        console.log(propertyImages);
+        console.log(roomImages);
+
+        if (loadingImages) {
+            return <p style={{fontFamily: 'arial'}}>Loading images...</p>;
+        }
+
+        if (propertyImages === undefined || propertyImages.length === 0) {
+            return <p style={{fontFamily: 'arial'}}>No images available</p>;
+        }
+
+        return propertyImages.map((image) => {
+            const publicURL = `https://exsvuquqspmbrtyjdpyc.supabase.co/storage/v1/object/public/post/${post.postID}/Property/${image.name}`;
 
             return (
                 <Image width={"auto"} height={200} key={image.id} src={publicURL} alt={image.name} />
             )
         })
     }
+
+    const displayRoomImages = (roomType) => {
+        const images = roomImages[roomType];
+        console.log(images);
+
+
+        if (loadingImages) {
+            return <p>Loading room images...</p>;
+        }
+
+        if (images === undefined || images.length === 0) {
+            return <p>No images available</p>;
+        }
+
+
+        if (images && images.length > 0) {
+            console.log("i am here");
+            return images.map((image) => {
+                const publicURL = `https://exsvuquqspmbrtyjdpyc.supabase.co/storage/v1/object/public/post/${post.postID}/${roomType}/${image.name}`;
+
+                return (
+                    <Image width={"auto"} height={100} key={image.id} src={publicURL} alt={image.name} />
+                );
+            });
+        }
+
+        return null;
+    };
 
 
     function redirectToWhatsApp(phoneNumber, postID) {
@@ -223,6 +348,47 @@ function RoomRentalPost() {
         const encodedText = encodeURIComponent(text);
         const whatsappUrl = `https://wa.me/6${processedNumber}?text=${encodedText}`;
         window.location.href = whatsappUrl;
+    }
+
+
+
+    const roomDetails = (currentNum) => {
+        console.log(currentNum);
+
+        const roomType = post.propertyRoomDetails[currentNum].roomType;
+        const roomSqrFeet = post.propertyRoomDetails[currentNum].roomSquareFeet;
+        const roomFurnish = post.propertyRoomDetails[currentNum].roomFurnish;
+
+
+        console.log(roomType);
+        return (
+            <Fragment key={currentNum}>
+                {
+                    post.propertyCategory === 'Unit' && 
+                    <Divider orientation="left" style={{ borderColor: 'gray' }} >Room {currentNum}</Divider>
+                }
+
+
+                <div
+                    style={{
+                        marginBottom: '20px',
+                        marginLeft: '20px',
+                    }}
+                >
+                    <Image.PreviewGroup>
+                        <Carousel responsive={responsive}>
+                            {displayRoomImages(roomType)}
+                        </Carousel>
+                    </Image.PreviewGroup>
+                </div>
+
+                <Row >
+                    <Col span={10} className='postSectionContent'><FaBed size={15} /> Room type: {roomType}</Col>
+                    <Col span={10} className='postSectionContent'><TbResize size={15} /> Room size: {roomSqrFeet} sq.ft.</Col>
+                </Row>
+                {getRoomFurnish(currentNum)}
+            </Fragment>
+        )
     }
 
 
@@ -263,20 +429,32 @@ function RoomRentalPost() {
                             <Col span={24} className='postSectionTitle'>Property Details: </Col>
                         </Row>
                         <Row >
-                            <Col span={10} className='postSectionContent'><BsCurrencyDollar size={15} />Rental: RM{post.propertyPrice}.00</Col>
+                            <Col span={10} className='postSectionContent'><BsCurrencyDollar size={15} />
+                                {
+                                    post.propertyCategory === 'Room' ?
+                                        `Room Rental Price: RM${post.propertyPrice}.00`
+                                        :
+                                        `Property Rental Price: RM${post.propertyPrice}.00`
+                                }
+                            </Col>
                             <Col span={10} className='postSectionContent'><BiBuildingHouse size={15} /> Property type: {post.propertyType}</Col>
                         </Row>
                         <Row >
                             <Col span={10} className='postSectionContent'><BsHouseFill size={15} />Furnish type: {post.propertyFurnishType}</Col>
                             <Col span={10} className='postSectionContent'><TbResize size={15} /> Built-up size: {post.propertySquareFeet} sq.ft.</Col>
                         </Row>
-                        <Row>
-                            <Col span={24} className='postSectionContent'>{roomType}</Col>
-                        </Row>
-                        <Row>
-                            <Col span={24} className='postSectionContent'>{roomNum}</Col>
-                        </Row>
                     </div>
+
+                    <div className='postSectionContainer'>
+                        <Row>
+                            <Col span={24} className='postSectionTitle'>Room Details: </Col>
+                        </Row>
+
+                        {Array.from({ length: post.propertyRoomNumber }, (_, i) => i + 1).map((roomNumber) => {
+                            return roomDetails(roomNumber);
+                        })}
+                    </div>
+
 
                     <div className='postSectionContainer'>
                         <Row>
@@ -310,9 +488,9 @@ function RoomRentalPost() {
 
                 </Col>
                 <Col span={8} offset={1}>
-                    <div className='postSectionContainer' style={{padding: '20px 0px'}}>
+                    <div className='postSectionContainer' style={{ padding: '20px 0px' }}>
                         <Row >
-                            <Col span={24} className='postSectionTitle' style={{display: 'flex', justifyContent: 'center', alignItems: 'center'}}>
+                            <Col span={24} className='postSectionTitle' style={{ display: 'flex', justifyContent: 'center', alignItems: 'center' }}>
                                 <Avatar size={140} src={agentAvatar} icon={<UserOutlined />} />
                             </Col>
                         </Row>
@@ -363,5 +541,7 @@ function RoomRentalPost() {
 
     );
 }
+
+
 
 export default RoomRentalPost;

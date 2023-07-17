@@ -2,7 +2,7 @@ import { Button } from "antd";
 import loginBg from "../images/loginBg.jpeg";
 import { Form, Input, Tooltip, message } from "antd";
 import { useState } from "react";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { supabase } from "../supabase-client";
 import { InfoCircleOutlined, UserOutlined } from "@ant-design/icons";
 import "./auth.css";
@@ -22,6 +22,8 @@ function LoginCard(props) {
     password: "",
   });
 
+  const navigate = useNavigate();
+
   function handleChange(e) {
     setFormData(() => ({ ...formData, [e.target.name]: e.target.value }));
   }
@@ -29,11 +31,24 @@ function LoginCard(props) {
   async function handleSubmit(e) {
     e.preventDefault();
     try {
-      const { data, error } = await supabase.auth.signInWithPassword({
+      const { data : {user, session}, error } = await supabase.auth.signInWithPassword({
         email: formData.email,
         password: formData.password,
       });
       if (error) throw error;
+      
+      if (user && session) {
+        if (user.user_metadata.userType === "agent") {
+          localStorage.setItem("selectedKey", "/agent");
+          window.location.href = "/agent";
+        }
+        else if (user.user_metadata.userType === "student") {
+          localStorage.setItem("selectedKey", "/student/profile/profileInformation");
+          // window.location.href = "/student";
+          navigate("/student");
+        }
+      }
+
     } catch (error) {
       message.error(error.error_description || error.message);
     }

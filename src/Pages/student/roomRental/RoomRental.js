@@ -218,7 +218,9 @@ function RoomRental() {
 
     //Get the first image from supabase storage with id = postID
     const getFirstImage = async (post) => {
-        const { data } = await supabase.storage.from('post').list(post.postID);
+        const { data } = await supabase.storage
+            .from('post')
+            .list(`${post.postID}/Property`);
 
         if (data) {
             setFirstImages((prevState) => ({
@@ -252,7 +254,7 @@ function RoomRental() {
                             <Image
                                 style={{ justifyContent: 'center' }}
                                 height={200}
-                                src={`https://exsvuquqspmbrtyjdpyc.supabase.co/storage/v1/object/public/post/${post.postID}/${firstImage?.name}`} />
+                                src={`https://exsvuquqspmbrtyjdpyc.supabase.co/storage/v1/object/public/post/${post.postID}/Property/${firstImage?.name}`} />
                         }
 
                     </Col>
@@ -279,19 +281,30 @@ function RoomRental() {
                                 {post.propertyFurnishType}
                                 <span style={{ marginLeft: '20px', marginRight: '10px' }}>&bull;</span>
                                 Built-up size: {post.propertySquareFeet} sq.ft.
+
+                                {post.propertyCategory === 'Room' ?
+                                    <>
+                                        <span style={{ marginLeft: '20px', marginRight: '10px' }}>&bull;</span>
+                                        {post.propertyRoomDetails[1].roomType}
+                                    </> :
+                                    <>
+                                        <span style={{ marginLeft: '20px', marginRight: '10px' }}>&bull;</span>
+                                        {post.propertyRoomNumber} rooms available
+                                    </>
+                                }
                             </Col>
                         </Row>
                     </div>
                     <div style={{ marginTop: '20px' }}>
                         <Row>
-                            <Col span={12}>
+                            <Col span={6}>
                                 <Link to={`/student/roomRental/${post.postID}`} state={post}>
                                     <Button
                                         type='primary'
                                         className='viewButton'>View</Button>
                                 </Link>
                             </Col>
-                            <Col span={12} style={{ textDecoration: 'underline', fontStyle: 'italic', display: 'flex', justifyContent: 'end', alignItems: 'end' }}>{`Posted on: ${getDateOnly(post.postDate)} (Last modified: ${getElapsedTime(post.lastModifiedDate)})`}</Col>
+                            <Col span={18} style={{ textDecoration: 'underline', fontStyle: 'italic', display: 'flex', justifyContent: 'end', alignItems: 'end' }}>{`Posted on: ${getDateOnly(post.postDate)} (Last modified: ${getElapsedTime(post.lastModifiedDate)})`}</Col>
                         </Row>
 
                     </div>

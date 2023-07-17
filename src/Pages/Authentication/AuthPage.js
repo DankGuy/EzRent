@@ -5,7 +5,7 @@ import { Button } from "antd";
 import AgentLayout from "../agent/AgentLayout";
 import StudentLayout from "../student/StudentLayout";
 
-export default function LoginPage({}) {
+export default function AuthPage({}) {
   const [session, setSession] = useState(null);
   const [metadata, setMetadata] = useState({
     userType: "",
