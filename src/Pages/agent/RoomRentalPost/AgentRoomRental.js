@@ -1,7 +1,7 @@
 import { IoAddCircle } from 'react-icons/io5'
 import { Link, useNavigate } from 'react-router-dom'
 import { useEffect, useState } from 'react';
-import { Col, Form, Image, Popconfirm, Row, message } from 'antd';
+import { Col, Form, Image, Popconfirm, Row, message, Pagination } from 'antd';
 import { supabase } from '../../../supabase-client';
 import CurrentPost from './CurrentPost';
 import PostSortingSelection from '../../../Components/PostSortingSelection';
@@ -12,9 +12,39 @@ function AgentRoomRental() {
 
     const navigate = useNavigate();
     const [posts, setPosts] = useState([]);
+    const [draftPosts, setDraftPosts] = useState([]);
     const [messageApi, contextHolder] = message.useMessage();
     const [sortBy, setSortBy] = useState(null);
     const [isFirstMount, setIsFirstMount] = useState(true);
+
+    // Define the number of items to show per page
+    const itemsPerPage = 8;
+    const draftItemsPerPage = 4;
+
+    // Define the current page state
+    const [currentPage, setCurrentPage] = useState(1);
+
+    // Calculate the start and end indexes for the current page
+    const startIndex = (currentPage - 1) * itemsPerPage;
+    const endIndex = currentPage * itemsPerPage;
+     // Get the posts for the current page
+     const currentPosts = posts.slice(startIndex, endIndex);
+
+
+    const [currentDraftPage, setCurrentDraftPage] = useState(1);
+    const startDraftIndex = (currentDraftPage - 1) * draftItemsPerPage;
+    const endDraftIndex = currentDraftPage * draftItemsPerPage;
+    const currentDraftPosts = draftPosts.slice(startDraftIndex, endDraftIndex);
+
+
+    // Handle page change
+    const handlePageChange = (page) => {
+        setCurrentPage(page);
+    };
+
+    const handleDraftPageChange = (page) => {
+        setCurrentDraftPage(page);
+    };
 
     useEffect(() => {
         fetchData();
@@ -32,7 +62,9 @@ function AgentRoomRental() {
     useEffect(() => {
         const fetchSortedData = async () => {
 
-            let query = supabase.from('property_post').select('*');
+            let query = supabase.from('property_post')
+                .select('*')
+                .not('propertyStatus', 'cs' , '{ "stage": "drafted" }');
 
             if (sortBy === 'ascDate') {
                 query = query.order('postDate', { ascending: true });
@@ -70,7 +102,8 @@ function AgentRoomRental() {
     const fetchData = async () => {
         const { data, error } = await supabase
             .from('property_post')
-            .select('*');
+            .select('*')
+            .contains('propertyStatus', { stage: 'drafted' });
 
         if (error) {
             console.log(error);
@@ -78,7 +111,20 @@ function AgentRoomRental() {
         }
 
         console.log(data);
-        setPosts(data);
+        setDraftPosts(data);
+
+        const { data: data2, error: error2 } = await supabase
+            .from('property_post')
+            .select('*')
+            .not('propertyStatus', 'cs' , '{ "stage": "drafted" }');
+
+        if (error2) {
+            console.log(error2);
+            return;
+        }
+
+        console.log(data2);
+        setPosts(data2);
     }
 
     const deletePost = async (postID) => {
@@ -132,20 +178,30 @@ function AgentRoomRental() {
                     <h1 style={{ fontSize: '25px' }}>Draft Post</h1>
                 </Col>
             </Row>
-            <Row>
-                {posts.map((post) => (
-                    <CurrentPost post={post} key={post.postID} deletePost={deletePost} contextHolder={contextHolder} />
-                ))}
-            </Row>
-            
+            <div>
+                <Row>
+                    {currentDraftPosts.map((post) => (
+                        <CurrentPost post={post} key={post.postID} deletePost={deletePost} contextHolder={contextHolder} />
+                    ))}
+                </Row>
+                <Pagination
+                    current={currentDraftPage}
+                    pageSize={draftItemsPerPage}
+                    total={draftPosts.length}
+                    onChange={handleDraftPageChange}
+                    showQuickJumper
+                    showTotal={() => `Total ${draftPosts.length} items`}
+                />
+            </div>
+
             <br />
-            <Row style={{ border: '1 solid red' }}>
+            <Row>
                 <Col span={14}>
                     <h1 style={{ fontSize: '25px' }}>Current Post</h1>
                 </Col>
                 <Col span={8} offset={2} style={{ display: 'flex', alignItems: 'end' }}>
                     <Form>
-                        <Form.Item name="sort"  label="Sort by">
+                        <Form.Item name="sort" label="Sort by">
                             <PostSortingSelection
                                 style={{ width: '250px' }}
                                 value={sortBy}
@@ -161,11 +217,21 @@ function AgentRoomRental() {
             <Row>
 
             </Row>
-            <Row>
-                {posts.map((post) => (
-                    <CurrentPost post={post} key={post.postID} deletePost={deletePost} contextHolder={contextHolder} />
-                ))}
-            </Row>
+            <div>
+                <Row>
+                    {currentPosts.map((post) => (
+                        <CurrentPost post={post} key={post.postID} deletePost={deletePost} contextHolder={contextHolder} />
+                    ))}
+                </Row>
+                <Pagination
+                    current={currentPage}
+                    pageSize={itemsPerPage}
+                    total={posts.length}
+                    onChange={handlePageChange}
+                    showQuickJumper
+                    showTotal={() => `Total ${posts.length} items`}
+                />
+            </div>
 
         </div>
 

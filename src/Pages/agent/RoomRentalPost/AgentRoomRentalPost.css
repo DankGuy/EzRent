@@ -35,3 +35,14 @@
     color: black !important;
     background-color: white !important;
 }
+
+.popOutBox:hover{
+    background-color: #ACCEF7 !important;
+    cursor: pointer;
+    border-radius: 5px;
+}
+
+.popOutBox{
+    padding: 0 5px;
+}
+

@@ -561,10 +561,12 @@ function AgentCreatePost() {
 
 
 
-    const onFinish = async (e) => {
+    const onFinish = async (e, buttonClicked) => {
 
         console.log(e);
         console.log(e["propertyName"])
+
+        console.log(buttonClicked);
 
         let propertyState = '';
         let propertyCity = '';
@@ -587,10 +589,6 @@ function AgentCreatePost() {
         const dateTime = getCurrentDateTime();
 
         const userID = (await supabase.auth.getUser()).data.user.id;
-
-        // let roomType = [];
-        // let roomSquareFeet = [];
-        // const roomFurnish = {};
 
         const roomDetails = {};
 
@@ -616,32 +614,10 @@ function AgentCreatePost() {
                 roomFurnish: roomFurnishQuantites,
             }
 
-
-
-            // roomType.push(e[`roomType${index}`]);
-            // roomSquareFeet.push(e[`roomSquareFeet${index}`]);
-
-            // const roomFurnishArray = e[`roomFurnish${index}`];
-            // const roomFurnishQuantites = {};
-
-            // roomFurnishArray.forEach((furnish) => {
-            //     const furnishQuantity = e[`roomFurnish${index}_${furnish}`];
-            //     roomFurnishQuantites[furnish] = furnishQuantity;
-            // });
-
-            // roomFurnish[e[`roomType${index}`]] = roomFurnishQuantites;
-
         }
         )
 
         console.log(roomDetails)
-
-
-        // console.log(roomType);
-        // console.log(roomSquareFeet);
-        // console.log(roomFurnish);
-
-
 
         const { data: postData, error: postError } = await supabase
             .from('property_post')
@@ -666,11 +642,23 @@ function AgentCreatePost() {
                     lastModifiedDate: dateTime,
                     propertyRoomNumber: isRoom ? 1 : e["propertyRoomNumber"],
                     propertyRoomDetails: roomDetails,
+                    propertyStatus: (
+                        buttonClicked === 'SaveDraft' ?
+                            {
+                                "status": 'inactive',
+                                "stage": 'drafted'
+                            }
+                            :
+                            {
+                                "status": 'inactive',
+                                "stage": 'pending'
+                            }
+                    )
                 },
             ])
             .select('postID');
 
-       
+
 
         if (postError) {
             console.log(postError)
@@ -686,7 +674,7 @@ function AgentCreatePost() {
         setIsButtonDisabled(true);
 
         messageApi.loading('Creating post...', 0);
-        
+
         setTimeout(() => {
             messageApi.success('Create successful. You will be redirected to the previous page within 3 seconds...', 3);
         }, 1000);
@@ -1030,15 +1018,35 @@ function AgentCreatePost() {
 
             <div style={{ display: 'flex', justifyContent: 'center', padding: '10px' }}>
                 <Form.Item>
-                    <Button htmlType='reset' className='viewButton' style={{ marginRight: '20px' }} type="primary" >
+                    <Button
+                        htmlType='reset'
+                        className='viewButton'
+                        onClick={() => { navigate('/agent/roomRental') }}
+                        style={{ marginRight: '20px' }}
+                        type="primary" >
                         Cancel
+                    </Button>
+                </Form.Item>
+
+                <Form.Item>
+                    <Button
+                        onClick={() => { onFinish(form.getFieldsValue(), "SaveDraft") }}
+                        style={{ marginRight: '20px' }}
+                        className="viewButton"
+                        type="primary"
+                        disabled={isButtonDisabled}>
+                        Save Draft
                     </Button>
                 </Form.Item>
 
                 <Form.Item>
                     {contextHolder}
 
-                    <Button htmlType='submit' className="viewButton" type="primary" disabled={isButtonDisabled}>
+                    <Button
+                        onClick={() => { onFinish(form.getFieldsValue(), "Submit") }}
+                        className="viewButton"
+                        type="primary"
+                        disabled={isButtonDisabled}>
                         Submit
                     </Button>
                 </Form.Item>
