@@ -105,7 +105,7 @@ function AgentRoomRental() {
 
     return <>
         <h1 style={{ fontSize: '25px' }}>Room Rental Post</h1>
-        <div>
+        <div >
             <Row>
                 <Col span={24}>
                     <div
@@ -126,6 +126,18 @@ function AgentRoomRental() {
                     </div>
                 </Col>
             </Row>
+            <br />
+            <Row>
+                <Col span={24}>
+                    <h1 style={{ fontSize: '25px' }}>Draft Post</h1>
+                </Col>
+            </Row>
+            <Row>
+                {posts.map((post) => (
+                    <CurrentPost post={post} key={post.postID} deletePost={deletePost} contextHolder={contextHolder} />
+                ))}
+            </Row>
+            
             <br />
             <Row style={{ border: '1 solid red' }}>
                 <Col span={14}>

@@ -43,6 +43,8 @@ function AgentLayout() {
       case '/agent/profile':
         setTitle('Profile')
         break;
+      case '/agent/myProperty':
+        setTitle('My Property')
     }
   }
 

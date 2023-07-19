@@ -33,7 +33,7 @@ function AgentRoomRentalPost() {
     const [pFurnishType, setPFurnishType] = useState(post.propertyFurnishType);
     const [pFurnishChecklist, setPFurnishChecklist] = useState(post.propertyFurnish);
 
-    const [isRoom, setIsRoom] = useState(post.category === 'Room' ? true : false);
+    const [isRoom, setIsRoom] = useState(post.propertyCategory === 'Room' ? true : false);
     const [fileList, setFileList] = useState([]);
 
 
@@ -350,7 +350,7 @@ function AgentRoomRentalPost() {
     const roomDetailForm = (index) => {
         return (
             <div key={index}>
-                <Divider orientation="left" style={{ borderColor: 'gray' }} >Room {index}</Divider>
+                <Divider orientation="left" style={{ borderColor: '#d9d9d9' }} >Room {index}</Divider>
                 <Row>
                     <Col span={4}>
                         <Form.Item name={`roomType${index}`} label="Room Type" required rules={[
@@ -948,6 +948,11 @@ function AgentRoomRentalPost() {
         }, 3000);
     }
 
+    const handleButtonCancel = () => {
+        form.resetFields();
+        navigate("/agent/roomRental");
+    }
+
     const showButton = () => {
         if (isView) {
             return (
@@ -974,7 +979,7 @@ function AgentRoomRentalPost() {
         else {
             return (
                 <div style={{ display: 'flex', justifyContent: 'center', padding: '10px' }}>
-                    <Button className='viewButton' style={{ marginRight: '20px', width: '100px' }} type="primary" onClick={() => { form.resetFields() }} >
+                    <Button className='viewButton' style={{ marginRight: '20px', width: '100px' }} type="primary" onClick={handleButtonCancel} >
                         Cancel
                     </Button>
 
@@ -1164,7 +1169,7 @@ function AgentRoomRentalPost() {
                 </Row>
             </fieldset>
             <fieldset
-                style={{ border: '1px solid gray', padding: '10px', borderRadius: '10px', marginTop: '20px' }}
+                style={{ border: '1px solid #d9d9d9', padding: '10px', borderRadius: '10px', marginTop: '20px' }}
             >
                 <legend style={{ width: 'auto', borderBottom: 'none', marginLeft: '20px', marginBottom: '0px' }}>Unit/Room Details</legend>
                 <Row>
@@ -1225,7 +1230,7 @@ function AgentRoomRentalPost() {
                 {isRoom ? roomDetailForm(1) : Array.from({ length: roomNum }, (_, i) => roomDetailForm(i + 1))}
             </fieldset>
             <fieldset
-                style={{ border: '1px solid gray', padding: '10px', borderRadius: '10px', marginTop: '20px' }}
+                style={{ border: '1px solid #d9d9d9', padding: '10px', borderRadius: '10px', marginTop: '20px' }}
             >
                 <legend style={{ width: 'auto', borderBottom: 'none', marginLeft: '20px', marginBottom: '0px' }}>Property Furnish</legend>
                 <Row>
@@ -1289,7 +1294,7 @@ function AgentRoomRentalPost() {
                 </Row>
             </fieldset>
             <fieldset
-                style={{ border: '1px solid gray', padding: '10px', borderRadius: '10px', marginTop: '20px' }}
+                style={{ border: '1px solid #d9d9d9', padding: '10px', borderRadius: '10px', marginTop: '20px' }}
             >
                 <legend style={{ width: 'auto', borderBottom: 'none', marginLeft: '20px', marginBottom: '0px' }}>Property Facility</legend>
                 <Row>
@@ -1307,7 +1312,7 @@ function AgentRoomRentalPost() {
                 </Row>
             </fieldset>
             <fieldset
-                style={{ border: '1px solid gray', padding: '10px', borderRadius: '10px', marginTop: '20px' }}
+                style={{ border: '1px solid #d9d9d9', padding: '10px', borderRadius: '10px', marginTop: '20px' }}
             >
                 <legend style={{ width: 'auto', borderBottom: 'none', marginLeft: '20px', marginBottom: '0px' }}>Additional description</legend>
 

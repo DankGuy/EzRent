@@ -16,14 +16,7 @@ function StateSelection({value, onChange, className, ...rest}){
             value: 'Kelantan',
             label: 'Kelantan'
         },
-        {
-            value: 'Kuala Lumpur',
-            label: 'Kuala Lumpur'
-        },
-        {
-            value: 'Labuan',
-            label: 'Labuan'
-        },
+       
         {
             value: 'Malacca',
             label: 'Malacca'
@@ -48,10 +41,7 @@ function StateSelection({value, onChange, className, ...rest}){
             value: 'Perlis',
             label: 'Perlis'
         },
-        {
-            value: 'Putrajaya',
-            label: 'Putrajaya'
-        },
+       
         {
             value: 'Sabah',
             label: 'Sabah'
@@ -67,6 +57,19 @@ function StateSelection({value, onChange, className, ...rest}){
         {
             value: 'Terengganu',
             label: 'Terengganu'
+        },
+        
+        {
+            value: 'Wilayah Persekutuan Kuala Lumpur',
+            label: 'Wilayah Persekutuan Kuala Lumpur'
+        },
+        {
+            value: 'Wilayah Persekutuan Labuan',
+            label: 'Wilayah Persekutuan Labuan'
+        },
+        {
+            value: 'Wilayah Persekutuan Putrajaya',
+            label: 'Wilayah Persekutuan Putrajaya'
         },
     ];
 

@@ -1,6 +1,6 @@
 import logo from '../images/icon.png'
 import { CgProfile } from 'react-icons/cg'
-import { BsFileEarmarkPostFill } from 'react-icons/bs'
+import { BsFileEarmarkPostFill, BsHouses } from 'react-icons/bs'
 import { BiTimeFive, BiLogOutCircle } from 'react-icons/bi'
 import { FaFileSignature } from 'react-icons/fa'
 import { MdOutlineDashboard } from 'react-icons/md'
@@ -71,6 +71,11 @@ function Sidebar({ value, setTitle }) {
                         key: '/agent',
                         icon: <MdOutlineDashboard style={{ width: '25px', height: 'auto' }} />,
                         label: 'Dashboard',
+                    },
+                    {
+                        key: '/agent/myProperty',
+                        icon: <BsHouses style={{ width: '25px', height: 'auto' }} />,
+                        label: 'My Property',
                     },
                     {
                         key: '/agent/roomRental',

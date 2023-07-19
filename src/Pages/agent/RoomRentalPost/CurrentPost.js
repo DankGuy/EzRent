@@ -41,6 +41,7 @@ function CurrentPost({post, deletePost, contextHolder}) {
                     marginTop: '10px',
                     boxShadow: '0 4px 8px 0 rgba(0,0,0,0.2)',
                     borderRadius: '8px',
+                    backgroundColor: 'white',
                 }}
             >
                 <Row>

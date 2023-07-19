@@ -31,6 +31,7 @@ import AgentRoomRental from "./Pages/agent/RoomRentalPost/AgentRoomRental";
 import AgentAppointment from "./Pages/agent/AgentAppointment";
 import AgentRentalAgreement from "./Pages/agent/AgentRentalAgreement";
 import AgentRoomRentalPost from "./Pages/agent/RoomRentalPost/AgentRoomRentalPost";
+import AgentMyProperty from "./Pages/agent/AgentMyProperty";
 import { supabase } from "./supabase-client";
 import { useState, useEffect } from "react";
 import AppointmentDetails from "./Pages/agent/Appointment/AppointmentDetails";
@@ -57,30 +58,16 @@ function App() {
                     <>
                         <Route path="/agent/" element={<AgentLayout />}>
                             <Route index element={<AgentHome />} />
+                            <Route path="myProperty" element={<AgentMyProperty />} />
                             <Route path="profile" element={<AgentProfile />} />
-                            <Route
-                                path="profile/editProfile"
-                                element={<AgentEditProfile />}
-                            />
-                            <Route
-                                path="roomRental/createNewPost"
-                                element={<AgentCreatePost />}
-                            />
+                            <Route path="profile/editProfile" element={<AgentEditProfile />}/>
+                            <Route path="roomRental/createNewPost" element={<AgentCreatePost />}/>
                             <Route path="roomRental" element={<AgentRoomRental />} />
                             <Route path="appointment" element={<AgentAppointment />} />
                             <Route path="appointment/:id" element={<AppointmentDetails />} />
-                            <Route
-                                path="rentalAgreement"
-                                element={<AgentRentalAgreement />}
-                            />
-                            <Route
-                                path="roomRental/editPost/:id"
-                                element={<AgentRoomRentalPost />}
-                            />
-                            <Route
-                                path="roomRental/viewPost/:id"
-                                element={<AgentRoomRentalPost />}
-                            />
+                            <Route path="rentalAgreement" element={<AgentRentalAgreement />} />
+                            <Route path="roomRental/editPost/:id"element={<AgentRoomRentalPost />}/>
+                            <Route path="roomRental/viewPost/:id" element={<AgentRoomRentalPost />}/>
                             <Route path="*" element={<NotFound />} />
                         </Route>
                         <Route path="*" element={<NotFound />} />

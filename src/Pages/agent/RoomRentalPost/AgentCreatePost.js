@@ -603,6 +603,8 @@ function AgentCreatePost() {
 
             const roomFurnishQuantites = {};
 
+            console.log(roomFurnishArray)
+
             roomFurnishArray.forEach((furnish) => {
                 const furnishQuantity = e[`roomFurnish${index}_${furnish}`];
                 roomFurnishQuantites[furnish] = furnishQuantity;
@@ -662,7 +664,7 @@ function AgentCreatePost() {
                     propertyCategory: e["propertyCategory"],
                     propertyDescription: e["propertyDescription"],
                     lastModifiedDate: dateTime,
-                    propertyRoomNumber: e["propertyRoomNumber"],
+                    propertyRoomNumber: isRoom ? 1 : e["propertyRoomNumber"],
                     propertyRoomDetails: roomDetails,
                 },
             ])

@@ -325,13 +325,13 @@ function RoomRental() {
                     }
                 }>
                 <Row style={{ marginLeft: '10%', marginRight: '5%', height: '25px' }}>
-                    <Col span={4}>
+                    <Col span={6}>
                         <Form.Item name="propertyState">
-                            <StateSelection value={state} onChange={handleStateChange} style={{ width: '80%' }} />
+                            <StateSelection value={state} onChange={handleStateChange} style={{ width: '90%' }} />
                         </Form.Item>
                     </Col>
 
-                    <Col span={17}>
+                    <Col span={15}>
                         <Form.Item name="searchInput">
                             <SearchInput placeholder='Search by location or property name' style={{ width: '90%' }} value={input} onChange={handleInputChange} />
                         </Form.Item>
