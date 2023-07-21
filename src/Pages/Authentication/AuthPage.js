@@ -1,9 +1,6 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useNavigate } from "react";
 import LoginCard from "../../Components/LoginCard";
 import { supabase } from "../../supabase-client";
-import { Button } from "antd";
-import AgentLayout from "../agent/AgentLayout";
-import StudentLayout from "../student/StudentLayout";
 
 export default function AuthPage({}) {
   const [session, setSession] = useState(null);
@@ -18,9 +15,7 @@ export default function AuthPage({}) {
     return user.user_metadata;
   }
 
-  const logout = () => {
-    supabase.auth.signOut();
-  };
+  const navigate = useNavigate();
 
   useEffect(() => {
     supabase.auth.getSession().then(({ data: { session } }) => {
@@ -35,26 +30,22 @@ export default function AuthPage({}) {
       if (_event === "SIGNED_IN") {
         setMetadata(getUserMetadata().then((res) => setMetadata(res)));
       }
-      else {
-        console.log("not signed in");
-      }
     });
 
     return () => subscription.unsubscribe();
   }, []);
 
   if (!session) {
-    return <LoginCard supabase={supabase} session={session} logout={logout} />;
+    return <LoginCard />;
   } else {
     if (metadata.userType === "agent") {
       localStorage.setItem("selectedKey", "/agent");
-      // setUserType("agent");
-      window.location.href = "/agent";
+      navigate("/agent");
 
+      // TODO: Check whether the student is admin or not (get userID, query from student table, check if admin or not)
     } else if (metadata.userType === "student") {
       localStorage.setItem("selectedKey", "/student/profile/profileInformation");
-      // setUserType("student");
-      window.location.href = "/student";
+      navigate("/agent");
     }
   }
 }

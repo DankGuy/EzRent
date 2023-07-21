@@ -1,4 +1,5 @@
-import loginBg from "../images/loginBg.jpeg";
+// import loginBg from "../images/loginBg.jpeg";
+import loginBg from "../images/loginBg.jpg";
 import { Button, Form, Input, Select, message, Radio } from "antd";
 import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";

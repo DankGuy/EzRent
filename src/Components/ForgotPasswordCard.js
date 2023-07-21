@@ -1,4 +1,5 @@
-import loginBg from "../images/loginBg.jpeg";
+// import loginBg from "../images/loginBg.jpeg";
+import loginBg from "../images/loginBg.jpg";
 import { Link } from "react-router-dom";
 import { supabase } from "../supabase-client";
 import { InfoCircleOutlined, UserOutlined } from "@ant-design/icons";

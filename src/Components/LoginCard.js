@@ -1,13 +1,14 @@
 import { Button } from "antd";
-import loginBg from "../images/loginBg.jpeg";
-import { Form, Input, Tooltip, message } from "antd";
-import { useState } from "react";
+import loginBg from "../images/loginBg.png";
+import cardBg from "../images/cardBg.jpg";
+import { Form, Input, Tooltip, message, Radio } from "antd";
+import { useEffect, useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { supabase } from "../supabase-client";
-import { InfoCircleOutlined, UserOutlined } from "@ant-design/icons";
+import { InfoCircleOutlined } from "@ant-design/icons";
 import "./auth.css";
 
-function LoginCard(props) {
+function LoginCard() {
   const [isHoveredForgot, setIsHoveredForgot] = useState(false);
   const [isHoveredSignup, setIsHoveredSignup] = useState(false);
   const hoverStyleForgot = {
@@ -22,6 +23,8 @@ function LoginCard(props) {
     password: "",
   });
 
+  const [userType, setUserType] = useState("student"); // ["student", "agent", "admin"
+
   const navigate = useNavigate();
 
   function handleChange(e) {
@@ -29,69 +32,74 @@ function LoginCard(props) {
   }
 
   async function handleSubmit(e) {
-    e.preventDefault();
     try {
-      const { data : {user, session}, error } = await supabase.auth.signInWithPassword({
+      const {
+        data: { user, session },
+        error,
+      } = await supabase.auth.signInWithPassword({
         email: formData.email,
         password: formData.password,
       });
       if (error) throw error;
-      
+
       if (user && session) {
         if (user.user_metadata.userType === "agent") {
           localStorage.setItem("selectedKey", "/agent");
           navigate("/agent");
-        }
-        else if (user.user_metadata.userType === "student") {
-          localStorage.setItem("selectedKey", "/student/profile/profileInformation");
-          // window.location.href = "/student";
+        } else if (user.user_metadata.userType === "student") {
+          localStorage.setItem(
+            "selectedKey",
+            "/student/profile/profileInformation"
+          );
           navigate("/student");
         }
       }
-
     } catch (error) {
       message.error(error.error_description || error.message);
     }
   }
+
+  // TODO: Add switch to login as admin or student/agent
+  // TODO: Check if the student is admin or not (get userID, query from student table, check if admin or not)
+  // if the switch is on admin, but the student is not admin, then show error message
+
   return (
     <div
       className="login-container"
       style={{
-        height: "100vh",
-        width: "100vw",
         display: "flex",
         alignItems: "center",
         justifyContent: "center",
-        background: `url(${loginBg}) no-repeat`,
-        backgroundSize: "cover",
+        margin: "0",
+        background: "rgb(255,255,255)",
+        maxHeight: "100vh",
+        maxWidth: "100vw"
       }}
     >
       <div
         className="login-card"
         style={{
-          backgroundColor: "#f0f2f5",
-          height: "auto",
+          backgroundColor: "#FFFFFF",
+          height: "60vh",
           width: "40%",
+          maxWidth: "500px",
+          maxHeight: "100vh",
           margin: "0",
           padding: "0",
           display: "flex",
           alignItems: "center",
           flexDirection: "column",
           justifyContent: "center",
-          boxShadow: "6px 6px 6px rgba(0, 0, 0, 0.2)",
           padding: "20px",
           borderRadius: "10px",
-          opacity: "0.95",
+          opacity: "0.9",
         }}
       >
         <Form
           className="login-form"
           name="basic"
-          labelCol={{
-            span: 8,
-          }}
           wrapperCol={{
-            span: 16,
+            span: 24,
           }}
           style={{
             maxWidth: 800,
@@ -100,9 +108,10 @@ function LoginCard(props) {
             remember: true,
           }}
           autoComplete="off"
+          onFinish={handleSubmit}
         >
-          <h1 style={{ textAlign: "center" }}>Login</h1>
-          <Form.Item label="Email" className="emailInput">
+          <h1 style={{ textAlign: "center", fontSize: "2rem" }}>Hi, <br/> Welcome Back! </h1>
+          <Form.Item className="emailInput" style={{width: "100%"}}>
             <Input
               name="email"
               onChange={handleChange}
@@ -119,7 +128,7 @@ function LoginCard(props) {
             />
           </Form.Item>
 
-          <Form.Item label="Password" name="password">
+          <Form.Item name="password">
             <Input.Password
               className="passwordInput"
               name="password"
@@ -137,15 +146,21 @@ function LoginCard(props) {
               marginBottom: 0,
             }}
           ></Form.Item>
+
+          <Form.Item style={{ display: "flex", justifyContent: "center"}}>
+            <Button
+              type="primary"
+              className="loginButton"
+              block
+              style={{ width: "22.5vw", fontSize: "1.2rem", height: "auto", backgroundColor: "#335C7C", borderColor: "#335C7C" }}
+              htmlType="submit"
+              onMouseOver={() => {
+              }}
+            >
+              Login
+            </Button>
+          </Form.Item>
         </Form>
-        <Button
-          type="primary"
-          block
-          style={{ width: "80%", fontSize: "1.2rem", height: "auto" }}
-          onClick={handleSubmit}
-        >
-          Login
-        </Button>
 
         <p
           style={{
@@ -171,6 +186,15 @@ function LoginCard(props) {
             Don't have an account? Sign up here!
           </Link>
         </p>
+      </div>
+      <div
+        style={{
+          height: "99vh",
+          maxHeight: "100vh",
+          width: "60vw",
+        }}
+      >
+        <img src={loginBg} style={{ height: "100%", width: "100%" }} />
       </div>
     </div>
   );
