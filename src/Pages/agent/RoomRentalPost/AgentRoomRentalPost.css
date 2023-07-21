@@ -50,3 +50,7 @@
     box-shadow: 0 -1px 1px 0 rgba(0, 28, 36, .3), 0 1px 1px 0 rgba(0, 28, 36, .3), 1px 1px 1px 0 rgba(0, 28, 36, .15), -1px 1px 1px 0 rgba(0, 28, 36, .15) !important;
     padding: 10px !important;
 }
+.postDetails .ant-descriptions-item-content{
+    display: flex !important;
+    flex: none !important;
+}

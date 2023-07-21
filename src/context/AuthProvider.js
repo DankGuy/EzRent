@@ -28,29 +28,12 @@ const AuthProvider = ({ children }) => {
   useEffect(() => {
     setLoading(true);
 
-    // supabase.auth.getSession().then(({ data: { session } }) => {
-    //     setUserSession(session);
-    //     setUser(session?.user ?? null);
-    //     setAuth(session?.user ? true : false);
-    //     setLoading(false);
-    //   });
-  
-    //   const { data } = supabase.auth.onAuthStateChange(async (event, session) => {
-    //     console.log(`Supabase auth event: ${event}`);
-    //     setUserSession(session);
-    //     setUser(session?.user ?? null);
-    //     setAuth(session?.user ? true : false);
-
-    //   });
-
     const getUser = async () => {
       const { data } = await supabase.auth.getUser();
       const { user: currentUser } = data;
       setUser(currentUser ?? null);
       setAuth(currentUser ? true : false);
       setLoading(false);
-      console.log(currentUser)
-      console.log(loading)
     };
     getUser();
 
@@ -60,15 +43,12 @@ const AuthProvider = ({ children }) => {
       const { data } = await supabase.auth.getSession();
       const { session: currentSession } = data;
       setUserSession(currentSession ?? null);
-      console.log(currentSession)
     };
 
     getSession();
 
 
     const { data } = supabase.auth.onAuthStateChange(async (event, session) => {
-        console.log(`Supabase auth event: ${event}`);
-        console.log(session)
       if (event == "PASSWORD_RECOVERY") {
         setAuth(false);
         setUserSession(session);
@@ -84,8 +64,6 @@ const AuthProvider = ({ children }) => {
         setUserSession(null);
         setLoading(false);
       }
-      console.log(user)
-      console.log(loading)
     });
     return () => {
       data.subscription.unsubscribe();

@@ -1,7 +1,7 @@
 import { supabase } from "../../supabase-client";
 import { useState, useEffect } from "react";
 
-function AgentMyProperty() {
+function AgentRentedProperty() {
 
 
     const [data, setData] = useState([]);
@@ -43,4 +43,4 @@ function AgentMyProperty() {
     )
 }
 
-export default AgentMyProperty;
+export default AgentRentedProperty;

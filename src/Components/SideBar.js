@@ -73,14 +73,14 @@ function Sidebar({ value, setTitle }) {
                         label: 'Dashboard',
                     },
                     {
-                        key: '/agent/myProperty',
+                        key: '/agent/rentedProperty',
                         icon: <BsHouses style={{ width: '25px', height: 'auto' }} />,
-                        label: 'My Property',
+                        label: 'Rented Property',
                     },
                     {
                         key: '/agent/roomRental',
                         icon: <BsFileEarmarkPostFill style={{ width: '25px', height: 'auto' }} />,
-                        label: 'Room Rental Post',
+                        label: 'Post Listing',
                     },
                     {
                         key: '/agent/appointment',

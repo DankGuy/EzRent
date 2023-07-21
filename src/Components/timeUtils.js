@@ -74,3 +74,23 @@ export function convertDate(inputDate) {
 
     return convertedDate;
 }
+
+export function formatDateTime(inputDateTime) {
+    // Function to convert date to "Jul 17, 2023" format
+    const formatDate = (inputDate) => {
+        const date = new Date(inputDate);
+        const options = { year: 'numeric', month: 'short', day: 'numeric' };
+        return date.toLocaleDateString('en-US', options);
+    };
+
+    // Function to convert time to 12-hour clock with AM/PM
+    const formatTime = (inputTime) => {
+        const time = new Date(`2000-01-01T${inputTime}`);
+        const options = { hour: 'numeric', minute: 'numeric', second: 'numeric', hour12: true };
+        return time.toLocaleTimeString('en-US', options);
+    };
+
+    const formattedDate = formatDate(inputDateTime);
+    const formattedTime = formatTime(inputDateTime.slice(11));
+    return `${formattedDate}, ${formattedTime}`;
+}

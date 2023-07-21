@@ -1,7 +1,7 @@
-import { Col, Image, Popconfirm, Popover, Row, Tag } from "antd";
+import { Col, Image, Popconfirm, Popover, Row, Tag, message } from "antd";
 import { FiEdit3 } from "react-icons/fi";
 import { GrView } from "react-icons/gr";
-import { MdOutlineDeleteOutline } from "react-icons/md";
+import { MdOutlineDeleteOutline, MdOutlinePublish } from "react-icons/md";
 import { BsThreeDotsVertical } from "react-icons/bs";
 import { Link } from "react-router-dom";
 import { useEffect, useState } from "react";
@@ -12,13 +12,14 @@ import {
     CloseCircleOutlined,
     DollarOutlined,
     SyncOutlined,
-  } from '@ant-design/icons';
+} from '@ant-design/icons';
 
 
 
-function CurrentPost({ post, deletePost, contextHolder }) {
+function CurrentPost({ post, deletePost, uploadPost, contextHolder }) {
 
     const [firstImage, setFirstImage] = useState(null);
+    const [isOpen, setIsOpen] = useState(false);
 
     useEffect(() => {
         getFirstImage();
@@ -35,9 +36,6 @@ function CurrentPost({ post, deletePost, contextHolder }) {
             console.log(error)
         }
 
-        console.log(post.postID);
-        console.log(data);
-
         setFirstImage(data[0]);
     }
 
@@ -48,6 +46,9 @@ function CurrentPost({ post, deletePost, contextHolder }) {
         cursor: 'pointer',
         margin: '5px 0px 5px 0px',
     };
+
+
+
 
     const content = (
         <div
@@ -87,22 +88,35 @@ function CurrentPost({ post, deletePost, contextHolder }) {
                     </Popconfirm>
                 </Col>
             </Row>
+            {post.propertyStatus.stage === 'drafted' &&
+                <Row className="popOutBox">
+                    <Col span={24} style={popOverStyle}
+                        onClick={
+                            () => {
+                                uploadPost(post.postID);
+                                setIsOpen(!isOpen);
+                            }}>
+                        <span
+                            style={{ display: 'flex', alignItems: 'center', cursor: 'pointer' }}>
+                            <span style={{ flexGrow: 1 }}>Post</span>
+                            <MdOutlinePublish size={18} />
+                        </span>
+                    </Col>
+                </Row>}
         </div>
     );
-
-    console.log(post);
 
     const tagStatus = () => {
 
         if (post.propertyStatus.stage === 'drafted') {
-            return ;
+            return;
         } else if (post.propertyStatus.stage === 'approved') {
             return (
-                <Tag icon={<CheckCircleOutlined/>} color="success">Approved</Tag>
+                <Tag icon={<CheckCircleOutlined />} color="success">Approved</Tag>
             );
         } else if (post.propertyStatus.stage === 'rejected') {
             return (
-                <Tag icon={<CloseCircleOutlined/>} color="error">Rejected</Tag>
+                <Tag icon={<CloseCircleOutlined />} color="error">Rejected</Tag>
             );
         } else if (post.propertyStatus.stage === 'pending') {
             return (
@@ -116,16 +130,16 @@ function CurrentPost({ post, deletePost, contextHolder }) {
     }
 
     return (
-        <Col span={5} style={{ marginRight: '40px', marginBottom: '30px' }} key={post.postID}>
+        <Col span={6} style={{ marginRight: '70px', marginBottom: '30px' }} key={post.postID}>
             <div
                 style={{
                     height: 'auto',
                     marginTop: '10px',
-                    backgroundColor: '#f2f3f3', //fafafa f2f3f3
+                    backgroundColor: '#ffffff', //fafafa f2f3f3
                     borderCollapse: 'separate',
                     borderSpacing: '0',
                     boxSizing: 'border-box',
-                    boxShadow: 'var(--shadow-container-0bkp96,0 1px 1px 0 rgba(0,28,36,.3),1px 1px 1px 0 rgba(0,28,36,.15),-1px 1px 1px 0 rgba(0,28,36,.15))',
+                    boxShadow: '0 -1px 1px 0 rgba(0, 28, 36, .3), 0 1px 1px 0 rgba(0, 28, 36, .3), 1px 1px 1px 0 rgba(0, 28, 36, .15), -1px 1px 1px 0 rgba(0, 28, 36, .15)',
                     fontFamily: 'var(--font-family-base-m6jzpk, "Amazon Ember", "Helvetica Neue", Roboto, Arial, sans-serif)',
                 }}
             >
@@ -133,7 +147,7 @@ function CurrentPost({ post, deletePost, contextHolder }) {
                     <Col span={3} style={{ margin: '5px 0px 5px 5px' }}>
                         {tagStatus()}
                     </Col>
-                    <Col span={20} style={{ textAlign: 'right', margin: '5px 5px 5px 0px', fontStyle: 'italic', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
+                    <Col span={20} style={{ fontSize: '13px', textAlign: 'right', margin: '5px 5px 5px 0px', fontStyle: 'italic', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
                         Last modified: {getElapsedTime(post.lastModifiedDate)}
                     </Col>
                 </Row>
@@ -141,6 +155,11 @@ function CurrentPost({ post, deletePost, contextHolder }) {
                     {firstImage && <Col span={24} style={{ display: 'flex', justifyContent: 'center', marginBottom: '10px' }}>
                         <Image style={{ justifyContent: 'center' }} height={200} src={`https://exsvuquqspmbrtyjdpyc.supabase.co/storage/v1/object/public/post/${post.postID}/Property/${firstImage?.name}`} />
                     </Col>}
+                </Row>
+                <Row>
+                    <Col span={24} style={{ paddingLeft: '15px', fontSize: '13px' }}>
+                        ID: {post.postID}
+                    </Col>
                 </Row>
                 <Row>
                     <Col span={24}
@@ -178,12 +197,16 @@ function CurrentPost({ post, deletePost, contextHolder }) {
                                 border: '1px solid blue',
                             }}
                             content={content}
+                            onOpenChange={() => setIsOpen(!isOpen)}
+                            open={isOpen}
                             trigger="click">
-                            <BsThreeDotsVertical size={18}
-                                style={{
-                                    color: 'black',
-                                    cursor: 'pointer',
-                                }} />
+                            <span>
+                                <BsThreeDotsVertical size={18}
+                                    style={{
+                                        color: 'black',
+                                        cursor: 'pointer',
+                                    }} />
+                            </span>
                         </Popover>
                     </Col>
                 </Row>

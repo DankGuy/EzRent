@@ -32,7 +32,7 @@ function AgentLayout() {
         setTitle('Dashboard')
         break;
       case '/agent/roomRental':
-        setTitle('Room Rental Post')
+        setTitle('Post Listing')
         break;
       case '/agent/appointment':
         setTitle('Appointment')
@@ -43,8 +43,8 @@ function AgentLayout() {
       case '/agent/profile':
         setTitle('Profile')
         break;
-      case '/agent/myProperty':
-        setTitle('My Property')
+      case '/agent/rentedProperty':
+        setTitle('Rented Property')
     }
   }
 

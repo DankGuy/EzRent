@@ -1,13 +1,14 @@
 import { useState, useEffect, Fragment } from 'react'
 import { PlusOutlined } from '@ant-design/icons';
-import { Modal, Upload, message, Form, Row, Col, Input, Radio, Select, InputNumber, Checkbox, Button, Popconfirm, Divider, Tooltip } from 'antd';
+import { Modal, Upload, message, Form, Row, Col, Input, Radio, Select, InputNumber, Checkbox, Button, Popconfirm, Divider, Tooltip, Descriptions } from 'antd';
 import TextArea from 'antd/es/input/TextArea';
 import { Link, useLocation, useNavigate } from 'react-router-dom';
 import "./AgentRoomRentalPost.css"
 import FurnishTypeSelection from '../../../Components/FurnishTypeSelection';
-import { getCurrentDateTime } from '../../../Components/timeUtils';
+import { convertDate, formatDateTime, getCurrentDateTime, getDateOnly } from '../../../Components/timeUtils';
 import { supabase, postCodeSupabase } from '../../../supabase-client';
 import { RiInformationFill } from 'react-icons/ri';
+import "../../../Components/timeUtils"
 
 
 function AgentRoomRentalPost() {
@@ -776,7 +777,7 @@ function AgentRoomRentalPost() {
                 }
             }
 
-            
+
 
             // Upload room images
             for (const index of Array.from({ length: roomNum }, (_, i) => i + 1)) {
@@ -869,8 +870,6 @@ function AgentRoomRentalPost() {
             .from('property_post')
             .update(
                 {
-                    postDate: dateTime,
-                    postType: 'Property',
                     propertyType: e["propertyType"],
                     propertyName: e["propertyName"],
                     propertyPrice: e["rentalPrice"],
@@ -888,6 +887,10 @@ function AgentRoomRentalPost() {
                     lastModifiedDate: dateTime,
                     propertyRoomNumber: e["propertyRoomNumber"],
                     propertyRoomDetails: roomDetails,
+                    propertyStatus: {
+                        stage: 'pending',
+                        status: 'inactive',
+                    },
                 })
             .eq('postID', post.postID);
 
@@ -1006,6 +1009,18 @@ function AgentRoomRentalPost() {
         }, 0);
     };
 
+    const statusColor = () => {
+        if (post.propertyStatus.stage === 'pending') {
+            return 'blue'
+        } else if (post.propertyStatus.stage === 'approved') {
+            return 'green'
+        } else if (post.propertyStatus.stage === 'rejected') {
+            return 'red'
+        } else if (post.propertyStatus.stage === 'drafted') {
+            return 'orange'
+        }
+    }
+
     return <>
         {isView ? <h1>View Post</h1> : <h1>Edit Post</h1>}
 
@@ -1048,6 +1063,52 @@ function AgentRoomRentalPost() {
                     border: '1px solid #d9d9d9',
                     borderRadius: '5px',
                     padding: '10px',
+                }}
+            >
+                <legend
+                    style={{
+                        width: 'auto',
+                        borderBottom: 'none',
+                        marginLeft: '20px',
+                        marginBottom: '0px',
+                    }}
+                >
+                    Post Details
+                </legend>
+                <Descriptions
+                    layout='vertical'
+                    labelStyle={{
+                        color: 'black',
+                    }}
+                    contentStyle={{
+                        color: 'black',
+                        border: '1px solid #d9d9d9',
+                        borderRadius: '5px',
+                        padding: '4px 11px', 
+                    }}
+                    colon={false}
+                    className='postDetails'
+                     >
+                    <Descriptions.Item label="Post ID">{post.postID}</Descriptions.Item>
+                    <Descriptions.Item label="Post Date">{formatDateTime(post.postDate)}</Descriptions.Item>
+                    <Descriptions.Item label="Last Modified Date"> {formatDateTime(post.lastModifiedDate)}</Descriptions.Item>
+                    <Descriptions.Item 
+                        label="Post Status"
+                        contentStyle={{
+                            color: statusColor(),
+                            textTransform: 'capitalize',
+                        }}
+                        >
+                            {post.propertyStatus.stage}
+                    </Descriptions.Item>
+                </Descriptions>
+            </fieldset>
+            <fieldset
+                style={{
+                    border: '1px solid #d9d9d9',
+                    borderRadius: '5px',
+                    padding: '10px',
+                    marginTop: '20px',
                 }}
             >
                 <legend style={{ width: 'auto', borderBottom: 'none', marginLeft: '20px', marginBottom: '0px' }}>Property Details</legend>

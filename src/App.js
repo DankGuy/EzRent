@@ -31,7 +31,7 @@ import AgentRoomRental from "./Pages/agent/RoomRentalPost/AgentRoomRental";
 import AgentAppointment from "./Pages/agent/AgentAppointment";
 import AgentRentalAgreement from "./Pages/agent/AgentRentalAgreement";
 import AgentRoomRentalPost from "./Pages/agent/RoomRentalPost/AgentRoomRentalPost";
-import AgentMyProperty from "./Pages/agent/AgentMyProperty";
+import AgentRentedProperty from "./Pages/agent/AgentRentedProperty";
 import { supabase } from "./supabase-client";
 import { useState, useEffect } from "react";
 import AppointmentDetails from "./Pages/agent/Appointment/AppointmentDetails";
@@ -48,9 +48,6 @@ import NotFoundBlue from "./Pages/Result/NotFoundBlue";
 function App() {
     const { user, userSession } = useAuth();
 
-    console.log(user);
-    console.log(userSession);
-
     const userTypeRoutes = () => {
         if (user && userSession) {
             if (user.user_metadata.userType === "agent") {
@@ -58,7 +55,7 @@ function App() {
                     <>
                         <Route path="/agent/" element={<AgentLayout />}>
                             <Route index element={<AgentHome />} />
-                            <Route path="myProperty" element={<AgentMyProperty />} />
+                            <Route path="rentedProperty" element={<AgentRentedProperty />} />
                             <Route path="profile" element={<AgentProfile />} />
                             <Route path="profile/editProfile" element={<AgentEditProfile />}/>
                             <Route path="roomRental/createNewPost" element={<AgentCreatePost />}/>

@@ -1,5 +1,5 @@
 import SearchInput from '../../../Components/SearchInput';
-import { Col, Row, Button, Form, Image, Empty } from 'antd';
+import { Col, Row, Button, Form, Image, Empty, Pagination } from 'antd';
 import { Link } from 'react-router-dom'
 import { SearchOutlined } from '@ant-design/icons';
 import { useState, useEffect } from 'react';
@@ -33,6 +33,18 @@ function RoomRental() {
     const [posts, setPost] = useState([]);
     const [firstImages, setFirstImages] = useState({});
 
+    const itemsPerPage = 10;
+
+    const [currentPage, setCurrentPage] = useState(1);
+
+    const startIndex = (currentPage - 1) * itemsPerPage;
+    const endIndex = currentPage * itemsPerPage;
+
+    const currentPosts = posts.slice(startIndex, endIndex);
+
+    const handlePageChange = (page) => {
+        setCurrentPage(page);
+    };
 
     const handleStateChange = (e) => {
         setState(e);
@@ -147,6 +159,8 @@ function RoomRental() {
                 query = query.order('propertySquareFeet', { ascending: false });
             }
 
+            query = query.contains('propertyStatus', { status: 'active' });
+
             const { data, error } = await query;
 
             if (error) {
@@ -232,7 +246,7 @@ function RoomRental() {
 
 
 
-    const renderedPost = posts.map((post) => {
+    const renderedPost = currentPosts.map((post) => {
         let bgColor;
         const firstImage = firstImages[post.postID];
 
@@ -259,7 +273,7 @@ function RoomRental() {
                 <div className='postDescription'>
                     <div>
                         <Row>
-                            <Col span={22} style={{ fontSize: '25px', fontWeight: 'normal' }}>{post.propertyName} - <span style={{ fontStyle: 'italic', fontWeight: '', fontSize: '20px' }}>{post.propertyState}</span></Col>
+                            <Col span={22} style={{ fontSize: '25px', fontWeight: 'normal' }}>{post.propertyName}</Col>
                             <Col span={2} style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', backgroundColor: bgColor, fontWeight: 'bold' }}>{post.propertyCategory}</Col>
                         </Row>
                         <Row>
@@ -407,6 +421,16 @@ function RoomRental() {
         </div>}
 
         {renderedPost}
+
+        <Pagination
+            current={currentPage}
+            pageSize={itemsPerPage}
+            total={posts.length}
+            onChange={handlePageChange}
+            showQuickJumper
+            showTotal={(total, range) => `${range[0]}-${range[1]} of ${total} items`}
+            style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', marginTop: '20px', marginBottom: '20px' }}
+        />
 
     </>
 };
