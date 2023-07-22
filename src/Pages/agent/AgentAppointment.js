@@ -1,4 +1,4 @@
-import { DatePicker, Row, Col, Checkbox, Button, Divider, message, Table, Tabs, Tag } from "antd";
+import { DatePicker, Row, Col, Checkbox, Button, Divider, message, Table, Tabs, Tag, Tooltip } from "antd";
 import moment from "moment";
 import { useState } from "react";
 import { supabase } from "../../supabase-client";
@@ -267,7 +267,7 @@ function AgentAppointment() {
             dataIndex: 'no',
             key: 'no',
             render: (text, record, index) => index + 1,
-            width: '4%',
+            width: '5%',
         },
         {
             title: 'Date',
@@ -300,12 +300,28 @@ function AgentAppointment() {
                 multiple: 2,
             },
             width: '20%',
+            ellipsis: {
+                showTitle: false,
+            },
+            render: (name) => (
+                <Tooltip placement="topLeft" title={name}>
+                    {name}
+                </Tooltip>
+            ),
         },
         {
             title: 'Property Address',
             dataIndex: 'propertyAddress',
             key: 'propertyAddress',
-            width: '30%',
+            width: '20%',
+            ellipsis: {
+                showTitle: false,
+            },
+            render: (address) => (
+                <Tooltip placement="topLeft" title={address}>
+                    {address}
+                </Tooltip>
+            ),
         },
         {
             title: 'Status',
@@ -319,7 +335,7 @@ function AgentAppointment() {
                     return <Tag color="red">{record.status}</Tag>;
                 }
             },
-            width: '10%',
+            width: '8%',
         },
         {
             title: 'Student Name',
@@ -329,8 +345,15 @@ function AgentAppointment() {
                 compare: (a, b) => a.studentName.localeCompare(b.studentName),
                 multiple: 2,
             },
-            width: '10%',
-
+            width: '12%',
+            ellipsis: {
+                showTitle: false,
+            },
+            render: (name) => (
+                <Tooltip placement="topLeft" title={name}>
+                    {name}
+                </Tooltip>
+            ),
         },
         {
             title: 'Action',
@@ -344,7 +367,7 @@ function AgentAppointment() {
                 )
                 
             },
-            width: '5%',
+            width: '7%',
         },
     ];
 
@@ -360,6 +383,7 @@ function AgentAppointment() {
                     dataSource={activeData}
                     bordered={true}
                     pagination={{ pageSize: 5 }}
+                    tableLayout="fixed"
                 />
         },
         {
@@ -371,6 +395,7 @@ function AgentAppointment() {
                     dataSource={historyData}
                     bordered={true}
                     pagination={{ pageSize: 5 }}
+                    tableLayout="fixed"
                 />
         },
     ];

@@ -18,3 +18,8 @@
     margin-top: 7px !important;
     
 }
+
+
+.postIDcolumn .ant-table-filter-trigger{
+    margin-inline: 4px 0px !important;
+}
