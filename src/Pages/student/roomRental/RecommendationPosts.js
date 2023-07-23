@@ -14,8 +14,6 @@ function RecommendationPosts({ postID }) {
 
     const [firstImage, setFirstImage] = useState({});
 
-
-    //Get all posts from  and get agent information from supabase
     const fetchPosts = async () => {
 
         //get current post state
@@ -77,8 +75,6 @@ function RecommendationPosts({ postID }) {
             slidesToSlide: 1 // optional, default to 1.
         }
     };
-
-
 
     const renderPosts = () => {
 
