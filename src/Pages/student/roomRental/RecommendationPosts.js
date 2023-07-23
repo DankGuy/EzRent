@@ -58,6 +58,10 @@ function RecommendationPosts({ postID }) {
         fetchPosts();
     }, []);
 
+    useEffect(() => {
+        fetchPosts();
+    }, [postID]);
+
     const responsive = {
         desktop: {
             breakpoint: { max: 3000, min: 1024 },
