@@ -1,12 +1,13 @@
 import { Fragment } from "react";
-import { supabase } from "../../supabase-client";
+import { supabase } from "../../../supabase-client";
 import { useState, useEffect } from "react";
 import { Button, Table, Tooltip } from "antd";
-import { convertDate } from "../../Components/timeUtils";
+import { convertDate } from "../../../Components/timeUtils";
 import { Input, Space } from "antd";
 import { SearchOutlined } from "@ant-design/icons";
 import Highlighter from "react-highlight-words";
 import { useRef } from "react";
+import { Link } from "react-router-dom";
 
 
 function AgentRentedProperty() {
@@ -30,7 +31,7 @@ function AgentRentedProperty() {
                 .eq("agentID", userID)
 
             const tableData = [];
-           
+
             data.forEach((element) => {
 
                 const rentalDuration = () => {
@@ -48,6 +49,7 @@ function AgentRentedProperty() {
 
                 tableData.push({
                     key: element.rentalAgreementID,
+                    post: element,
                     postID: element.postID.postID,
                     propertyName: element.postID.propertyName,
                     propertyAddress: address,
@@ -77,11 +79,11 @@ function AgentRentedProperty() {
 
     const getColumnSearchProps = (dataIndex, placeholder) => ({
         filterDropdown: ({ setSelectedKeys, selectedKeys, confirm, clearFilters }) => (
-            <div style={{ padding: 8 }} 
+            <div style={{ padding: 8 }}
                 onKeyDown={(e) => {
                     e.stopPropagation();
                 }
-            }>
+                }>
                 <Input
                     ref={searchInput}
                     placeholder={placeholder}
@@ -99,7 +101,7 @@ function AgentRentedProperty() {
                         onClick={() => handleSearch(selectedKeys, confirm, dataIndex)}
                         icon={<SearchOutlined />}
                         size="small"
-                        style={{ width: 90 }}   
+                        style={{ width: 90 }}
                     >
                         Search
                     </Button>
@@ -147,7 +149,7 @@ function AgentRentedProperty() {
 
     const columns = [
         {
-            title: "Post ID" ,
+            title: "Post ID",
             dataIndex: "postID",
             key: "postID",
             fixed: "left",
@@ -155,15 +157,17 @@ function AgentRentedProperty() {
             ellipsis: {
                 showTitle: false,
             },
-            render: (postID) => (
+            render: (postID, post) => (
                 <Tooltip placement="topLeft" title={postID}>
-                    {postID}
+                    <Link to={`/agent/rentedProperty/${postID}`} state={post} style={{textDecoration: 'underline'}}>
+                        {postID}
+                    </Link>
                 </Tooltip>
             ),
-            className: "postIDcolumn", 
+            className: "postIDcolumn",
         },
         {
-            title: "Property Name" ,
+            title: "Property Name",
             dataIndex: "propertyName",
             key: "propertyName",
             ...getColumnSearchProps("propertyName", "Search Property Name"),
@@ -178,7 +182,7 @@ function AgentRentedProperty() {
             ),
         },
         {
-            title: "Property Address" ,
+            title: "Property Address",
             dataIndex: "propertyAddress",
             key: "propertyAddress",
             sorter: (a, b) => a.propertyAddress.localeCompare(b.propertyAddress),
@@ -190,11 +194,11 @@ function AgentRentedProperty() {
                     {address}
                 </Tooltip>
             ),
-            
+
         }
         ,
         {
-            title: "Rental Price" ,
+            title: "Rental Price",
             dataIndex: "rentalPrice",
             key: "rentalPrice",
             sorter: (a, b) => a.rentalPrice - b.rentalPrice,
@@ -203,13 +207,13 @@ function AgentRentedProperty() {
             ),
         },
         {
-            title: "Duration" ,
+            title: "Duration",
             dataIndex: "duration",
             key: "duration",
             sorter: (a, b) => a.duration.localeCompare(b.duration),
         },
         {
-            title: "Student Name" ,
+            title: "Student Name",
             dataIndex: "studentName",
             key: "studentName",
             sorter: (a, b) => a.studentName.localeCompare(b.studentName),
@@ -224,7 +228,7 @@ function AgentRentedProperty() {
             ),
         },
         {
-            title: "Commencement Date" ,
+            title: "Commencement Date",
             dataIndex: "commencementDate",
             key: "commencementDate",
             sorter: (a, b) => a.commencementDate.localeCompare(b.commencementDate),
@@ -239,18 +243,18 @@ function AgentRentedProperty() {
 
     return (
         <Fragment>
-        <div>
-            <h1>Rented Property</h1>
-        </div>
-        <Table 
-            columns={columns}
-            dataSource={properties}
-            bordered={true}
-            pagination={{ pageSize: 20, position: ['bottomCenter'] }}
-            scroll={{ x: 1300, y: 300 }}
-            tableLayout="fixed"
-            className="propertyTable"
-        />
+            <div>
+                <h1>Rented Property</h1>
+            </div>
+            <Table
+                columns={columns}
+                dataSource={properties}
+                bordered={true}
+                pagination={{ pageSize: 20, position: ['bottomCenter'] }}
+                scroll={{ x: 1300, y: 300 }}
+                tableLayout="fixed"
+                className="propertyTable"
+            />
         </Fragment>
     );
 }

@@ -1,5 +1,5 @@
 import SearchInput from '../../../Components/SearchInput';
-import { Col, Row, Button, Form, Image, Empty, Pagination } from 'antd';
+import { Col, Row, Button, Form, Image, Empty, Pagination, FloatButton } from 'antd';
 import { Link } from 'react-router-dom'
 import { SearchOutlined } from '@ant-design/icons';
 import { useState, useEffect } from 'react';
@@ -431,6 +431,8 @@ function RoomRental() {
             showTotal={(total, range) => `${range[0]}-${range[1]} of ${total} items`}
             style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', marginTop: '20px', marginBottom: '20px' }}
         />
+
+        <FloatButton.BackTop />
 
     </>
 };

@@ -139,6 +139,7 @@ function AgentCreatePost() {
         //iterate through the roomNum and set initial value for roomSquareFeet
         Array.from({ length: roomNum }, (_, i) => i + 1).forEach((index) => {
             form.setFieldsValue({ [`roomSquareFeet${index}`]: 1 })
+            form.setFieldsValue({ [`maxTenant${index}`]: 1 })
         }
         )
 
@@ -203,6 +204,11 @@ function AgentCreatePost() {
                     <Col span={4} offset={1}>
                         <Form.Item name={`roomSquareFeet${index}`} label="Room Square Feet (sq.ft.)" required>
                             <InputNumber min={1} max={1000} style={{ width: '100%' }} />
+                        </Form.Item>
+                    </Col>
+                    <Col span={4} offset={1}>
+                        <Form.Item name={`maxTenant${index}`} label="Maximum Tenant" required>
+                            <InputNumber min={1} max={5} style={{ width: '100%' }} />
                         </Form.Item>
                     </Col>
                 </Row>
@@ -598,6 +604,7 @@ function AgentCreatePost() {
             const roomFurnishArray = e[`roomFurnish${index}`];
             const roomType = e[`roomType${index}`];
             const roomSquareFeet = e[`roomSquareFeet${index}`];
+            const maxTenant = e[`maxTenant${index}`];
 
             const roomFurnishQuantites = {};
 
@@ -612,6 +619,7 @@ function AgentCreatePost() {
                 roomType: roomType,
                 roomSquareFeet: roomSquareFeet,
                 roomFurnish: roomFurnishQuantites,
+                maxTenant: maxTenant,
             }
 
         }

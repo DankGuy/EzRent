@@ -84,6 +84,7 @@ function AgentRoomRentalPost() {
             Array.from({ length: roomNum }, (_, i) => i + 1).forEach((index) => {
                 form.setFieldsValue({ [`roomSquareFeet${index}`]: roomDetails[index].roomSquareFeet })
                 form.setFieldsValue({ [`roomType${index}`]: roomDetails[index].roomType })
+                form.setFieldsValue({ [`maxTenant${index}`]: roomDetails[index].maxTenant })
 
                 const roomFurnish = roomDetails[index].roomFurnish;
 
@@ -370,6 +371,11 @@ function AgentRoomRentalPost() {
                     <Col span={4} offset={1}>
                         <Form.Item name={`roomSquareFeet${index}`} label="Room Square Feet (sq.ft.)" required>
                             <InputNumber min={1} max={1000} style={{ width: '100%' }} />
+                        </Form.Item>
+                    </Col>
+                    <Col span={4} offset={1}>
+                        <Form.Item name={`maxTenant${index}`} label="Maximum Tenant" required>
+                            <InputNumber min={1} max={10} style={{ width: '100%' }} />
                         </Form.Item>
                     </Col>
                 </Row>
@@ -847,6 +853,7 @@ function AgentRoomRentalPost() {
             const roomFurnishArray = e[`roomFurnish${index}`];
             const roomType = e[`roomType${index}`];
             const roomSquareFeet = e[`roomSquareFeet${index}`];
+            const maxTenant = e[`maxTenant${index}`];
 
             const roomFurnishQuantites = {};
 
@@ -859,6 +866,7 @@ function AgentRoomRentalPost() {
                 roomType: roomType,
                 roomSquareFeet: roomSquareFeet,
                 roomFurnish: roomFurnishQuantites,
+                maxTenant: maxTenant,
             }
 
         }
@@ -887,10 +895,17 @@ function AgentRoomRentalPost() {
                     lastModifiedDate: dateTime,
                     propertyRoomNumber: e["propertyRoomNumber"],
                     propertyRoomDetails: roomDetails,
-                    propertyStatus: {
-                        stage: 'pending',
-                        status: 'inactive',
-                    },
+                    propertyStatus: (
+                        post.propertyStatus.stage === 'drafted' ?
+                            {
+                                stage: 'drafted',
+                                status: 'inactive',
+                            } :
+                            {
+                                stage: 'pending',
+                                status: 'inactive',
+                            }
+                    ),
                 })
             .eq('postID', post.postID);
 

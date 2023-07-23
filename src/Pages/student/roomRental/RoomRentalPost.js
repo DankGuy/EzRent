@@ -2,7 +2,7 @@ import { Link, useNavigate, useLocation } from 'react-router-dom'
 import { useState, useEffect, useCallback } from 'react'
 import { Col, Row, Button, Modal, Select, Input, Form, Image, Breadcrumb, Avatar, Divider } from 'antd';
 import { TfiLocationPin, TfiBasketball } from 'react-icons/tfi'
-import { BsHouseFill, BsCurrencyDollar } from 'react-icons/bs'
+import { BsHouseFill, BsCurrencyDollar, BsPeopleFill } from 'react-icons/bs'
 import { FaBed, FaShower, FaCar, FaSwimmer, FaRunning, FaSwimmingPool, FaDumbbell, FaTableTennis, FaShoppingCart } from 'react-icons/fa'
 import { TbAirConditioning, TbResize } from 'react-icons/tb'
 import { GoReport } from 'react-icons/go'
@@ -201,7 +201,6 @@ function RoomRentalPost() {
     const getRoomFurnish = (currentNum) => {
 
         const roomFurnish = post.propertyRoomDetails[currentNum].roomFurnish;
-        console.log(roomFurnish);
 
         const furnishLabels = Object.keys(roomFurnish);
         const renderedRoomFurnish = furnishLabels.map((furnish, index) => {
@@ -222,7 +221,7 @@ function RoomRentalPost() {
 
         return <Fragment>
             <Row>
-                <Col span={24} style={{marginLeft: '20px'}}>
+                <Col span={24} style={{ marginLeft: '20px' }}>
                     <h3 style={{ fontFamily: 'arial', fontWeight: 'normal', marginBottom: '1em' }}>Room Furnish:</h3>
                 </Col>
             </Row>
@@ -234,7 +233,6 @@ function RoomRentalPost() {
 
 
     const getImages = async () => {
-        console.log(post.postID);
         setLoadingImages(true);
 
 
@@ -247,30 +245,20 @@ function RoomRentalPost() {
             setPropertyImages(propertyData);
         }
 
-        if (propertyError) {
-            console.log(propertyError);
-        }
-
-        console.log(post.propertyRoomNumber);
-        console.log(typeof post.propertyRoomNumber);
-
         // Create an array of room numbers
         const roomNumbers = Array.from({ length: post.propertyRoomNumber }, (_, i) => i + 1);
 
         // Map over the room numbers and retrieve room images for each
         await Promise.all(
             roomNumbers.map(async (roomNumber) => {
-                console.log(roomNumber);
 
                 const roomType = post.propertyRoomDetails[roomNumber].roomType;
-                console.log(roomType);
 
                 const { data: roomData, error: roomError } = await supabase.storage
                     .from("post")
                     .list(`${post.postID}/${roomType}`);
 
                 if (roomData) {
-                    console.log(roomData);
                     setRoomImages((prevState) => {
                         const updatedState = { ...prevState };
                         updatedState[roomType] = roomData;
@@ -284,7 +272,6 @@ function RoomRentalPost() {
             })
         );
 
-        console.log(roomImages);
         setLoadingImages(false);
 
     };
@@ -293,15 +280,14 @@ function RoomRentalPost() {
 
     //Display all images
     const displayImages = () => {
-        console.log(propertyImages);
-        console.log(roomImages);
+
 
         if (loadingImages) {
-            return <p style={{fontFamily: 'arial'}}>Loading images...</p>;
+            return <p style={{ fontFamily: 'arial' }}>Loading images...</p>;
         }
 
         if (propertyImages === undefined || propertyImages.length === 0) {
-            return <p style={{fontFamily: 'arial'}}>No images available</p>;
+            return <p style={{ fontFamily: 'arial' }}>No images available</p>;
         }
 
         return propertyImages.map((image) => {
@@ -315,7 +301,6 @@ function RoomRentalPost() {
 
     const displayRoomImages = (roomType) => {
         const images = roomImages[roomType];
-        console.log(images);
 
 
         if (loadingImages) {
@@ -328,7 +313,6 @@ function RoomRentalPost() {
 
 
         if (images && images.length > 0) {
-            console.log("i am here");
             return images.map((image) => {
                 const publicURL = `https://exsvuquqspmbrtyjdpyc.supabase.co/storage/v1/object/public/post/${post.postID}/${roomType}/${image.name}`;
 
@@ -353,18 +337,15 @@ function RoomRentalPost() {
 
 
     const roomDetails = (currentNum) => {
-        console.log(currentNum);
 
         const roomType = post.propertyRoomDetails[currentNum].roomType;
         const roomSqrFeet = post.propertyRoomDetails[currentNum].roomSquareFeet;
-        const roomFurnish = post.propertyRoomDetails[currentNum].roomFurnish;
+        const maxTenant = post.propertyRoomDetails[currentNum].maxTenant;
 
-
-        console.log(roomType);
         return (
             <Fragment key={currentNum}>
                 {
-                    post.propertyCategory === 'Unit' && 
+                    post.propertyCategory === 'Unit' &&
                     <Divider orientation="left" style={{ borderColor: 'gray' }} >Room {currentNum}</Divider>
                 }
 
@@ -385,6 +366,9 @@ function RoomRentalPost() {
                 <Row >
                     <Col span={10} className='postSectionContent'><FaBed size={15} /> Room type: {roomType}</Col>
                     <Col span={10} className='postSectionContent'><TbResize size={15} /> Room size: {roomSqrFeet} sq.ft.</Col>
+                </Row>
+                <Row >
+                    <Col span={10} className='postSectionContent'><BsPeopleFill size={15} /> Max tenant: {maxTenant}</Col>
                 </Row>
                 {getRoomFurnish(currentNum)}
             </Fragment>
@@ -531,11 +515,9 @@ function RoomRentalPost() {
 
             <div style={{ display: 'flex', flexDirection: 'column' }}>
                 <Row>
-                    <Col span={24} style={{ fontSize: '30px', marginLeft: '10px', fontWeight: 'bold' }}>Recommended Properties</Col>
+                    <Col span={24} style={{ fontSize: '30px', marginLeft: '10px', fontWeight: '500' }}>Recommended Properties</Col>
                 </Row>
-                <Row justify={'center'} style={{ margin: '1% 0%' }}>
-                    <RecommendationPosts postID={post.postID} />
-                </Row>
+                <RecommendationPosts postID={post.postID} />
             </div>
         </div>
 

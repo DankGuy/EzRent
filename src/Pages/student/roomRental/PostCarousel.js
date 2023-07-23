@@ -36,7 +36,8 @@ function PostCarousel({ post }) {
 
    
 
-    return (<Col span={7} style={{ boxShadow: '0 2px 4px rgba(0, 0, 0, 0.2)', backgroundColor: 'white', position: 'relative', margin: '10px 20px', height: 'auto', width: '380px' }}>
+    return (
+    <Col span={7} style={{ boxShadow: '0 2px 4px rgba(0, 0, 0, 0.2)', backgroundColor: 'white', position: 'relative', margin: '10px 20px', height: 'auto', width: '380px' }}>
         <div
             style={{
                 position: 'absolute',

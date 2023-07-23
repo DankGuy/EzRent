@@ -1,10 +1,8 @@
 import React from "react";
-import ReactDOM from "react-dom/client";
-import AuthPage from "./Pages/Authentication/AuthPage";
 import SignupCard from "./Components/SignUpCard";
 import ForgotPasswordCard from "./Components/ForgotPasswordCard";
 import UpdatePasswordCard from "./Components/UpdatePasswordCard";
-import { BrowserRouter, Routes, Route } from "react-router-dom";
+import { Routes, Route } from "react-router-dom";
 import AgentLayout from "./Pages/agent/AgentLayout";
 import StudentLayout from "./Pages/student/StudentLayout";
 import NotFound from "./Pages/Result/NotFound";
@@ -31,19 +29,13 @@ import AgentRoomRental from "./Pages/agent/RoomRentalPost/AgentRoomRental";
 import AgentAppointment from "./Pages/agent/AgentAppointment";
 import AgentRentalAgreement from "./Pages/agent/AgentRentalAgreement";
 import AgentRoomRentalPost from "./Pages/agent/RoomRentalPost/AgentRoomRentalPost";
-import AgentRentedProperty from "./Pages/agent/AgentRentedProperty";
-import { supabase } from "./supabase-client";
-import { useState, useEffect } from "react";
+import AgentRentedProperty from "./Pages/agent/RentedProperty/AgentRentedProperty";
 import AppointmentDetails from "./Pages/agent/Appointment/AppointmentDetails";
 import StudentAppointmentDetails from "./Pages/student/profile/StudentAppointmentDetails";
 import AuthRoute from "./Components/AuthRoute";
 import AuthProvider, { useAuth } from "./context/AuthProvider";
 import LoginCard from "./Components/LoginCard";
-
-import NotFoundRed from "./Pages/Result/NotFoundRed";
-import NotFoundGreen from "./Pages/Result/NotFoundGreen";
-import NotFoundYellow from "./Pages/Result/NotFoundYellow";
-import NotFoundBlue from "./Pages/Result/NotFoundBlue";
+import RentedPropertyDetails from "./Pages/agent/RentedProperty/RentedPropertyDetails";
 
 function App() {
     const { user, userSession } = useAuth();
@@ -56,6 +48,7 @@ function App() {
                         <Route path="/agent/" element={<AgentLayout />}>
                             <Route index element={<AgentHome />} />
                             <Route path="rentedProperty" element={<AgentRentedProperty />} />
+                            <Route path="rentedProperty/:id" element={<RentedPropertyDetails />} />
                             <Route path="profile" element={<AgentProfile />} />
                             <Route path="profile/editProfile" element={<AgentEditProfile />}/>
                             <Route path="roomRental/createNewPost" element={<AgentCreatePost />}/>
