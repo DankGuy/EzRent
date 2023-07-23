@@ -11,6 +11,11 @@ import Home from "./Pages/student/Home";
 import RoomRental from "./Pages/student/roomRental/RoomRental";
 import Roommate from "./Pages/student/roommate/Roommate";
 import AboutUs from "./Pages/student/AboutUs";
+import AdminDashboard from "./Pages/student/admin/AdminDashboard";
+import AdminLayout from "./Pages/student/admin/AdminLayout";
+import PendingPosts from "./Pages/student/admin/PendingPosts";
+import PendingReports from "./Pages/student/admin/PendingReports";
+import ActivityLog from "./Pages/student/admin/ActivityLog";
 
 import Profile from "./Pages/student/Profile";
 import ProfileInformation from "./Pages/student/profile/ProfileInformation";
@@ -38,8 +43,7 @@ import LoginCard from "./Components/LoginCard";
 import RentedPropertyDetails from "./Pages/agent/RentedProperty/RentedPropertyDetails";
 
 function App() {
-    const { user, userSession } = useAuth();
-
+    const { user, userSession } = useAuth();  
     const userTypeRoutes = () => {
         if (user && userSession) {
             if (user.user_metadata.userType === "agent") {
@@ -71,6 +75,15 @@ function App() {
                             <Route path="roomRental" element={<RoomRental />} />
                             <Route path="roommate" element={<Roommate />} />
                             <Route path="aboutUs" element={<AboutUs />} />
+
+                            <Route path="/student/admin/" element={<AdminLayout />}>
+                                <Route index element={<AdminDashboard />} />
+                                <Route path="pendingPosts" element={<PendingPosts />} />
+                                <Route path="pendingPosts" element={<PendingPosts />} />
+                                <Route path="pendingReports" element={<PendingReports />} />
+                                <Route path="activityLog" element={<ActivityLog />} />
+                            </Route>
+
                             <Route path="/student/profile/" element={<Profile />}>
                                 <Route
                                     path="profileInformation"

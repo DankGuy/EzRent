@@ -1,5 +1,5 @@
 // import loginBg from "../images/loginBg.jpeg";
-import loginBg from "../images/loginBg.jpg";
+import signupBg from "../images/signupBg.jpg";
 import { Button, Form, Input, Select, message, Radio } from "antd";
 import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
@@ -8,32 +8,12 @@ import "./auth.css";
 
 const { Option } = Select;
 const formItemLayout = {
-  labelCol: {
-    xs: {
-      span: 10,
-    },
-    sm: {
-      span: 10,
-    },
-  },
   wrapperCol: {
     xs: {
       span: 18,
     },
     sm: {
-      span: 14,
-    },
-  },
-};
-const tailFormItemLayout = {
-  wrapperCol: {
-    xs: {
       span: 24,
-      offset: 0,
-    },
-    sm: {
-      span: 16,
-      offset: 8,
     },
   },
 };
@@ -110,6 +90,7 @@ function SignUpCard() {
         if (error) throw error;
 
         message.success("Please check your email for confirmation link!");
+        
         window.location.href = "/login";
       }
     } catch (error) {
@@ -133,14 +114,13 @@ function SignUpCard() {
     <div
       className="signup-container"
       style={{
+        backgroundColor: "#FFFFFF",
         minHeight: "100vh",
         height: "auto",
         width: "100vw",
         display: "flex",
         alignItems: "center",
         justifyContent: "center",
-        background: `url(${loginBg}) no-repeat fixed`,
-        backgroundSize: "cover",
         padding: "0",
         margin: "0",
       }}
@@ -148,9 +128,9 @@ function SignUpCard() {
       <div
         className="signup-card"
         style={{
-          backgroundColor: "#f0f2f5",
+          backgroundColor: "#FFFFFF",
           height: "auto",
-          width: "40%",
+          width: "40vw",
           marginTop: "40px",
           marginBottom: "40px",
           marginLeft: "0",
@@ -159,12 +139,10 @@ function SignUpCard() {
           alignItems: "center",
           flexDirection: "column",
           justifyContent: "center",
-          boxShadow: "6px 6px 6px rgba(0, 0, 0, 0.2)",
           padding: "20px",
           borderRadius: "10px",
-          opacity: "0.95",
           overflow: "auto",
-          maxWidthL: "100%",
+          maxWidth: "100%",
         }}
       >
         <Form
@@ -175,12 +153,17 @@ function SignUpCard() {
           style={{
             maxWidth: "81%",
             marginBottom: "10px",
+            width: "100%",
+            alignItems: "center",
+            display: "flex",
+            flexDirection: "column",
+            justifyContent: "center",
           }}
           scrollToFirstError
           colon={true}
         >
           <h1 style={{ textAlign: "center" }}>Sign Up</h1>
-          <Form.Item name="user-type" label="User Type">
+          <Form.Item name="user-type" className="radioItem">
             <Radio.Group onChange={handleUserChange} defaultValue={"student"}>
               <Radio value={"student"} defaultChecked>
                 Student
@@ -191,7 +174,6 @@ function SignUpCard() {
 
           <Form.Item
             name="name"
-            label="Name"
             rules={[
               {
                 required: true,
@@ -199,12 +181,11 @@ function SignUpCard() {
               },
             ]}
           >
-            <Input />
+            <Input placeholder="Name" />
           </Form.Item>
 
           <Form.Item
             name="email"
-            label="E-mail"
             rules={[
               {
                 type: "email",
@@ -231,12 +212,11 @@ function SignUpCard() {
               },
             ]}
           >
-            <Input />
+            <Input placeholder="E-mail" />
           </Form.Item>
 
           <Form.Item
             name="password"
-            label="Password"
             rules={[
               {
                 required: true,
@@ -263,12 +243,11 @@ function SignUpCard() {
             ]}
             hasFeedback
           >
-            <Input.Password />
+            <Input.Password placeholder="Password" />
           </Form.Item>
 
           <Form.Item
             name="confirm"
-            label="Confirm Password"
             dependencies={["password"]}
             hasFeedback
             rules={[
@@ -288,12 +267,11 @@ function SignUpCard() {
               }),
             ]}
           >
-            <Input.Password />
+            <Input.Password placeholder="Confirm Password" />
           </Form.Item>
 
           <Form.Item
             name="phone"
-            label="Phone Number"
             rules={[
               {
                 required: true,
@@ -316,17 +294,12 @@ function SignUpCard() {
               },
             ]}
           >
-            <Input
-              style={{
-                width: "100%",
-              }}
-            />
+            <Input placeholder="Phone Number" />
           </Form.Item>
 
           {isAgent && (
             <Form.Item
               name="company"
-              label="Company"
               rules={[
                 {
                   required: true,
@@ -334,30 +307,36 @@ function SignUpCard() {
                 },
               ]}
             >
-              <Input />
+              <Input placeholder="Company Name" />
             </Form.Item>
           )}
 
           <Form.Item
             name="gender"
-            label="Gender"
             rules={[
               {
                 required: true,
                 message: "Please select gender!",
               },
             ]}
+            initialValue="Male"
           >
-            <Radio.Group name="gender">
+            <Radio.Group name="gender" className="radioItem">
               <Radio value={"Male"}>Male</Radio>
               <Radio value={"Female"}>Female</Radio>
             </Radio.Group>
           </Form.Item>
 
-          <Form.Item {...tailFormItemLayout}>
-            <Button type="primary" htmlType="submit" style={{
-              width: "50%",
-            }}>
+          <Form.Item>
+            <Button
+              type="primary"
+              htmlType="submit"
+              style={{
+                backgroundColor: "#335C7C",
+                borderColor: "#335C7C",
+                marginTop: "5px",
+              }}
+            >
               Register
             </Button>
           </Form.Item>
@@ -371,6 +350,17 @@ function SignUpCard() {
           Already have an account? Login here
         </Link>
       </div>
+      <div
+        style={{
+          height: "100vh",
+          maxHeight: "100vh",
+          width: "55vw",
+          backgroundImage: `url(${signupBg})`,
+          backgroundSize: "55vw 100vh",
+          backgroundPosition: "center",
+          backgroundRepeat: "no-repeat",
+        }}
+      ></div>
     </div>
   );
 }

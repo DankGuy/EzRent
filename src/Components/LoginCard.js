@@ -1,6 +1,5 @@
 import { Button } from "antd";
-import loginBg from "../images/loginBg.png";
-import cardBg from "../images/cardBg.jpg";
+import loginBg from "../images/loginBg.jpg";
 import { Form, Input, Tooltip, message, Radio } from "antd";
 import { useEffect, useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
@@ -23,15 +22,13 @@ function LoginCard() {
     password: "",
   });
 
-  const [userType, setUserType] = useState("student"); // ["student", "agent", "admin"
-
   const navigate = useNavigate();
 
   function handleChange(e) {
     setFormData(() => ({ ...formData, [e.target.name]: e.target.value }));
   }
 
-  async function handleSubmit(e) {
+  async function handleSubmit() {
     try {
       const {
         data: { user, session },
@@ -73,15 +70,27 @@ function LoginCard() {
         margin: "0",
         background: "rgb(255,255,255)",
         maxHeight: "100vh",
-        maxWidth: "100vw"
+        maxWidth: "100vw",
       }}
     >
+      <div
+        style={{
+          height: "100vh",
+          maxHeight: "100vh",
+          width: "55vw",
+          backgroundImage: `url(${loginBg})`,
+          backgroundSize: "55vw 100vh",
+          backgroundPosition: "center",
+          backgroundRepeat: "no-repeat",
+        }}
+      ></div>
+
       <div
         className="login-card"
         style={{
           backgroundColor: "#FFFFFF",
           height: "60vh",
-          width: "40%",
+          width: "45vw",
           maxWidth: "500px",
           maxHeight: "100vh",
           margin: "0",
@@ -110,8 +119,10 @@ function LoginCard() {
           autoComplete="off"
           onFinish={handleSubmit}
         >
-          <h1 style={{ textAlign: "center", fontSize: "2rem" }}>Hi, <br/> Welcome Back! </h1>
-          <Form.Item className="emailInput" style={{width: "100%"}}>
+          <h1 style={{ textAlign: "center", fontSize: "2rem" }}>
+            Hi, <br /> Welcome Back!{" "}
+          </h1>
+          <Form.Item className="emailInput" style={{ width: "100%" }}>
             <Input
               name="email"
               onChange={handleChange}
@@ -147,15 +158,20 @@ function LoginCard() {
             }}
           ></Form.Item>
 
-          <Form.Item style={{ display: "flex", justifyContent: "center"}}>
+          <Form.Item style={{ display: "flex", justifyContent: "center" }}>
             <Button
               type="primary"
               className="loginButton"
               block
-              style={{ width: "22.5vw", fontSize: "1.2rem", height: "auto", backgroundColor: "#335C7C", borderColor: "#335C7C" }}
-              htmlType="submit"
-              onMouseOver={() => {
+              style={{
+                width: "22.5vw",
+                fontSize: "1.2rem",
+                height: "auto",
+                backgroundColor: "#335C7C",
+                borderColor: "#335C7C",
               }}
+              htmlType="submit"
+              onMouseOver={() => {}}
             >
               Login
             </Button>
@@ -186,15 +202,6 @@ function LoginCard() {
             Don't have an account? Sign up here!
           </Link>
         </p>
-      </div>
-      <div
-        style={{
-          height: "99vh",
-          maxHeight: "100vh",
-          width: "60vw",
-        }}
-      >
-        <img src={loginBg} style={{ height: "100%", width: "100%" }} />
       </div>
     </div>
   );

@@ -1,3 +1,4 @@
+import React from "react";
 import {
   MenuFoldOutlined,
   MenuUnfoldOutlined,
@@ -9,31 +10,27 @@ import {
 } from "@ant-design/icons";
 import { Layout, Menu, theme, Button } from "antd";
 import { useState } from "react";
-import React from "react";
 import { useNavigate, Outlet, useLocation } from "react-router-dom";
 import { useEffect } from "react";
 
 const { Header, Content, Sider } = Layout;
 
-function Profile() {
+function AdminSideBar() {
   const [collapsed, setCollapsed] = useState(false);
   const [title, setTitle] = useState("");
   const [selectedKey, setSelectedKey] = useState("");
   const location = useLocation();
 
   useEffect(() => {
-    const storedKey = localStorage.getItem('selectedKey');
+    const storedKey = localStorage.getItem("selectedKey");
     if (storedKey) {
       setSelectedKey(storedKey);
-      navigate(storedKey);
     }
   }, []);
 
   useEffect(() => {
     handleTitle(location.pathname);
   }, [location.pathname]);
-
-
 
   const {
     token: { colorBgContainer },
@@ -60,8 +57,9 @@ function Profile() {
   };
 
   const navigate = useNavigate();
+
   return (
-    <div style={{ marginTop: "6.5vh"}}>
+    <div style={{ marginTop: "6.5vh" }}>
       <Layout>
         <Sider
           trigger={null}
@@ -76,11 +74,12 @@ function Profile() {
             zIndex: "100",
           }}
         >
+          <div className="demo-logo-vertical" />
           <Menu
             onClick={({ key }) => {
               navigate(key);
               setSelectedKey(key);
-              localStorage.setItem('selectedKey', key);
+              localStorage.setItem("selectedKey", key);
               handleTitle(key);
             }}
             style={{
@@ -96,30 +95,27 @@ function Profile() {
               {
                 label: "Profile Information",
                 key: "/student/profile/profileInformation",
-                icon: <UserOutlined style={{ fontSize: '25px' }} />,
-                style: {
-                  marginTop: "15px",
-                }
+                icon: <UserOutlined />,
               },
               {
                 label: "Payment Methods",
                 key: "/student/profile/paymentMethods",
-                icon: <CreditCardOutlined style={{ fontSize: '25px' }} />,
+                icon: <CreditCardOutlined />,
               },
               {
                 label: "Rental Payment",
                 key: "/student/profile/rentalPayment",
-                icon: <DollarOutlined style={{ fontSize: '25px' }} />,
+                icon: <DollarOutlined />,
               },
               {
                 label: "Appointments",
                 key: "/student/profile/appointments",
-                icon: <ScheduleOutlined style={{ fontSize: '25px' }} />,
+                icon: <ScheduleOutlined />,
               },
               {
                 label: "Rental Agreement",
                 key: "/student/profile/rentalAgreement",
-                icon: <SolutionOutlined style={{ fontSize: '25px' }} />,
+                icon: <SolutionOutlined />,
               },
             ]}
           />
@@ -189,4 +185,4 @@ function Profile() {
   );
 }
 
-export default Profile;
+export default AdminSideBar;
