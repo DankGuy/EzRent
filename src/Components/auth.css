@@ -2,20 +2,27 @@
   font-size: 2em;
 }
 
-.signup-container .ant-form-item-label > label,
-.login-container .ant-form-item-label > label,
-.forgotpw-container .ant-form-item-label > label {
-  font-size: 1.3em;
-}
-
-.signup-container .ant-input-affix-wrapper > input.ant-input {
-  font-size: 1.3em;
-  width: 300px;
-}
-
 .login-container .ant-input-affix-wrapper > input.ant-input {
   font-size: 1.3em;
   width: 300px;
+}
+
+/*to target the password and confirm password*/
+.signup-container .ant-input-affix-wrapper {
+  width: 20vw;
+}
+
+.signup-container input.ant-input {
+  width: 20vw;
+  font-size: 1.3em;
+}
+
+.signup-container .ant-form-item {
+  max-width: 20vw;
+}
+
+.radioItem .ant-radio-wrapper > span {
+  font-size: 1.3em;
 }
 
 .forgotpw-container .ant-input-affix-wrapper > input.ant-input {
