@@ -94,3 +94,26 @@ export function formatDateTime(inputDateTime) {
     const formattedTime = formatTime(inputDateTime.slice(11));
     return `${formattedDate}, ${formattedTime}`;
 }
+
+export function getTimeStamp(inputDateTime) {
+    const date = new Date(inputDateTime);
+    const timeStamp = date.getTime();
+    return timeStamp;
+}
+
+export function getFormattedTime(inputTime) {
+    const dateObj = new Date(inputTime);
+
+    const formattedDate = dateObj.toLocaleString("en-US", {
+        weekday: 'short',
+        month: 'short',
+        day: 'numeric',
+        year: 'numeric',
+        hour: 'numeric',
+        minute: 'numeric',
+        second: 'numeric',
+        timeZoneName: 'short',
+    });
+
+    return formattedDate;
+}

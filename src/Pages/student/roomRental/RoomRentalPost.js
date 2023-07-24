@@ -1,6 +1,6 @@
-import { Link, useNavigate, useLocation } from 'react-router-dom'
-import { useState, useEffect, useCallback } from 'react'
-import { Col, Row, Button, Modal, Select, Input, Form, Image, Breadcrumb, Avatar, Divider } from 'antd';
+import { useLocation } from 'react-router-dom'
+import { useState, useEffect } from 'react'
+import { Col, Row, Image, Breadcrumb, Avatar, Divider } from 'antd';
 import { TfiLocationPin, TfiBasketball } from 'react-icons/tfi'
 import { BsHouseFill, BsCurrencyDollar, BsPeopleFill } from 'react-icons/bs'
 import { FaBed, FaShower, FaCar, FaSwimmer, FaRunning, FaSwimmingPool, FaDumbbell, FaTableTennis, FaShoppingCart } from 'react-icons/fa'
@@ -14,9 +14,6 @@ import { LiaChairSolid } from 'react-icons/lia'
 import { GiSofa, GiClothesline, GiKidSlide, GiWashingMachine, GiShuttlecock, GiCoffeeCup, GiCctvCamera, GiBed, GiConverseShoe, GiPillow } from 'react-icons/gi'
 
 import { supabase } from '../../../supabase-client'
-import { DatePicker } from 'antd';
-import dayjs from 'dayjs';
-import customParseFormat from 'dayjs/plugin/customParseFormat';
 import ReportModalForm from '../../../Components/ReportModalForm';
 import RecommendationPosts from './RecommendationPosts';
 
@@ -31,9 +28,6 @@ import { Fragment } from 'react';
 function RoomRentalPost() {
     const location = useLocation();
     const post = location.state; // Access the passed data from the location state
-    const navigate = useNavigate();
-
-
     const [propertyImages, setPropertyImages] = useState([]);
     const [roomImages, setRoomImages] = useState({});
 

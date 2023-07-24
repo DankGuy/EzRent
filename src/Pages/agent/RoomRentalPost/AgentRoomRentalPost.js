@@ -5,7 +5,7 @@ import TextArea from 'antd/es/input/TextArea';
 import { Link, useLocation, useNavigate } from 'react-router-dom';
 import "./AgentRoomRentalPost.css"
 import FurnishTypeSelection from '../../../Components/FurnishTypeSelection';
-import { convertDate, formatDateTime, getCurrentDateTime, getDateOnly } from '../../../Components/timeUtils';
+import { convertDate, formatDateTime, getCurrentDateTime, getDateOnly, getFormattedTime, getTimeStamp } from '../../../Components/timeUtils';
 import { supabase, postCodeSupabase } from '../../../supabase-client';
 import { RiInformationFill } from 'react-icons/ri';
 import "../../../Components/timeUtils"
@@ -49,6 +49,7 @@ function AgentRoomRentalPost() {
 
     }, [isView])
 
+    
 
     //Get the image list from supabase storage and set it to fileList
     useEffect(() => {
@@ -58,6 +59,9 @@ function AgentRoomRentalPost() {
                 .from('post')
                 .list(`${post.postID}/Property`);
 
+            console.log(images)
+
+
             if (error) {
                 console.log(error)
             } else {
@@ -66,10 +70,21 @@ function AgentRoomRentalPost() {
                         uid: image.id,
                         name: image.name,
                         status: 'done',
-                        url: `https://exsvuquqspmbrtyjdpyc.supabase.co/storage/v1/object/public/post/${post.postID}/Property/${image.name}`
+                        url: `https://exsvuquqspmbrtyjdpyc.supabase.co/storage/v1/object/public/post/${post.postID}/Property/${image.name}`,
+                        originFileObj: {
+                            uid: image.id,
+                            name: image.name,
+                            size: image.metadata.size,
+                            type: image.metadata.mimetype,
+                            lastModifiedDate: new Date(image.metadata.lastModified),
+                            lastModified: getTimeStamp(image.metadata.lastModified),
+                            webkitRelativePath: '',
+                        }
+
                     }
                 })
                 setFileList(urls)
+                console.log(urls)
             }
 
             //set fields value
@@ -139,7 +154,16 @@ function AgentRoomRentalPost() {
                             uid: image.id,
                             name: image.name,
                             status: 'done',
-                            url: `https://exsvuquqspmbrtyjdpyc.supabase.co/storage/v1/object/public/post/${post.postID}/${roomType}/${image.name}`
+                            url: `https://exsvuquqspmbrtyjdpyc.supabase.co/storage/v1/object/public/post/${post.postID}/${roomType}/${image.name}`,
+                            originFileObj: {
+                                uid: image.id,
+                                name: image.name,
+                                size: image.size,
+                                type: image.mimetype,
+                                lastModifiedDate: getFormattedTime(image.metadata.lastModified),
+                                lastModified: getTimeStamp(image.lastModified),
+                                webkitRelativePath: '',
+                            }
                         }
                     })
 
@@ -161,6 +185,18 @@ function AgentRoomRentalPost() {
 
 
         }
+
+        // //download a file from supabase
+        // const downloadFile = async () => {
+        //     const { data, error } = await supabase.storage
+        //         .from('post')
+        //         .("29a3a911-ae60-4a79-9a53-a698b2bad72b/Property/8.jpg");
+
+        //     console.log(data);
+
+        // }
+
+        // downloadFile();
 
         fetchPropertyImages();
         setRoomDetails();
@@ -729,6 +765,8 @@ function AgentRoomRentalPost() {
 
         try {
 
+
+
             // Get all folders in supabase storage
             const { data: folders, error: folderError } = await supabase.storage
                 .from('post')
@@ -1099,22 +1137,22 @@ function AgentRoomRentalPost() {
                         color: 'black',
                         border: '1px solid #d9d9d9',
                         borderRadius: '5px',
-                        padding: '4px 11px', 
+                        padding: '4px 11px',
                     }}
                     colon={false}
                     className='postDetails'
-                     >
+                >
                     <Descriptions.Item label="Post ID">{post.postID}</Descriptions.Item>
                     <Descriptions.Item label="Post Date">{formatDateTime(post.postDate)}</Descriptions.Item>
                     <Descriptions.Item label="Last Modified Date"> {formatDateTime(post.lastModifiedDate)}</Descriptions.Item>
-                    <Descriptions.Item 
+                    <Descriptions.Item
                         label="Post Status"
                         contentStyle={{
                             color: statusColor(),
                             textTransform: 'capitalize',
                         }}
-                        >
-                            {post.propertyStatus.stage}
+                    >
+                        {post.propertyStatus.stage}
                     </Descriptions.Item>
                 </Descriptions>
             </fieldset>
