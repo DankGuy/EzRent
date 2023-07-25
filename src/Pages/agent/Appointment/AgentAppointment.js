@@ -7,6 +7,7 @@ import "./AgentAppointment.css";
 import { AiOutlineZoomIn } from 'react-icons/ai'
 import { Link } from "react-router-dom";
 import dayjs from "dayjs";
+import AdvancedTimeslotSelection from "./AdvancedTimeslotSelection";
 
 
 function AgentAppointment() {
@@ -365,7 +366,7 @@ function AgentAppointment() {
                         <AiOutlineZoomIn size={20} style={{ cursor: 'pointer' }} />
                     </Link>
                 )
-                
+
             },
             width: '7%',
         },
@@ -427,11 +428,11 @@ function AgentAppointment() {
 
                 <div style={{ width: '100%', height: '300px', marginTop: '20px' }}>
 
-                    {isEdit ?
-                        <div className="buttonRow">
+                    <Row>
+                        {isEdit ?
+                            <>
 
-                            <Row>
-                                <Col span={4}>
+                                <Col span={4} style={{ display: 'inline-block', verticalAlign: 'middle' }}>
                                     <Button
                                         type="primary"
                                         className="viewButton"
@@ -440,15 +441,14 @@ function AgentAppointment() {
                                         Save
                                     </Button>
                                 </Col>
-                                <Col span={5} offset={1} >
+                                <Col span={5} offset={1} style={{ display: 'inline-block', verticalAlign: 'middle' }}>
                                     <Checkbox className="check-all-checkbox" indeterminate={indeterminate} onChange={onCheckAllChange} checked={checkAll} disabled={isCheckBoxDisabled}>
                                         {isCheckedAll ? 'Uncheck all' : 'Check all'}
                                     </Checkbox>
                                 </Col>
 
-                            </Row>
-                        </div> : <Row>
-                            <Col span={4} style={{ display: 'flex', alignItems: 'center' }}>
+                            </> :
+                            <Col span={4} style={{ display: 'inline-block',}}>
                                 <Button
                                     type="primary"
                                     className="viewButton"
@@ -459,7 +459,13 @@ function AgentAppointment() {
                                         setIsCheckBoxDisabled(false);
                                     }}>Edit</Button>
                             </Col>
-                        </Row>}
+                        }
+
+                        
+                        <AdvancedTimeslotSelection isEdit={isEdit}/>
+
+                    </Row>
+
                 </div>
             </div>
         </div>

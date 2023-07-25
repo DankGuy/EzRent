@@ -19,7 +19,7 @@
 }
 
 .check-all-checkbox{
-    margin: 5px !important; 
+    /* margin: 5px !important;  */
     padding: 5px !important;
     border-radius: 5px !important;
     border: 1px solid #d9d9d9 !important;
@@ -27,10 +27,10 @@
     background-color: #fff !important;
 }
 
-.buttonRow > .ant-row{
+/* .buttonRow > .ant-row{
     display: flex !important;
     align-items: center !important;
-}
+} */
 
 /* .ant-checkbox-inner:after{
     background-color: #fff !important;
