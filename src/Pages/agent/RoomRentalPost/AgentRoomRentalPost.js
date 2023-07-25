@@ -41,15 +41,20 @@ function AgentRoomRentalPost() {
     const [roomFileList, setRoomFileList] = useState({});
     const handleRoomChange = (index, { fileList: newFileList }) => {
         setRoomFileList(prev => ({ ...prev, [index]: newFileList }));
+
+        const roomType = form.getFieldValue(`roomType${index}`);
+        console.log(roomType);
     };
 
+
+    const [isRoomTypeDisabled, setIsRoomTypeDisabled] = useState([]);
 
     useEffect(() => {
         window.scrollTo(0, 0);
 
     }, [isView])
 
-    
+
 
     //Get the image list from supabase storage and set it to fileList
     useEffect(() => {
@@ -111,6 +116,7 @@ function AgentRoomRentalPost() {
                 }
 
                 form.setFieldsValue({ [`roomFurnish${index}`]: roomFurnishArray })
+
             }
             )
 
@@ -129,6 +135,13 @@ function AgentRoomRentalPost() {
             )
 
             setCheckedItems(checkedItems);
+
+            Array.from({ length: post.propertyRoomNumber }, (_, i) => i + 1).forEach((index) => {
+                console.log(index)
+                setIsRoomTypeDisabled(prev => [...prev, true])
+
+            }
+            )
 
         }
 
@@ -185,19 +198,6 @@ function AgentRoomRentalPost() {
 
 
         }
-
-        // //download a file from supabase
-        // const downloadFile = async () => {
-        //     const { data, error } = await supabase.storage
-        //         .from('post')
-        //         .("29a3a911-ae60-4a79-9a53-a698b2bad72b/Property/8.jpg");
-
-        //     console.log(data);
-
-        // }
-
-        // downloadFile();
-
         fetchPropertyImages();
         setRoomDetails();
         fetchRoomImages();
@@ -224,7 +224,24 @@ function AgentRoomRentalPost() {
         setPreviewOpen(true);
         setPreviewTitle(file.name || file.url.substring(file.url.lastIndexOf('/') + 1));
     };
-    const handleChange = ({ fileList: newFileList }) => setFileList(newFileList);
+
+    const handleChange = ({ fileList }) => setFileList(fileList);
+
+    const handleRemove = (e) => {
+        console.log(e)
+        //Remove the image from the supabase storage
+        const { data, error } = supabase.storage
+            .from('post')
+            .remove([`${post.postID}/Property/${e.name}`]);
+
+        if (error) {
+            console.log(error);
+            return;
+        }
+
+        console.log(data);
+
+    };
 
 
 
@@ -326,6 +343,27 @@ function AgentRoomRentalPost() {
 
     // }, [roomNum])
 
+    const uploadPropertyImage = async (file, id) => {
+        try {
+            const { data, error } = await supabase.storage
+                .from('post')
+                .upload(`${id}/Property/${file.name}`, file, {
+                    cacheControl: '3600',
+                    upsert: false,
+                });
+
+            if (error) {
+                console.log(error);
+                return;
+            }
+
+            console.log(data);
+        } catch (error) {
+            console.log(error);
+            // Handle any other unexpected errors
+        }
+    };
+
 
     const getBase64 = (file) =>
         new Promise((resolve, reject) => {
@@ -353,6 +391,14 @@ function AgentRoomRentalPost() {
         }
 
         const value = isJpgOrPng && isLt2M && !isDuplicate;
+
+        if (value) {
+            console.log(file)
+            //Upload file to supabase storage
+            uploadPropertyImage(file, post.postID);
+        }
+
+
         return value || Upload.LIST_IGNORE;
     };
 
@@ -396,12 +442,16 @@ function AgentRoomRentalPost() {
                                 required: true,
                                 message: 'Please choose the room type!',
                             },
+
                         ]}>
-                            <Select placeholder="All Room Type" options={[
-                                { value: 'Master Room', label: 'Master Room' },
-                                { value: 'Medium Room', label: 'Medium Room' },
-                                { value: 'Small Room', label: 'Small Room' },
-                            ]} />
+                            <Select
+                                placeholder="All Room Type"
+                                disabled={isRoomTypeDisabled[index]}
+                                options={[
+                                    { value: 'Master Room', label: 'Master Room' },
+                                    { value: 'Medium Room', label: 'Medium Room' },
+                                    { value: 'Small Room', label: 'Small Room' },
+                                ]} />
                         </Form.Item>
                     </Col>
                     <Col span={4} offset={1}>
@@ -419,7 +469,21 @@ function AgentRoomRentalPost() {
                     <Col span={24}>
                         <Form.Item
                             name={`roomImage${index}`}
-                            label="Room Image"
+                            label={
+                                <div style={{ display: 'flex' }}>
+                                    <span>Room Image</span>
+                                    <Tooltip
+                                        title="Image actions are independent from edit actions. Upload to add a new image. 
+                                        Delete to remove the current image (irreversible)."
+                                        placement='right'
+                                        overlayStyle={{ maxWidth: '400px' }}
+                                    >
+                                        <div>
+                                            <RiInformationFill style={{ marginLeft: '5px', color: 'gray' }} />
+                                        </div>
+                                    </Tooltip>
+                                </div>
+                            }
                             rules={[
                                 {
                                     validator: () => {
@@ -439,6 +503,7 @@ function AgentRoomRentalPost() {
                                 multiple={true}
                                 beforeUpload={beforeUploadRoom(index)}
                                 customRequest={dummyRequest}
+                                // onRemove={handleRoomRemove.bind(this, index)}
                             >
                                 {roomFileList[index]?.length >= 10 ? null : uploadButton}
                             </Upload>
@@ -957,7 +1022,7 @@ function AgentRoomRentalPost() {
         else {
 
 
-            uploadImage(e, post.postID);
+            //uploadImage(e, post.postID);
 
 
             messageApi.loading('Editing post...', 3);
@@ -1169,7 +1234,21 @@ function AgentRoomRentalPost() {
                     <Col span={24}>
                         <Form.Item
                             name="propertyImage"
-                            label="Property Image"
+                            label={
+                                <div style={{ display: 'flex' }}>
+                                    <span>Property Image</span>
+                                    <Tooltip
+                                        title="Image actions are independent from edit actions. Upload to add a new image. 
+                                        Delete to remove the current image (irreversible)."
+                                        placement='right'
+                                        overlayStyle={{ maxWidth: '400px' }}
+                                    >
+                                        <div>
+                                            <RiInformationFill style={{ marginLeft: '5px', color: 'gray' }} />
+                                        </div>
+                                    </Tooltip>
+                                </div>
+                            }
                             //rules to validate if the filelist is empty
                             rules={[
                                 {
@@ -1190,6 +1269,7 @@ function AgentRoomRentalPost() {
                                 multiple={true}
                                 beforeUpload={beforeUploadProperty}
                                 customRequest={dummyRequest}
+                                onRemove={handleRemove}
                             >
                                 {fileList.length >= 10 ? null : uploadButton}
                             </Upload>

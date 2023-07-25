@@ -1,7 +1,7 @@
 import { DatePicker, Row, Col, Checkbox, Button, Divider, message, Table, Tabs, Tag, Tooltip } from "antd";
 import moment from "moment";
 import { useState } from "react";
-import { supabase } from "../../supabase-client";
+import { supabase } from "../../../supabase-client";
 import { useEffect } from "react";
 import "./AgentAppointment.css";
 import { AiOutlineZoomIn } from 'react-icons/ai'

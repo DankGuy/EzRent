@@ -31,7 +31,7 @@ import AgentProfile from "./Pages/agent/AgentProfile";
 import AgentEditProfile from "./Pages/agent/Profile/EditProfile";
 import AgentCreatePost from "./Pages/agent/RoomRentalPost/AgentCreatePost";
 import AgentRoomRental from "./Pages/agent/RoomRentalPost/AgentRoomRental";
-import AgentAppointment from "./Pages/agent/AgentAppointment";
+import AgentAppointment from "./Pages/agent/Appointment/AgentAppointment";
 import AgentRentalAgreement from "./Pages/agent/AgentRentalAgreement";
 import AgentRoomRentalPost from "./Pages/agent/RoomRentalPost/AgentRoomRentalPost";
 import AgentRentedProperty from "./Pages/agent/RentedProperty/AgentRentedProperty";

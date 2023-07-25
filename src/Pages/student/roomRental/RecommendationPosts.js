@@ -2,7 +2,6 @@ import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import { Row, Col, Image, Button } from 'antd';
 import { BsCurrencyDollar } from 'react-icons/bs'
-import './RecommendationPosts.css'
 import { supabase } from '../../../supabase-client';
 import Carousel from 'react-multi-carousel';
 
