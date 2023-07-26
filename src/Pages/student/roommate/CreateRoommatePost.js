@@ -1,4 +1,4 @@
-import { Button, Modal, Steps, theme, message, Form, Input, Select, DatePicker, Radio } from "antd";
+import { Button, Modal, Steps, theme, message, Form, Input, Select, DatePicker, Radio, Divider, Card, InputNumber } from "antd";
 import { useState, useRef } from "react";
 import { supabase } from "../../../supabase-client";
 
@@ -57,10 +57,17 @@ function CreateRoommatePost({ value, onChange }) {
                     </>}
                 <div>
                     {hasRentedProperty && rentedProperty &&
-                        <div>
-                            <h3>Property Details</h3>
+
+
+                        <Card 
+                            style={{ width: '50%', marginBottom: "15px" }} 
+                            title="Property Details"
+                            headStyle={{backgroundColor: "#fafafa"}}
+                            bodyStyle={{padding: "10px"}}
+                            >
                             <p>Property Name: {rentedProperty.postID.propertyName}</p>
-                        </div>
+                            <p>Property Address: {rentedProperty.postID.propertyAddress}, {rentedProperty.postID.propertyPostcode}, {rentedProperty.postID.propertyCity}, {rentedProperty.postID.propertyState}</p>
+                        </Card>
                     }
                     {
                         hasRentedProperty && !rentedProperty &&
@@ -69,47 +76,64 @@ function CreateRoommatePost({ value, onChange }) {
                         </div>
                     }
                 </div>
-
             </div>
         }
         ,
-        {
-            title: 'Location & Property Details',
-            formRef: useRef(),
-            content: <div>
-                <Form.Item name="locationSelection" label="Select your preferable location">
-                    <Input placeholder="Location" />
-                </Form.Item>
-                <Form.Item name="propertySelection" label="Select your preferable property type">
-                    <Select placeholder="All Property Type"
-                        options={[
-                            { value: 'Apartment', label: 'Apartment' },
-                            { value: 'Condominium', label: 'Condominium' },
-                            { value: 'Flat', label: 'Flat' },
-                            { value: 'Terrace house', label: 'Terrace house' },
-                        ]} />
-                </Form.Item>
-            </div>
-        },
+       
         {
             title: 'Rental Details',
             formRef: useRef(),
             content: <div>
-                <Form.Item name="budgetInput" label="Enter your budget (RM)">
-                    <Input placeholder="Budget" />
-                </Form.Item>
+                {/* <Form.Item name="budgetInput" label="Enter your budget (RM)">
+                    <InputNumber placeholder="Budget" style={{ width: '21%' }} />
+                </Form.Item> */}
                 <Form.Item name="moveInDate" label="Select your preferable move in month">
-                    <DatePicker placeholder="Move-in Date" picker="month" />
+                    <DatePicker placeholder="Move-in Date"  />
                 </Form.Item>
                 <Form.Item name="rentDuration" label="Select your preferable rent duration">
-                    <Select placeholder="Rent Duration" options={[
+                    <Select placeholder="Rent Duration" style={{width: '21%'}}
+                    options={[
                         { value: '3 months', label: '3 months' },
                         { value: '6 months', label: '6 months' },
                         { value: '12 months', label: '12 months' },
+                        { value: '24 months', label: '24 months'}
                     ]} />
                 </Form.Item>
             </div>
         },
+        {
+            title: 'Roommate Preferences',
+            formRef: useRef(),
+            content: <div>
+                <Form.Item name="preferredGender" label="Preferred gender">
+                    <Radio.Group>
+                        <Radio value="male">Male</Radio>
+                        <Radio value="female">Female</Radio>
+                    </Radio.Group>
+                </Form.Item>
+                <Form.Item name="description" label="Description">
+                    <Input.TextArea placeholder="Description" />
+                </Form.Item>
+            </div>
+        },
+        //  {
+        //     title: 'Location & Property Details',
+        //     formRef: useRef(),
+        //     content: <div>
+        //         <Form.Item name="locationSelection" label="Select your preferable location">
+        //             <Input placeholder="Location" />
+        //         </Form.Item>
+        //         <Form.Item name="propertySelection" label="Select your preferable property type">
+        //             <Select placeholder="All Property Type"
+        //                 options={[
+        //                     { value: 'Apartment', label: 'Apartment' },
+        //                     { value: 'Condominium', label: 'Condominium' },
+        //                     { value: 'Flat', label: 'Flat' },
+        //                     { value: 'Terrace house', label: 'Terrace house' },
+        //                 ]} />
+        //         </Form.Item>
+        //     </div>
+        // },
     ]
 
     const handleFormFinish = () => {
@@ -189,7 +213,8 @@ function CreateRoommatePost({ value, onChange }) {
                     initialValues={
                         {
                             rentedProperty: 'no',
-                    }
+                            preferredGender: 'male',
+                        }
                     }
                 >
                     {stepsData.map((item, index) => (
@@ -209,7 +234,7 @@ function CreateRoommatePost({ value, onChange }) {
                             <Button
                                 type="primary"
                                 disabled={
-                                    index === 0 && hasRentedProperty && !rentedProperty ? true : false  
+                                    index === 0 && hasRentedProperty && !rentedProperty ? true : false
                                 }
                                 onClick={index === stepsData.length - 1 ? handleFormFinish : handleNextStep}
                             >
