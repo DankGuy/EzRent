@@ -1,5 +1,6 @@
-import { Button, Modal, Steps, theme, message, Form, Input, Select, DatePicker } from "antd";
+import { Button, Modal, Steps, theme, message, Form, Input, Select, DatePicker, Radio } from "antd";
 import { useState, useRef } from "react";
+import { supabase } from "../../../supabase-client";
 
 
 function CreateRoommatePost({ value, onChange }) {
@@ -8,7 +9,70 @@ function CreateRoommatePost({ value, onChange }) {
     const [currentStep, setCurrentStep] = useState(0);
     const [formData, setFormData] = useState({});
 
+    const [hasRentedProperty, setHasRentedProperty] = useState(false);
+    const [rentedProperty, setRentedProperty] = useState(null);
+    const [isLoading, setIsLoading] = useState(false);
+
+    const handleYesNo = (e) => {
+        if (e.target.value === 'yes') {
+            setHasRentedProperty(true);
+        } else {
+            setHasRentedProperty(false);
+        }
+    }
+
+    const handleSearch = async (value) => {
+        setIsLoading(true);
+
+        //Get post details from database
+        const { data: post, error } = await supabase
+            .from('rental_agreement')
+            .select('*, postID(*)')
+            .eq('postID', value)
+            .single();
+
+        if (error) {
+            message.error("Invalid property post ID");
+        }
+        setRentedProperty(post);
+        setIsLoading(false);
+    }
+
     const stepsData = [
+        {
+            title: 'Rented Property Details',
+            formRef: useRef(),
+            content: <div>
+                <Form.Item name="rentedProperty" label="Do you have a rented property?">
+                    <Radio.Group onChange={handleYesNo}>
+                        <Radio value="yes">Yes</Radio>
+                        <Radio value="no">No</Radio>
+                    </Radio.Group>
+                </Form.Item>
+                {hasRentedProperty &&
+                    <>
+                        <Form.Item name="rentedPropertyId" label="Enter your rented property post ID">
+                            <Input.Search placeholder="Rented Property ID" enterButton={true} allowClear loading={isLoading} onSearch={handleSearch} />
+                        </Form.Item>
+                    </>}
+                <div>
+                    {hasRentedProperty && rentedProperty &&
+                        <div>
+                            <h3>Property Details</h3>
+                            <p>Property Name: {rentedProperty.postID.propertyName}</p>
+                        </div>
+                    }
+                    {
+                        hasRentedProperty && !rentedProperty &&
+                        <div>
+                            <h3>No Results Found...</h3>
+                        </div>
+                    }
+                </div>
+
+            </div>
+        }
+        ,
         {
             title: 'Location & Property Details',
             formRef: useRef(),
@@ -17,7 +81,7 @@ function CreateRoommatePost({ value, onChange }) {
                     <Input placeholder="Location" />
                 </Form.Item>
                 <Form.Item name="propertySelection" label="Select your preferable property type">
-                    <Select placeholder="All Property Type" 
+                    <Select placeholder="All Property Type"
                         options={[
                             { value: 'Apartment', label: 'Apartment' },
                             { value: 'Condominium', label: 'Condominium' },
@@ -35,7 +99,7 @@ function CreateRoommatePost({ value, onChange }) {
                     <Input placeholder="Budget" />
                 </Form.Item>
                 <Form.Item name="moveInDate" label="Select your preferable move in month">
-                    <DatePicker placeholder="Move-in Date" picker="month"/>
+                    <DatePicker placeholder="Move-in Date" picker="month" />
                 </Form.Item>
                 <Form.Item name="rentDuration" label="Select your preferable rent duration">
                     <Select placeholder="Rent Duration" options={[
@@ -122,13 +186,18 @@ function CreateRoommatePost({ value, onChange }) {
                     ref={stepsData[currentStep].formRef}
                     style={{ marginTop: 20 }}
                     layout="vertical"
+                    initialValues={
+                        {
+                            rentedProperty: 'no',
+                    }
+                    }
                 >
                     {stepsData.map((item, index) => (
                         <div key={index} style={{ display: index === currentStep ? 'block' : 'none' }}>
                             {item.content}
 
                             {/* Cancel button */}
-                            {index !== 0 && 
+                            {index !== 0 &&
                                 <Button
                                     style={{ marginRight: 10 }}
                                     onClick={() => setCurrentStep((prev) => prev - 1)}
@@ -139,6 +208,9 @@ function CreateRoommatePost({ value, onChange }) {
 
                             <Button
                                 type="primary"
+                                disabled={
+                                    index === 0 && hasRentedProperty && !rentedProperty ? true : false  
+                                }
                                 onClick={index === stepsData.length - 1 ? handleFormFinish : handleNextStep}
                             >
                                 {index === stepsData.length - 1 ? 'Submit' : 'Next'}

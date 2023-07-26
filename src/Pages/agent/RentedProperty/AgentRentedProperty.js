@@ -72,9 +72,10 @@ function AgentRentedProperty() {
         setSearchedColumn(dataIndex)
     }
 
-    const handleReset = (clearFilters) => {
+    const handleReset = (clearFilters, confirm) => {
         clearFilters();
         setSearchText("")
+        confirm()
     }
 
     const getColumnSearchProps = (dataIndex, placeholder) => ({
@@ -107,7 +108,7 @@ function AgentRentedProperty() {
                     </Button>
 
                     <Button
-                        onClick={() => handleReset(clearFilters)}
+                        onClick={() => handleReset(clearFilters, confirm)}
                         size="small"
                         style={{ width: 90 }}
                     >
@@ -172,14 +173,14 @@ function AgentRentedProperty() {
             key: "propertyName",
             ...getColumnSearchProps("propertyName", "Search Property Name"),
             sorter: (a, b) => a.propertyName.localeCompare(b.propertyName),
-            ellipsis: {
-                showTitle: false,
-            },
-            render: (propertyName) => (
-                <Tooltip placement="topLeft" title={propertyName}>
-                    {propertyName}
-                </Tooltip>
-            ),
+            // ellipsis: {
+            //     showTitle: false,
+            // },
+            // render: (propertyName) => (
+            //     <Tooltip placement="topLeft" title={propertyName}>
+            //         {propertyName}
+            //     </Tooltip>
+            // ),
         },
         {
             title: "Property Address",
