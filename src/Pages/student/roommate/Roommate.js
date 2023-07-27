@@ -6,6 +6,7 @@ import RoommatePostLayout from "./RoommatePostLayout";
 import { AiOutlineHistory } from "react-icons/ai";
 import { BiEditAlt, BiMenu } from "react-icons/bi";
 import CreateRoommatePost from "./CreateRoommatePost";
+import "./Roommate.css"
 
 function Roommate() {
 
@@ -71,13 +72,16 @@ function Roommate() {
             trigger="click"
             style={{
                 right: '24',
+                bottom: '24',
+                position: 'fixed',     
+                color: 'white',           
             }}
-            size={150}
-            type="primary"
-            icon={<BiMenu />}
+            className="floatButton"
+            // type="primary"
+            icon={<BiMenu style={{color: 'white'}}/>}
         >
-            <FloatButton type="primary" icon={<BiEditAlt/>} onClick={handleCreateModal}/>
-            <FloatButton type="primary" icon={<AiOutlineHistory />} />
+            <FloatButton type="primary" tooltip="Create post" icon={<BiEditAlt/>} onClick={handleCreateModal}/>
+            <FloatButton type="primary" tooltip="View listings" icon={<AiOutlineHistory />} />
         </FloatButton.Group>
 
         <CreateRoommatePost value={postModal} onChange={setPostModal} />
