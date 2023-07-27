@@ -112,7 +112,25 @@ function CreateRoommatePost({ value, onChange }) {
                     </Radio.Group>
                 </Form.Item>
                 <Form.Item name="description" label="Description">
-                    <Input.TextArea placeholder="Description" />
+                    <Input.TextArea placeholder="Description" style={{height: 500}} />
+                </Form.Item>
+                <Form.Item name="description" label="Description">
+                    <Input.TextArea placeholder="Description" style={{height: 500}} />
+                </Form.Item>
+                <Form.Item name="description" label="Description">
+                    <Input.TextArea placeholder="Description" style={{height: 500}} />
+                </Form.Item>
+                <Form.Item name="description" label="Description">
+                    <Input.TextArea placeholder="Description" style={{height: 500}} />
+                </Form.Item>
+                <Form.Item name="description" label="Description">
+                    <Input.TextArea placeholder="Description" style={{height: 500}} />
+                </Form.Item>
+                <Form.Item name="description" label="Description">
+                    <Input.TextArea placeholder="Description" style={{height: 500}} />
+                </Form.Item>
+                <Form.Item name="description" label="Description">
+                    <Input.TextArea placeholder="Description" style={{height: 500}} />
                 </Form.Item>
             </div>
         },
@@ -195,6 +213,7 @@ function CreateRoommatePost({ value, onChange }) {
             footer={null}
             onCancel={() => onChange(false)}
             width={800}
+            bodyStyle={{height: 400, overflowX: 'hidden', overflowY: 'scroll'}}
         >
 
             <div>
