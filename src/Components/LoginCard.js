@@ -171,7 +171,6 @@ function LoginCard() {
                 borderColor: "#335C7C",
               }}
               htmlType="submit"
-              onMouseOver={() => {}}
             >
               Login
             </Button>

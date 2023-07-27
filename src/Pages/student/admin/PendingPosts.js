@@ -1,5 +1,5 @@
 import { SearchOutlined, EyeOutlined } from "@ant-design/icons";
-import { Button, Input, Space, Table } from "antd";
+import { Button, Input, Space, Table, Modal } from "antd";
 import React, { useRef, useState, useEffect } from "react";
 import Highlighter from "react-highlight-words";
 import { supabase } from "../../../supabase-client";
@@ -12,9 +12,17 @@ function PendingPosts() {
   const [selectedPostIDs, setSelectedPostIDs] = useState([]);
   const [posts, setPosts] = useState([]);
   const searchInput = useRef(null);
+  const [isModalOpen, setIsModalOpen] = useState(false);
+  const [modalData, setModalData] = useState();
 
   const viewPost = () => {
-    // modal view post
+    setIsModalOpen(true);
+  };
+  const handleOk = () => {
+    setIsModalOpen(false);
+  };
+  const handleCancel = () => {
+    setIsModalOpen(false);
   };
 
   const fetchData = async () => {
@@ -33,7 +41,13 @@ function PendingPosts() {
         property_name: post.propertyName,
         price: post.propertyPrice,
         action: (
-          <Button type="link" onClick={viewPost(post.postID)}>
+          <Button
+            type="link"
+            onClick={() => {
+              viewPost(post.post_ID);
+              setModalData(post);
+            }}
+          >
             <EyeOutlined style={{ fontSize: "20px" }} />
           </Button>
         ),
@@ -41,6 +55,10 @@ function PendingPosts() {
       setData(newData);
     }
   };
+
+  useEffect(() => {
+    console.log(modalData);
+  }, [modalData]);
 
   const getPosts = async () => {
     let { data: property_post, error } = await supabase
@@ -52,7 +70,7 @@ function PendingPosts() {
     } else {
       setPosts(property_post);
     }
-  }
+  };
 
   const approvePost = async (postIDArr) => {
     for (let i = 0; i < postIDArr.length; i++) {
@@ -301,6 +319,14 @@ function PendingPosts() {
           </Button>
         </div>
       </div>
+      <Modal
+        title="Basic Modal"
+        open={isModalOpen}
+        onOk={handleOk}
+        onCancel={handleCancel}
+      >
+        <p>{modalData?.postID}</p>
+      </Modal>
     </div>
   );
 }

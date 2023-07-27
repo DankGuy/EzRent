@@ -116,6 +116,7 @@ function SignUpCard() {
       style={{
         backgroundColor: "#FFFFFF",
         minHeight: "100vh",
+        maxWidth: "100vw",
         height: "auto",
         width: "100vw",
         display: "flex",
@@ -130,7 +131,7 @@ function SignUpCard() {
         style={{
           backgroundColor: "#FFFFFF",
           height: "auto",
-          width: "40vw",
+          width: "35vw",
           marginTop: "40px",
           marginBottom: "40px",
           marginLeft: "0",
@@ -335,6 +336,9 @@ function SignUpCard() {
                 backgroundColor: "#335C7C",
                 borderColor: "#335C7C",
                 marginTop: "5px",
+                width: "20vw",
+                fontSize: "1.2rem",
+                height: "auto",
               }}
             >
               Register
