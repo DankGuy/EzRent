@@ -116,7 +116,6 @@ function LoginCard() {
           initialValues={{
             remember: true,
           }}
-          autoComplete="off"
           onFinish={handleSubmit}
         >
           <h1 style={{ textAlign: "center", fontSize: "2rem" }}>
