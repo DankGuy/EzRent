@@ -23,7 +23,6 @@ function AgentRentedProperty() {
 
         const fetchProperties = async () => {
             const userID = (await supabase.auth.getUser()).data.user.id;
-            console.log(userID)
 
             const { data, error } = await supabase
                 .from("rental_agreement")
@@ -50,12 +49,11 @@ function AgentRentedProperty() {
                 tableData.push({
                     key: element.rentalAgreementID,
                     post: element,
-                    postID: element.postID.postID,
+                    rentalAgreementID: element.rentalAgreementID,
                     propertyName: element.postID.propertyName,
                     propertyAddress: address,
-                    rentalPrice: element.rentalPrice,
                     duration: rentalDuration(),
-                    studentName: element.studentID.name,
+                    tenantName: element.studentID.name,
                     commencementDate: element.commencementDate,
                 });
             });
@@ -150,21 +148,14 @@ function AgentRentedProperty() {
 
     const columns = [
         {
-            title: "Post ID",
-            dataIndex: "postID",
-            key: "postID",
+            title: "Rental Agreement ID",
+            dataIndex: "rentalAgreementID",
+            key: "rentalAgreementID",
             fixed: "left",
-            ...getColumnSearchProps("postID", "Search Post ID"),
+            ...getColumnSearchProps("rentalAgreementID", "Search Rental Agreement ID"),
             ellipsis: {
                 showTitle: false,
             },
-            render: (postID, post) => (
-                <Tooltip placement="topLeft" title={postID}>
-                    <Link to={`/agent/rentedProperty/${postID}`} state={post} style={{textDecoration: 'underline'}}>
-                        {postID}
-                    </Link>
-                </Tooltip>
-            ),
             className: "postIDcolumn",
         },
         {
@@ -173,14 +164,14 @@ function AgentRentedProperty() {
             key: "propertyName",
             ...getColumnSearchProps("propertyName", "Search Property Name"),
             sorter: (a, b) => a.propertyName.localeCompare(b.propertyName),
-            // ellipsis: {
-            //     showTitle: false,
-            // },
-            // render: (propertyName) => (
-            //     <Tooltip placement="topLeft" title={propertyName}>
-            //         {propertyName}
-            //     </Tooltip>
-            // ),
+            ellipsis: {
+                showTitle: false,
+            },
+            render: (propertyName) => (
+                <Tooltip placement="topLeft" title={propertyName}>
+                    {propertyName}
+                </Tooltip>
+            ),
         },
         {
             title: "Property Address",
@@ -199,32 +190,25 @@ function AgentRentedProperty() {
         }
         ,
         {
-            title: "Rental Price",
-            dataIndex: "rentalPrice",
-            key: "rentalPrice",
-            sorter: (a, b) => a.rentalPrice - b.rentalPrice,
-            render: (rentalPrice) => (
-                <p>RM {rentalPrice}.00</p>
-            ),
-        },
-        {
             title: "Duration",
             dataIndex: "duration",
             key: "duration",
             sorter: (a, b) => a.duration.localeCompare(b.duration),
         },
         {
-            title: "Student Name",
-            dataIndex: "studentName",
-            key: "studentName",
-            sorter: (a, b) => a.studentName.localeCompare(b.studentName),
-            ...getColumnSearchProps("studentName", "Search Student Name"),
+            title: "Tenant Name",
+            dataIndex: "tenantName",
+            key: "tenantName",
+            sorter: (a, b) => a.tenantName.localeCompare(b.tenantName),
+            ...getColumnSearchProps("tenantName", "Search Tenant Name"),
             ellipsis: {
                 showTitle: false,
             },
-            render: (studentName) => (
-                <Tooltip placement="topLeft" title={studentName}>
-                    {studentName}
+            render: (tenantName, post) => (
+                <Tooltip placement="topLeft" title={tenantName}>
+                    <Link to={`/agent/rentedProperty/${tenantName}`} state={post} >
+                        {tenantName}
+                    </Link>
                 </Tooltip>
             ),
         },
