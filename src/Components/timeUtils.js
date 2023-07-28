@@ -76,6 +76,7 @@ export function convertDate(inputDate) {
 }
 
 export function formatDateTime(inputDateTime) {
+    if (!inputDateTime) return '';
     // Function to convert date to "Jul 17, 2023" format
     const formatDate = (inputDate) => {
         const date = new Date(inputDate);

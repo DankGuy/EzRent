@@ -122,7 +122,7 @@ function CreateRoommatePost({ value, onChange }) {
             formRef: useRef(),
             content: <div style={{marginLeft: '5%'}}>
                 <Form.Item name="preferredAge" label="Age">
-                    <Slider range  min={18} max={60} style={{ margin: '10px' }} />
+                    <Slider range step={3}  min={1} max={60} style={{ margin: '10px' }} />
                 </Form.Item>
                 <Form.Item name="preferredGender" label="Gender">
                     <Radio.Group>
@@ -264,6 +264,7 @@ function CreateRoommatePost({ value, onChange }) {
                             rentedProperty: 'no',
                             preferredGender: 'male',
                             preferredAge: [18, 30],
+                            studentType: 'local',
                         }
                     }
                 >
