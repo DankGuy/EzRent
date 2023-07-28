@@ -1,5 +1,4 @@
-// import loginBg from "../images/loginBg.jpeg";
-import loginBg from "../images/loginBg.jpg";
+import ForgotpwBg from "../images/forgotpwBg.jpg";
 import { Link } from "react-router-dom";
 import { supabase } from "../supabase-client";
 import { InfoCircleOutlined, UserOutlined } from "@ant-design/icons";
@@ -36,16 +35,25 @@ function ForgotPasswordCard() {
         display: "flex",
         alignItems: "center",
         justifyContent: "center",
-        background: `url(${loginBg}) no-repeat fixed`,
-        backgroundSize: "cover",
+        backgroundColor: "#ffffff",
         padding: "0",
         margin: "0",
       }}
     >
       <div
+        style={{
+          height: "100vh",
+          maxHeight: "100vh",
+          width: "55vw",
+          backgroundImage: `url(${ForgotpwBg})`,
+          backgroundSize: "55vw 100vh",
+          backgroundPosition: "center",
+          backgroundRepeat: "no-repeat",
+        }}
+      ></div>
+      <div
         className="forgotpw-card"
         style={{
-          backgroundColor: "#f0f2f5",
           height: "auto",
           width: "40%",
           marginTop: "50px",
@@ -57,12 +65,9 @@ function ForgotPasswordCard() {
           alignItems: "center",
           flexDirection: "column",
           justifyContent: "center",
-          boxShadow: "6px 6px 6px rgba(0, 0, 0, 0.2)",
           padding: "20px",
-          borderRadius: "10px",
-          opacity: "0.95",
           overflow: "auto",
-          maxWidthL: "100%",
+          maxWidth: "100%",
         }}
       >
         <Form
@@ -112,9 +117,23 @@ function ForgotPasswordCard() {
               width: "100%",
             }}
           >
-            <Button type="primary" htmlType="submit" onClick={handleSubmit}>
+          <Form.Item>
+            <Button
+              type="primary"
+              htmlType="submit"
+              style={{
+                backgroundColor: "#335C7C",
+                borderColor: "#335C7C",
+                marginTop: "5px",
+                width: "20vw",
+                fontSize: "1.2rem",
+                height: "auto",
+              }}
+              onClick={handleSubmit}
+            >
               Send Reset Link
             </Button>
+          </Form.Item>
           </Form.Item>
         </Form>
         <Link

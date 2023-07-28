@@ -14,6 +14,8 @@ function PendingPosts() {
   const searchInput = useRef(null);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [modalData, setModalData] = useState();
+  const [fetchTrigger, setFetchTrigger] = useState(0);
+
 
   const viewPost = () => {
     setIsModalOpen(true);
@@ -56,10 +58,6 @@ function PendingPosts() {
     }
   };
 
-  useEffect(() => {
-    console.log(modalData);
-  }, [modalData]);
-
   const getPosts = async () => {
     let { data: property_post, error } = await supabase
       .from("property_post")
@@ -96,18 +94,22 @@ function PendingPosts() {
     }
   };
 
-  const handleApproveClick = () => {
-    approvePost(selectedPostIDs);
+  const handleApproveClick = async () => {
+    await approvePost(selectedPostIDs);
+    // add fetch trigger to rerender the table
+    setFetchTrigger((prevTrigger) => prevTrigger + 1);
   };
 
-  const handleRejectClick = () => {
-    rejectPost(selectedPostIDs);
+  const handleRejectClick = async () => {
+    await rejectPost(selectedPostIDs);
+    // add fetch trigger to rerender the table
+    setFetchTrigger((prevTrigger) => prevTrigger + 1);
   };
 
   useEffect(() => {
     fetchData();
     getPosts();
-  }, []);
+  }, [fetchTrigger]);
 
   const handleSearch = (selectedKeys, confirm, dataIndex) => {
     confirm();
@@ -320,12 +322,13 @@ function PendingPosts() {
         </div>
       </div>
       <Modal
-        title="Basic Modal"
+        title={"Post ID: " + modalData?.postID}
         open={isModalOpen}
         onOk={handleOk}
         onCancel={handleCancel}
+        width={1000}
       >
-        <p>{modalData?.postID}</p>
+        <p>{modalData?.propertyName}</p>
       </Modal>
     </div>
   );
