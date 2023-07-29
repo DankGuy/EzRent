@@ -42,7 +42,6 @@ export default function AuthPage({}) {
       localStorage.setItem("selectedKey", "/agent");
       navigate("/agent");
 
-      // TODO: Check whether the student is admin or not (get userID, query from student table, check if admin or not)
     } else if (metadata.userType === "student") {
       localStorage.setItem("selectedKey", "/student/profile/profileInformation");
       navigate("/agent");

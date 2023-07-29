@@ -1,11 +1,22 @@
 import { SearchOutlined, EyeOutlined } from "@ant-design/icons";
-import { Button, Input, Space, Table, Modal, Descriptions, Divider, Row, Col, Image } from "antd";
+import {
+  Button,
+  Input,
+  Space,
+  Table,
+  Modal,
+  Descriptions,
+  Divider,
+  Row,
+  Col,
+  Image,
+  Tabs,
+} from "antd";
 import React, { useRef, useState, useEffect, Fragment } from "react";
 import Highlighter from "react-highlight-words";
 import { supabase } from "../../../supabase-client";
 import { formatDateTime } from "../../../Components/timeUtils";
 import Carousel from "react-multi-carousel";
-
 
 function PendingPosts() {
   const [data, setData] = useState([]);
@@ -23,7 +34,9 @@ function PendingPosts() {
   const [roomImages, setRoomImages] = useState({});
   const [loadingImages, setLoadingImages] = useState(false);
 
-
+  const onChange = (key) => {
+    console.log(key);
+  };
 
   const viewPost = () => {
     setIsModalOpen(true);
@@ -45,12 +58,11 @@ function PendingPosts() {
     } else {
       const newData = property_post.map((post, index) => ({
         key: index,
-        post_ID: post.postID,
-        agent_ID: post.propertyAgentID,
-        agent_rating: "4.5",
         property_name: post.propertyName,
-        price: post.propertyPrice,
-        action: (
+        property_category: post.propertyCategory,
+        agent_name: post.propertyAgentID,
+        agent_rating: "4.5",
+        view: (
           <Button
             type="link"
             onClick={() => {
@@ -238,48 +250,52 @@ function PendingPosts() {
 
   const columns = [
     {
-      title: "Post ID",
-      dataIndex: "post_ID",
-      key: "post_ID",
-      width: "22.33%",
-      ...getColumnSearchProps("post_ID"),
+      title: "Property Name",
+      dataIndex: "property_name",
+      key: "property_name",
+      width: "30.67%",
+      ...getColumnSearchProps("property_name"),
     },
     {
-      title: "Agent ID",
-      dataIndex: "agent_ID",
-      key: "agent_ID",
-      width: "22.33%",
-      ...getColumnSearchProps("agent_ID"),
+      title: "Property Category",
+      dataIndex: "property_category",
+      key: "property_category",
+      width: "30.67%",
+      ...getColumnSearchProps("property_category"),
+      sorter: (a, b) => {
+        // Compare the length first
+        const lengthComparison =
+          a.property_category.length - b.property_category.length;
+
+        // If lengths are the same, sort alphabetically by the property_category value
+        if (lengthComparison === 0) {
+          return a.property_category.localeCompare(b.property_category);
+        }
+
+        return lengthComparison;
+      },
+      sortDirections: ["descend", "ascend"],
+    },
+    {
+      title: "Agent Name",
+      dataIndex: "agent_name",
+      key: "agent_name",
+      width: "30.67%",
+      ...getColumnSearchProps("agent_name"),
     },
     {
       title: "Agent Rating",
       dataIndex: "agent_rating",
       key: "agent_rating",
-      width: "15%",
+      width: "30.67%",
       ...getColumnSearchProps("agent_rating"),
       sorter: (a, b) => a.agent_rating - b.agent_rating,
       sortDirections: ["descend", "ascend"],
     },
     {
-      title: "Property Name",
-      dataIndex: "property_name",
-      key: "property_name",
-      width: "22.33%",
-      ...getColumnSearchProps("property_name"),
-    },
-    {
-      title: "Price (RM)",
-      dataIndex: "price",
-      key: "price",
-      width: "10%",
-      ...getColumnSearchProps("price"),
-      sorter: (a, b) => a.price - b.price,
-      sortDirections: ["descend", "ascend"],
-    },
-    {
-      title: "Action",
-      dataIndex: "action",
-      key: "action",
+      title: "View",
+      dataIndex: "view",
+      key: "view",
       width: "8%",
     },
   ];
@@ -288,65 +304,61 @@ function PendingPosts() {
     desktop: {
       breakpoint: { max: 3000, min: 1024 },
       items: 5,
-      slidesToSlide: 1 // optional, default to 1.
+      slidesToSlide: 1, // optional, default to 1.
     },
     tablet: {
       breakpoint: { max: 1024, min: 464 },
       items: 3,
-      slidesToSlide: 1 // optional, default to 1.
+      slidesToSlide: 1, // optional, default to 1.
     },
     mobile: {
       breakpoint: { max: 464, min: 0 },
       items: 1,
-      slidesToSlide: 1 // optional, default to 1.
-    }
+      slidesToSlide: 1, // optional, default to 1.
+    },
   };
 
   const statusColor = () => {
-    if (modalData?.propertyStatus.stage === 'pending') {
-      return 'blue'
-    } else if (modalData?.propertyStatus?.stage === 'approved') {
-      return 'green'
-    } else if (modalData?.propertyStatus?.stage === 'rejected') {
-      return 'red'
-    } else if (modalData?.propertyStatus?.stage === 'drafted') {
-      return 'orange'
+    if (modalData?.propertyStatus.stage === "pending") {
+      return "blue";
+    } else if (modalData?.propertyStatus?.stage === "approved") {
+      return "green";
+    } else if (modalData?.propertyStatus?.stage === "rejected") {
+      return "red";
+    } else if (modalData?.propertyStatus?.stage === "drafted") {
+      return "orange";
     }
-  }
+  };
 
   const fieldsetStyle = {
-    border: '1px solid #d9d9d9',
-    borderRadius: '5px',
-    padding: '10px',
-    marginTop: '20px',
-  }
+    border: "1px solid #d9d9d9",
+    borderRadius: "5px",
+    padding: "10px",
+    marginTop: "20px",
+  };
 
   const legendStyle = {
-    width: 'auto',
-    borderBottom: 'none',
-    marginLeft: '20px',
-    marginBottom: '0px',
-  }
+    width: "auto",
+    borderBottom: "none",
+    marginLeft: "20px",
+    marginBottom: "0px",
+  };
 
   const descriptionLabelStyle = {
-    color: 'black',
-  }
-
+    color: "black",
+  };
 
   const descriptionContentStyle = {
-    color: 'black',
-    border: '1px solid #d9d9d9',
-    borderRadius: '5px',
-    padding: '4px 11px',
-  }
+    color: "black",
+    border: "1px solid #d9d9d9",
+    borderRadius: "5px",
+    padding: "4px 11px",
+  };
 
   const getImages = async (post) => {
-
-
     setLoadingImages(true);
 
-
-    // Get all images from supabase storage with id = postID 
+    // Get all images from supabase storage with id = postID
     const { data: propertyData, error: propertyError } = await supabase.storage
       .from("post")
       .list(`${post.postID}/Property`);
@@ -356,12 +368,14 @@ function PendingPosts() {
     }
 
     // Create an array of room numbers
-    const roomNumbers = Array.from({ length: post.propertyRoomNumber }, (_, i) => i + 1);
+    const roomNumbers = Array.from(
+      { length: post.propertyRoomNumber },
+      (_, i) => i + 1
+    );
 
     // Map over the room numbers and retrieve room images for each
     await Promise.all(
       roomNumbers.map(async (roomNumber) => {
-
         const roomType = post.propertyRoomDetails[roomNumber].roomType;
 
         const { data: roomData, error: roomError } = await supabase.storage
@@ -383,33 +397,34 @@ function PendingPosts() {
     );
 
     setLoadingImages(false);
-
   };
 
-
   const displayImages = (modalData) => {
-
-
     if (loadingImages) {
-      return <p style={{ fontFamily: 'arial' }}>Loading images...</p>;
+      return <p style={{ fontFamily: "arial" }}>Loading images...</p>;
     }
 
     if (propertyImages === undefined || propertyImages.length === 0) {
-      return <p style={{ fontFamily: 'arial' }}>No images available</p>;
+      return <p style={{ fontFamily: "arial" }}>No images available</p>;
     }
 
     return propertyImages.map((image) => {
       const publicURL = `https://exsvuquqspmbrtyjdpyc.supabase.co/storage/v1/object/public/post/${modalData?.postID}/Property/${image.name}`;
 
       return (
-        <Image width={"auto"} height={200} key={image.id} src={publicURL} alt={image.name} />
-      )
-    })
-  }
+        <Image
+          width={"auto"}
+          height={200}
+          key={image.id}
+          src={publicURL}
+          alt={image.name}
+        />
+      );
+    });
+  };
 
   const displayRoomImages = (roomType) => {
     const images = roomImages[roomType];
-
 
     if (loadingImages) {
       return <p>Loading room images...</p>;
@@ -419,13 +434,18 @@ function PendingPosts() {
       return <p>No images available</p>;
     }
 
-
     if (images && images.length > 0) {
       return images.map((image) => {
         const publicURL = `https://exsvuquqspmbrtyjdpyc.supabase.co/storage/v1/object/public/post/${modalData?.postID}/${roomType}/${image.name}`;
 
         return (
-          <Image width={"auto"} height={100} key={image.id} src={publicURL} alt={image.name} />
+          <Image
+            width={"auto"}
+            height={100}
+            key={image.id}
+            src={publicURL}
+            alt={image.name}
+          />
         );
       });
     }
@@ -433,9 +453,7 @@ function PendingPosts() {
     return null;
   };
 
-
   const roomDetailForm = (index) => {
-
     const roomType = modalData?.propertyRoomDetails[index]?.roomType;
     const roomSize = modalData?.propertyRoomDetails[index]?.roomSquareFeet;
     const maxTenant = modalData?.propertyRoomDetails[index]?.maxTenant;
@@ -455,8 +473,8 @@ function PendingPosts() {
 
         <div
           style={{
-            marginBottom: '20px',
-            marginLeft: '20px',
+            marginBottom: "20px",
+            marginLeft: "20px",
           }}
         >
           <Image.PreviewGroup>
@@ -466,205 +484,255 @@ function PendingPosts() {
           </Image.PreviewGroup>
         </div>
 
-        <Descriptions layout='vertical'
+        <Descriptions
+          layout="vertical"
           labelStyle={descriptionLabelStyle}
           contentStyle={descriptionContentStyle}
           colon={false}
-          className='postDetails'
+          className="postDetails"
         >
-
           <Descriptions.Item label="Room Type">{roomType}</Descriptions.Item>
-          <Descriptions.Item label="Room Size (sq.ft.)">{roomSize}</Descriptions.Item>
-          <Descriptions.Item label="Maximum Tenant">{maxTenant}</Descriptions.Item>
+          <Descriptions.Item label="Room Size (sq.ft.)">
+            {roomSize}
+          </Descriptions.Item>
+          <Descriptions.Item label="Maximum Tenant">
+            {maxTenant}
+          </Descriptions.Item>
         </Descriptions>
-
 
         <Row>
           <Col span={6}>
             <span>Room Furnish</span>
           </Col>
         </Row>
-        <Row style={{ marginTop: '10px' }}>
+        <Row style={{ marginTop: "10px" }}>
           {roomFurnishLabelArray.map((furnish, index) => (
             <Col span={6} key={index}>
-              <span>&#8226; {furnish} ({roomFurnishQuantityArray[index]})</span>
+              <span>
+                &#8226; {furnish} ({roomFurnishQuantityArray[index]})
+              </span>
             </Col>
           ))}
         </Row>
       </div>
-    )
-  }
+    );
+  };
 
+  const content = (rating) => {
+    return (
+      <div style={{ display: "flex", flexDirection: "column" }}>
+        <Table
+          rowSelection={{
+            type: selectionType,
+            ...rowSelection,
+          }}
+          columns={columns}
+          dataSource={
+            rating === "high"
+              ? data.filter((post) => post.agent_rating >= 3)
+              : data.filter((post) => post.agent_rating < 3)
+          }
+          bordered
+        />
+        <div style={{ display: "flex", flexDirection: "column" }}>
+          <div
+            style={{
+              width: "30%",
+              display: "flex",
+              flexDirection: "row",
+              alignSelf: "flex-end",
+            }}
+          >
+            <Button
+              type="primary"
+              style={{
+                width: "40%",
+                height: "auto",
+                margin: "10px",
+                fontSize: "1.1rem",
+              }}
+              onClick={handleApproveClick}
+            >
+              Approve
+            </Button>
+            <Button
+              type="primary"
+              danger
+              style={{
+                width: "40%",
+                height: "auto",
+                margin: "10px",
+                fontSize: "1.1rem",
+              }}
+              onClick={handleRejectClick}
+            >
+              Reject
+            </Button>
+          </div>
+        </div>
+        <Modal
+          title={"View Post"}
+          open={isModalOpen}
+          onOk={handleOk}
+          onCancel={handleCancel}
+          width={1000}
+        >
+          <fieldset style={fieldsetStyle}>
+            <legend style={legendStyle}>Post Details</legend>
+            <Image.PreviewGroup>
+              <Carousel responsive={responsive}>
+                {displayImages(modalData)}
+              </Carousel>
+            </Image.PreviewGroup>
+            <Descriptions
+              layout="vertical"
+              labelStyle={descriptionLabelStyle}
+              contentStyle={descriptionContentStyle}
+              colon={false}
+              className="postDetails"
+            >
+              <Descriptions.Item label="Post ID">
+                {modalData?.postID}
+              </Descriptions.Item>
+              <Descriptions.Item label="Post Date">
+                {formatDateTime(modalData?.postDate)}
+              </Descriptions.Item>
+              <Descriptions.Item label="Last Modified Date">
+                {" "}
+                {formatDateTime(modalData?.lastModifiedDate)}
+              </Descriptions.Item>
+              <Descriptions.Item
+                label="Post Status"
+                contentStyle={{
+                  color: statusColor(),
+                  textTransform: "capitalize",
+                }}
+              >
+                {modalData?.propertyStatus?.stage}
+              </Descriptions.Item>
+            </Descriptions>
+          </fieldset>
+          <fieldset style={fieldsetStyle}>
+            <legend style={legendStyle}>Property Details</legend>
+            <Descriptions
+              layout="vertical"
+              labelStyle={descriptionLabelStyle}
+              contentStyle={descriptionContentStyle}
+              colon={false}
+              className="postDetails"
+            >
+              <Descriptions.Item label="Property Name" span={3}>
+                {modalData?.propertyName}
+              </Descriptions.Item>
+              <Descriptions.Item label="Property Address">
+                {modalData?.propertyAddress}
+              </Descriptions.Item>
+              <Descriptions.Item label="Property Postcode">
+                {modalData?.propertyPostcode}
+              </Descriptions.Item>
+              <Descriptions.Item label="Property City">
+                {modalData?.propertyCity}
+              </Descriptions.Item>
+              <Descriptions.Item label="Property State">
+                {modalData?.propertyState}
+              </Descriptions.Item>
+              <Descriptions.Item label="Property Built-Up Size (sq.ft.)">
+                {modalData?.propertySquareFeet}
+              </Descriptions.Item>
+              <Descriptions.Item label="Property Type">
+                {modalData?.propertyType}
+              </Descriptions.Item>
+            </Descriptions>
+          </fieldset>
+          <fieldset style={fieldsetStyle}>
+            <legend style={legendStyle}>Unit/Room Details</legend>
 
-
-
+            <Descriptions
+              layout="vertical"
+              labelStyle={descriptionLabelStyle}
+              contentStyle={descriptionContentStyle}
+              colon={false}
+              className="postDetails"
+            >
+              <Descriptions.Item label="Property Category">
+                {modalData?.propertyCategory}
+              </Descriptions.Item>
+              {modalData?.propertyCategory === "Room" ? (
+                <>
+                  <Descriptions.Item label="Property Room Number">
+                    {modalData?.propertyRoomNumber}
+                  </Descriptions.Item>
+                </>
+              ) : null}
+              <Descriptions.Item
+                label={
+                  modalData?.propertyCategory === "Room"
+                    ? "Room Rental Price (RM)"
+                    : "Unit Rental Price (RM)"
+                }
+              >
+                {modalData?.propertyPrice}
+              </Descriptions.Item>
+            </Descriptions>
+            {modalData?.propertyCategory === "Room"
+              ? roomDetailForm(1)
+              : Array.from(
+                  { length: modalData?.propertyRoomNumber },
+                  (v, i) => i + 1
+                ).map((roomNumber) => roomDetailForm(roomNumber))}
+          </fieldset>
+          <fieldset style={fieldsetStyle}>
+            <legend style={legendStyle}>Property Furnish</legend>
+            <Row>
+              {modalData?.propertyFurnish?.map((furnish, index) => (
+                <Col span={6} key={index}>
+                  <span>&#8226; {furnish}</span>
+                </Col>
+              ))}
+            </Row>
+          </fieldset>
+          <fieldset style={fieldsetStyle}>
+            <legend style={legendStyle}>Property Facilities</legend>
+            <Row>
+              {modalData?.propertyFacility?.map((facility, index) => (
+                <Col span={6} key={index}>
+                  <span>&#8226; {facility}</span>
+                </Col>
+              ))}
+            </Row>
+          </fieldset>
+          <fieldset style={fieldsetStyle}>
+            <legend style={legendStyle}>Property Description</legend>
+            {modalData?.propertyDescription ? (
+              <p>{modalData?.propertyDescription}</p>
+            ) : (
+              <p>No description provided</p>
+            )}
+          </fieldset>
+        </Modal>
+      </div>
+    );
+  };
 
   return (
-    <div style={{ display: "flex", flexDirection: "column" }}>
-      <Table
-        rowSelection={{
-          type: selectionType,
-          ...rowSelection,
-        }}
-        columns={columns}
-        dataSource={data}
-        bordered
+    <>
+      <Tabs
+        onChange={onChange}
+        type="card"
+        items={[
+          {
+            label: "High-Rated Agent",
+            key: "1",
+            children: content("high"),
+          },
+          {
+            label: "Low-Rated Agent",
+            key: "2",
+            children: content("low"),
+          },
+        ]}
       />
-      <div style={{ display: "flex", flexDirection: "column" }}>
-        <div
-          style={{
-            width: "30%",
-            display: "flex",
-            flexDirection: "row",
-            alignSelf: "flex-end",
-          }}
-        >
-          <Button
-            type="primary"
-            style={{
-              width: "40%",
-              height: "auto",
-              margin: "10px",
-              fontSize: "1.1rem",
-            }}
-            onClick={handleApproveClick}
-          >
-            Approve
-          </Button>
-          <Button
-            type="primary"
-            danger
-            style={{
-              width: "40%",
-              height: "auto",
-              margin: "10px",
-              fontSize: "1.1rem",
-            }}
-            onClick={handleRejectClick}
-          >
-            Reject
-          </Button>
-        </div>
-      </div>
-      <Modal
-        title={"View Post"}
-        open={isModalOpen}
-        onOk={handleOk}
-        onCancel={handleCancel}
-        width={1000}
-      >
-
-        <fieldset style={fieldsetStyle}>
-          <legend style={legendStyle}>
-            Post Details
-          </legend>
-          <Image.PreviewGroup>
-            <Carousel responsive={responsive}>
-              {displayImages(modalData)}
-            </Carousel>
-          </Image.PreviewGroup>
-          <Descriptions
-            layout='vertical'
-            labelStyle={descriptionLabelStyle}
-            contentStyle={descriptionContentStyle}
-            colon={false}
-            className='postDetails'
-          >
-            <Descriptions.Item label="Post ID">{modalData?.postID}</Descriptions.Item>
-            <Descriptions.Item label="Post Date">{formatDateTime(modalData?.postDate)}</Descriptions.Item>
-            <Descriptions.Item label="Last Modified Date"> {formatDateTime(modalData?.lastModifiedDate)}</Descriptions.Item>
-            <Descriptions.Item
-              label="Post Status"
-              contentStyle={{
-                color: statusColor(),
-                textTransform: 'capitalize',
-              }}
-            >
-              {modalData?.propertyStatus?.stage}
-            </Descriptions.Item>
-          </Descriptions>
-        </fieldset>
-        <fieldset style={fieldsetStyle}>
-          <legend style={legendStyle}>
-            Property Details
-          </legend>
-          <Descriptions
-            layout='vertical'
-            labelStyle={descriptionLabelStyle}
-            contentStyle={descriptionContentStyle}
-            colon={false}
-            className='postDetails'
-          >
-            <Descriptions.Item label="Property Name" span={3}>{modalData?.propertyName}</Descriptions.Item>
-            <Descriptions.Item label="Property Address">{modalData?.propertyAddress}</Descriptions.Item>
-            <Descriptions.Item label="Property Postcode">{modalData?.propertyPostcode}</Descriptions.Item>
-            <Descriptions.Item label="Property City">{modalData?.propertyCity}</Descriptions.Item>
-            <Descriptions.Item label="Property State">{modalData?.propertyState}</Descriptions.Item>
-            <Descriptions.Item label="Property Built-Up Size (sq.ft.)">{modalData?.propertySquareFeet}</Descriptions.Item>
-            <Descriptions.Item label="Property Type">{modalData?.propertyType}</Descriptions.Item>
-          </Descriptions>
-        </fieldset>
-        <fieldset style={fieldsetStyle}>
-          <legend style={legendStyle}>
-            Unit/Room Details
-          </legend>
-
-          <Descriptions
-            layout='vertical'
-            labelStyle={descriptionLabelStyle}
-            contentStyle={descriptionContentStyle}
-            colon={false}
-            className='postDetails'
-          >
-            <Descriptions.Item label="Property Category">{modalData?.propertyCategory}</Descriptions.Item>
-            {modalData?.propertyCategory === 'Room' ? (
-              <>
-                <Descriptions.Item label="Property Room Number">{modalData?.propertyRoomNumber}</Descriptions.Item>
-              </>
-            ) : null}
-            <Descriptions.Item label={modalData?.propertyCategory === 'Room' ? 'Room Rental Price (RM)' : 'Unit Rental Price (RM)'}>
-              {modalData?.propertyPrice}
-            </Descriptions.Item>
-          </Descriptions>
-          {modalData?.propertyCategory === 'Room' ?
-            roomDetailForm(1) : Array.from({ length: modalData?.propertyRoomNumber }, (v, i) => i + 1).map((roomNumber) => roomDetailForm(roomNumber))
-          }
-        </fieldset>
-        <fieldset style={fieldsetStyle}>
-          <legend style={legendStyle}>
-            Property Furnish
-          </legend>
-          <Row>
-            {modalData?.propertyFurnish?.map((furnish, index) => (
-              <Col span={6} key={index}>
-                <span>&#8226; {furnish}</span>
-              </Col>
-            ))}
-          </Row>
-        </fieldset>
-        <fieldset style={fieldsetStyle}>
-          <legend style={legendStyle}>
-            Property Facilities
-          </legend>
-          <Row>
-            {modalData?.propertyFacility?.map((facility, index) => (
-              <Col span={6} key={index}>
-                <span>&#8226; {facility}</span>
-              </Col>
-            ))}
-          </Row>
-        </fieldset>
-        <fieldset style={fieldsetStyle}>
-          <legend style={legendStyle}>
-            Property Description
-          </legend>
-          {modalData?.propertyDescription
-            ? <p>{modalData?.propertyDescription}</p>
-            : <p>No description provided</p>
-          }
-        </fieldset>
-      </Modal>
-    </div>
+    </>
   );
 }
 
