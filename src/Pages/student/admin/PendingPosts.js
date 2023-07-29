@@ -11,6 +11,7 @@ import {
   Col,
   Image,
   Tabs,
+  message,
 } from "antd";
 import React, { useRef, useState, useEffect, Fragment } from "react";
 import Highlighter from "react-highlight-words";
@@ -117,12 +118,20 @@ function PendingPosts() {
   };
 
   const handleApproveClick = async () => {
+    if (selectedPostIDs.length === 0) {
+      message.error("Please select at least one post to approve");
+      return;
+    }
     await approvePost(selectedPostIDs);
     // add fetch trigger to rerender the table
     setFetchTrigger((prevTrigger) => prevTrigger + 1);
   };
 
   const handleRejectClick = async () => {
+    if (selectedPostIDs.length === 0) {
+      message.error("Please select at least one post to reject");
+      return;
+    }
     await rejectPost(selectedPostIDs);
     // add fetch trigger to rerender the table
     setFetchTrigger((prevTrigger) => prevTrigger + 1);
