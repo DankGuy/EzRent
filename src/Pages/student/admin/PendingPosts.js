@@ -547,13 +547,12 @@ function PendingPosts() {
         </div>
       </div>
       <Modal
-        title={"Post ID: " + modalData?.postID}
+        title={"View Post"}
         open={isModalOpen}
         onOk={handleOk}
         onCancel={handleCancel}
         width={1000}
       >
-        <p>{modalData?.propertyName}</p>
 
         <fieldset style={fieldsetStyle}>
           <legend style={legendStyle}>

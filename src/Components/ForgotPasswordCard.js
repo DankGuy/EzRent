@@ -122,8 +122,8 @@ function ForgotPasswordCard() {
               type="primary"
               htmlType="submit"
               style={{
-                backgroundColor: "#335C7C",
-                borderColor: "#335C7C",
+                backgroundColor: "#0062D1",
+                borderColor: "#0062D1",
                 marginTop: "5px",
                 width: "20vw",
                 fontSize: "1.2rem",

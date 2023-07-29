@@ -166,8 +166,8 @@ function LoginCard() {
                 width: "22.5vw",
                 fontSize: "1.2rem",
                 height: "auto",
-                backgroundColor: "#335C7C",
-                borderColor: "#335C7C",
+                backgroundColor: "#0062D1",
+                borderColor: "#0062D1",
               }}
               htmlType="submit"
             >
