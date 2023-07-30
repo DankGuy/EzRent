@@ -25,7 +25,6 @@ function PendingPosts() {
   const [searchedColumn, setSearchedColumn] = useState("");
   const [selectionType, setSelectionType] = useState("checkbox");
   const [selectedPostIDs, setSelectedPostIDs] = useState([]);
-  const [posts, setPosts] = useState([]);
   const searchInput = useRef(null);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [modalData, setModalData] = useState();
@@ -34,10 +33,6 @@ function PendingPosts() {
   const [propertyImages, setPropertyImages] = useState();
   const [roomImages, setRoomImages] = useState({});
   const [loadingImages, setLoadingImages] = useState(false);
-
-  const onChange = (key) => {
-    console.log(key);
-  };
 
   const viewPost = () => {
     setIsModalOpen(true);
@@ -57,43 +52,49 @@ function PendingPosts() {
     if (error) {
       console.log("error", error);
     } else {
-      const newData = property_post.map((post, index) => ({
-        key: index,
-        property_name: post.propertyName,
-        property_category: post.propertyCategory,
-        agent_name: post.propertyAgentID,
-        agent_rating: "4.5",
-        view: (
-          <Button
-            type="link"
-            onClick={() => {
-              viewPost(post.post_ID);
-              setModalData(post);
-              getImages(post);
-              console.log(post);
-            }}
-          >
-            <EyeOutlined style={{ fontSize: "20px" }} />
-          </Button>
-        ),
-      }));
+      const newData = await Promise.all(
+        property_post.map(async (post, index) => {
+          let agentName;
+          let agentRating;
+          let { data: agent, error } = await supabase
+            .from("agent")
+            .select("*")
+            .eq("agent_id", post.propertyAgentID);
+          if (error) {
+            console.log("error", error);
+          } else {
+            agentName = agent[0].name;
+            agentRating = agent[0].rating;
+          }
+
+          return {
+            key: index,
+            post_ID: post.postID,
+            property_name: post.propertyName,
+            property_category: post.propertyCategory,
+            agent_name: agentName,
+            agent_rating: agentRating,
+            view: (
+              <Button
+                type="text"
+                onClick={() => {
+                  viewPost(post.post_ID);
+                  setModalData(post);
+                  getImages(post);
+                }}
+              >
+                <EyeOutlined style={{ fontSize: "20px", color: "#1677FF" }} />
+              </Button>
+            ),
+          };
+        })
+      );
       setData(newData);
     }
   };
 
-  const getPosts = async () => {
-    let { data: property_post, error } = await supabase
-      .from("property_post")
-      .select("*")
-      .eq("propertyStatus->>stage", "pending");
-    if (error) {
-      console.log("error", error);
-    } else {
-      setPosts(property_post);
-    }
-  };
-
   const approvePost = async (postIDArr) => {
+    let approveStatus = true;
     for (let i = 0; i < postIDArr.length; i++) {
       let { data: property_post, error } = await supabase
         .from("property_post")
@@ -101,11 +102,16 @@ function PendingPosts() {
         .eq("postID", postIDArr[i]);
       if (error) {
         console.log("error", error);
+        approveStatus = false;
       }
+    }
+    if (approveStatus) {
+      message.success("Post(s) approved successfully");
     }
   };
 
   const rejectPost = async (postIDArr) => {
+    let rejectStatus = true;
     for (let i = 0; i < postIDArr.length; i++) {
       let { data: property_post, error } = await supabase
         .from("property_post")
@@ -113,7 +119,11 @@ function PendingPosts() {
         .eq("postID", postIDArr[i]);
       if (error) {
         console.log("error", error);
+        rejectStatus = false;
       }
+    }
+    if (rejectStatus) {
+      message.success("Post(s) rejected successfully");
     }
   };
 
@@ -139,7 +149,6 @@ function PendingPosts() {
 
   useEffect(() => {
     fetchData();
-    getPosts();
   }, [fetchTrigger]);
 
   const handleSearch = (selectedKeys, confirm, dataIndex) => {
@@ -249,6 +258,11 @@ function PendingPosts() {
   const rowSelection = {
     onChange: (selectedRowKeys, selectedRows) => {
       setSelectedPostIDs(selectedRows.map((row) => row.post_ID));
+      console.log(
+        `selectedRowKeys: ${selectedRowKeys}`,
+        "selectedRows: ",
+        selectedRows
+      );
     },
     getCheckboxProps: (record) => ({
       disabled: record.name === "Disabled User",
@@ -726,7 +740,6 @@ function PendingPosts() {
   return (
     <>
       <Tabs
-        onChange={onChange}
         type="card"
         items={[
           {
