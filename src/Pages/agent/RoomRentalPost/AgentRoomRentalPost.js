@@ -42,8 +42,6 @@ function AgentRoomRentalPost() {
     const handleRoomChange = (index, { fileList: newFileList }) => {
         setRoomFileList(prev => ({ ...prev, [index]: newFileList }));
 
-        const roomType = form.getFieldValue(`roomType${index}`);
-        console.log(roomType);
     };
 
 
@@ -76,16 +74,6 @@ function AgentRoomRentalPost() {
                         name: image.name,
                         status: 'done',
                         url: `https://exsvuquqspmbrtyjdpyc.supabase.co/storage/v1/object/public/post/${post.postID}/Property/${image.name}`,
-                        originFileObj: {
-                            uid: image.id,
-                            name: image.name,
-                            size: image.metadata.size,
-                            type: image.metadata.mimetype,
-                            lastModifiedDate: new Date(image.metadata.lastModified),
-                            lastModified: getTimeStamp(image.metadata.lastModified),
-                            webkitRelativePath: '',
-                        }
-
                     }
                 })
                 setFileList(urls)
@@ -168,15 +156,6 @@ function AgentRoomRentalPost() {
                             name: image.name,
                             status: 'done',
                             url: `https://exsvuquqspmbrtyjdpyc.supabase.co/storage/v1/object/public/post/${post.postID}/${roomType}/${image.name}`,
-                            originFileObj: {
-                                uid: image.id,
-                                name: image.name,
-                                size: image.size,
-                                type: image.mimetype,
-                                lastModifiedDate: getFormattedTime(image.metadata.lastModified),
-                                lastModified: getTimeStamp(image.lastModified),
-                                webkitRelativePath: '',
-                            }
                         }
                     })
 
@@ -226,24 +205,6 @@ function AgentRoomRentalPost() {
     };
 
     const handleChange = ({ fileList }) => setFileList(fileList);
-
-    const handleRemove = (e) => {
-        console.log(e)
-        //Remove the image from the supabase storage
-        const { data, error } = supabase.storage
-            .from('post')
-            .remove([`${post.postID}/Property/${e.name}`]);
-
-        if (error) {
-            console.log(error);
-            return;
-        }
-
-        console.log(data);
-
-    };
-
-
 
     const uploadButton = (
         <div>
@@ -391,13 +352,6 @@ function AgentRoomRentalPost() {
         }
 
         const value = isJpgOrPng && isLt2M && !isDuplicate;
-
-        if (value) {
-            console.log(file)
-            //Upload file to supabase storage
-            uploadPropertyImage(file, post.postID);
-        }
-
 
         return value || Upload.LIST_IGNORE;
     };
@@ -704,7 +658,6 @@ function AgentRoomRentalPost() {
 
 
     const handlePFurnishChecklist = (values) => {
-        console.log(values)
         setPFurnishChecklist(values)
     }
 
@@ -789,8 +742,6 @@ function AgentRoomRentalPost() {
             console.log(folderError);
         }
 
-        console.log(folders);
-
         // Iterate the folders and delete all the files in each folder
         for (const folder of folders) {
             const folderName = folder.name;
@@ -799,11 +750,6 @@ function AgentRoomRentalPost() {
                 .from('post')
                 .list(`${id}/${folderName}`);
 
-            if (fileError) {
-                console.log(fileError);
-            }
-
-            console.log(files);
 
             for (const file of files) {
                 const filename = file.name;
@@ -824,55 +770,39 @@ function AgentRoomRentalPost() {
 
     //Funtion to upload propertyImage to supabase storage
     const uploadImage = async (e, id) => {
-        console.log(id);
-
-        console.log(fileList);
-
         try {
 
-
-
-            // Get all folders in supabase storage
-            const { data: folders, error: folderError } = await supabase.storage
+            //Get all images in the property folder
+            const { data: images, error } = await supabase
+                .storage
                 .from('post')
-                .list(`${id}`);
+                .list(`${id}/Property`);
 
-            if (folderError) {
-                console.log(folderError);
-            }
+            const imageNames = images.map(image => image.name);
 
-            console.log(folders);
+            //get the image name from file list that does not have originFileObj and store into an array
+            const removedImages = fileList.filter((image) => !image.originFileObj).map((image) => image.name);
 
-            // Iterate the folders and delete all the files in each folder
-            for (const folder of folders) {
-                const folderName = folder.name;
+            //get the missing images from the imageNames array
+            const missingImages = imageNames.filter((image) => !removedImages.includes(image));
 
-                const { data: files, error: fileError } = await supabase.storage
+            //delete the missing images from the supabase storage
+            for (const image of missingImages) {
+                const { data, error } = await supabase.storage
                     .from('post')
-                    .list(`${id}/${folderName}`);
+                    .remove([`${id}/Property/${image}`]);
 
-                if (fileError) {
-                    console.log(fileError);
-                }
-
-                console.log(files);
-
-                for (const file of files) {
-                    const filename = file.name;
-
-                    const { data, error } = await supabase.storage
-                        .from('post')
-                        .remove([`${id}/${folderName}/${filename}`]);
-
-                    if (error) {
-                        console.log(error);
-                        return;
-                    }
+                if (error) {
+                    console.log(error);
+                    return;
                 }
             }
 
-            // Get the length of the image array and upload the images to supabase storage
-            for (const image of fileList) {
+            //Get the new upload image
+            const newUploadImages = fileList.filter((image) => image.originFileObj);
+
+            //Upload the new upload image to supabase storage
+            for (const image of newUploadImages) {
                 const { data, error } = await supabase.storage
                     .from('post')
                     .upload(`${id}/Property/${image.name}`, image.originFileObj, {
@@ -886,29 +816,56 @@ function AgentRoomRentalPost() {
                 }
             }
 
+            //Iterate through the roomNum
+            Array.from({ length: roomNum }, (_, i) => i + 1).forEach(async (index) => {
+                const roomType = form.getFieldValue(`roomType${index}`);
 
+                //Get all images in the roomType folder
+                const { data: images, error } = await supabase
+                    .storage
+                    .from('post')
+                    .list(`${id}/${roomType}`);
 
-            // Upload room images
-            for (const index of Array.from({ length: roomNum }, (_, i) => i + 1)) {
-                const roomType = e[`roomType${index}`];
+                const imageNames = images.map(image => image.name);
 
+                //get the image name from roomFileList that does not have originFileObj and store into an array
+                const removedImages = roomFileList[index]?.filter((image) => !image.originFileObj).map((image) => image.name);
 
-                if (roomFileList[index].length > 0) {
-                    for (const image of roomFileList[index]) {
-                        const { data, error } = await supabase.storage
-                            .from('post')
-                            .upload(`${id}/${roomType}/${image.name}`, image.originFileObj, {
-                                cacheControl: '3600',
-                                upsert: false,
-                            });
+                //get the missing images from the imageNames array
+                const missingImages = imageNames.filter((image) => !removedImages.includes(image));
 
-                        if (error) {
-                            console.log(error);
-                            return;
-                        }
+                //delete the missing images from the supabase storage
+                for (const image of missingImages) {
+                    const { data, error } = await supabase.storage
+                        .from('post')
+                        .remove([`${id}/${roomType}/${image}`]);
+
+                    if (error) {
+                        console.log(error);
+                        return;
                     }
                 }
-            }
+
+                //Get the new upload image
+                const newUploadImages = roomFileList[index]?.filter((image) => image.originFileObj);
+
+                //Upload the new upload image to supabase storage
+                for (const image of newUploadImages) {
+                    const { data, error } = await supabase.storage
+                        .from('post')
+                        .upload(`${id}/${roomType}/${image.name}`, image.originFileObj, {
+                            cacheControl: '3600',
+                            upsert: false,
+                        });
+
+                    if (error) {
+                        console.log(error);
+                        return;
+                    }
+                }
+
+            })
+
         } catch (error) {
             console.log(error);
             // Handle any other unexpected errors
@@ -921,11 +878,6 @@ function AgentRoomRentalPost() {
 
 
     const onFinish = async (e) => {
-
-        console.log(fileList);
-        console.log(e);
-        console.log(e["propertyName"])
-
         let propertyState = '';
         let propertyCity = '';
 
@@ -975,7 +927,6 @@ function AgentRoomRentalPost() {
         }
         )
 
-        console.log(roomDetails)
 
         const { data: postData, error: postError } = await supabase
             .from('property_post')
@@ -1022,7 +973,7 @@ function AgentRoomRentalPost() {
         else {
 
 
-            //uploadImage(e, post.postID);
+            uploadImage(e, post.postID);
 
 
             messageApi.loading('Editing post...', 3);
@@ -1030,9 +981,9 @@ function AgentRoomRentalPost() {
             setTimeout(() => {
                 messageApi.success('Edit successful. You will be redirected to the previous page within 1 second...', 1);
 
-                setTimeout(() => {
-                    navigate("/agent/roomRental");
-                }, 1000);
+                // setTimeout(() => {
+                //     navigate("/agent/roomRental");
+                // }, 1000);
             }, 3000);
 
         }
@@ -1041,8 +992,6 @@ function AgentRoomRentalPost() {
     const onFinishFailed = (e) => {
         //display error message
         messageApi.error('Please fill in all the required fields!');
-
-        console.log(e)
     }
 
 
@@ -1269,7 +1218,6 @@ function AgentRoomRentalPost() {
                                 multiple={true}
                                 beforeUpload={beforeUploadProperty}
                                 customRequest={dummyRequest}
-                                onRemove={handleRemove}
                             >
                                 {fileList.length >= 10 ? null : uploadButton}
                             </Upload>
