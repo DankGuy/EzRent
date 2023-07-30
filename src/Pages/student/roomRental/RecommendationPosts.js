@@ -1,5 +1,4 @@
 import React, { useState, useEffect } from 'react';
-import { Link } from 'react-router-dom';
 import { Row, Col, Image, Button } from 'antd';
 import { BsCurrencyDollar } from 'react-icons/bs'
 import { supabase } from '../../../supabase-client';
@@ -51,7 +50,7 @@ function RecommendationPosts({ postID }) {
         setFirstImage(firstImageObject);
     }
 
-   
+
 
     useEffect(() => {
         fetchPosts();
@@ -77,6 +76,12 @@ function RecommendationPosts({ postID }) {
             items: 1,
             slidesToSlide: 1 // optional, default to 1.
         }
+    };
+
+    const openLinkInNewTab = (url, stateData, event) => {
+        event.preventDefault();
+        const serializedState = JSON.stringify(stateData);
+        window.open(`${url}?state=${encodeURIComponent(serializedState)}`, '_blank');
     };
 
     const renderPosts = () => {
@@ -152,11 +157,11 @@ function RecommendationPosts({ postID }) {
                         </Row>
                         <Row style={{ margin: '10px 0px', paddingBottom: '10px' }}>
                             <Col span={12}>
-                                <Link to={`/student/roomRental/${post.postID}`} state={post}>
-                                    <Button
-                                        type="primary"
-                                        className='viewButton'>View</Button>
-                                </Link>
+                                <Button
+                                    type="primary"
+                                    className='viewButton'
+                                    onClick={(e) => openLinkInNewTab(`/student/roomRental/${post.postID}`, post, e)}                                        >View
+                                </Button>
                             </Col>
                             <Col span={11} style={{ fontSize: '16px', marginLeft: '0px', display: 'flex', justifyContent: 'end', alignItems: 'end' }}>{post.agent.name}</Col>
 

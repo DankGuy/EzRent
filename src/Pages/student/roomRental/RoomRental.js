@@ -1,6 +1,5 @@
 import SearchInput from '../../../Components/SearchInput';
 import { Col, Row, Button, Form, Image, Empty, Pagination, FloatButton } from 'antd';
-import { Link } from 'react-router-dom'
 import { SearchOutlined } from '@ant-design/icons';
 import { useState, useEffect } from 'react';
 import FurnishTypeSelection from '../../../Components/FurnishTypeSelection';
@@ -244,6 +243,12 @@ function RoomRental() {
         }
     };
 
+    const openLinkInNewTab = (url, stateData, event) => {
+        event.preventDefault();
+        const serializedState = JSON.stringify(stateData);
+        window.open(`${url}?state=${encodeURIComponent(serializedState)}`, '_blank');
+      };
+      
 
 
     const renderedPost = currentPosts.map((post) => {
@@ -305,11 +310,13 @@ function RoomRental() {
                     <div style={{ marginTop: '20px' }}>
                         <Row>
                             <Col span={6}>
-                                <Link to={`/student/roomRental/${post.postID}`} state={post}>
                                     <Button
                                         type='primary'
-                                        className='viewButton'>View</Button>
-                                </Link>
+                                        className='viewButton'
+                                        onClick={(e) => openLinkInNewTab(`/student/roomRental/${post.postID}`, post, e)}
+                                        >
+                                            View
+                                    </Button>
                             </Col>
                             <Col span={18} style={{ textDecoration: 'underline', fontStyle: 'italic', display: 'flex', justifyContent: 'end', alignItems: 'end' }}>{`Posted on: ${getDateOnly(post.postDate)} (Last modified: ${getElapsedTime(post.lastModifiedDate)})`}</Col>
                         </Row>

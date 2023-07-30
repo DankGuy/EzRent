@@ -27,7 +27,9 @@ import { Fragment } from 'react';
 
 function RoomRentalPost() {
     const location = useLocation();
-    const post = location.state; // Access the passed data from the location state
+    const post = location.search ? JSON.parse(decodeURIComponent(location.search.replace('?state=', ''))) : null;
+
+
     const [propertyImages, setPropertyImages] = useState([]);
     const [roomImages, setRoomImages] = useState({});
 
@@ -60,11 +62,11 @@ function RoomRentalPost() {
 
     }, [])
 
-    useEffect(() => {
-        window.scrollTo(0, 0); // Scroll to the top of the page
-        getImages();
-        // getAvailableDate();
-    }, [post]);
+    // useEffect(() => {
+    //     window.scrollTo(0, 0); // Scroll to the top of the page
+    //     getImages();
+    //     // getAvailableDate();
+    // }, [post]);
 
     const getAgentAvatar = async () => {
         const { data } = supabase.storage
@@ -407,7 +409,7 @@ function RoomRentalPost() {
                             <Col span={24} className='postSectionTitle'>Property Details: </Col>
                         </Row>
                         <Row >
-                            <Col span={10} className='postSectionContent'><BsCurrencyDollar size={15} />
+                            <Col span={11} className='postSectionContent'><BsCurrencyDollar size={15} />
                                 {
                                     post.propertyCategory === 'Room' ?
                                         `Room Rental Price: RM${post.propertyPrice}.00`
@@ -418,7 +420,7 @@ function RoomRentalPost() {
                             <Col span={10} className='postSectionContent'><BiBuildingHouse size={15} /> Property type: {post.propertyType}</Col>
                         </Row>
                         <Row >
-                            <Col span={10} className='postSectionContent'><BsHouseFill size={15} />Furnish type: {post.propertyFurnishType}</Col>
+                            <Col span={11} className='postSectionContent'><BsHouseFill size={15} />Furnish type: {post.propertyFurnishType}</Col>
                             <Col span={10} className='postSectionContent'><TbResize size={15} /> Built-up size: {post.propertySquareFeet} sq.ft.</Col>
                         </Row>
                     </div>

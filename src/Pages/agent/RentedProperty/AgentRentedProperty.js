@@ -7,7 +7,6 @@ import { Input, Space } from "antd";
 import { SearchOutlined } from "@ant-design/icons";
 import Highlighter from "react-highlight-words";
 import { useRef } from "react";
-import { Link } from "react-router-dom";
 
 
 function AgentRentedProperty() {
@@ -32,6 +31,8 @@ function AgentRentedProperty() {
             const tableData = [];
 
             data.forEach((element) => {
+
+                console.log(element);
 
                 const rentalDuration = () => {
                     if (element.rentalDuration.year === 0) {
@@ -63,6 +64,13 @@ function AgentRentedProperty() {
 
         fetchProperties()
     }, [])
+
+    const openLinkInNewTab = (url, stateData, event) => {
+        event.preventDefault();
+        console.log(stateData);
+        const serializedState = JSON.stringify(stateData);
+        window.open(`${url}?state=${encodeURIComponent(serializedState)}`, '_blank');
+      };
 
     const handleSearch = (selectedKeys, confirm, dataIndex) => {
         confirm();
@@ -204,11 +212,13 @@ function AgentRentedProperty() {
             ellipsis: {
                 showTitle: false,
             },
-            render: (tenantName, post) => (
+            render: (tenantName, rentalAgreementID) => (
                 <Tooltip placement="topLeft" title={tenantName}>
-                    <Link to={`/agent/rentedProperty/${tenantName}`} state={post} >
+                    <div 
+                        onClick={(e) => openLinkInNewTab(`/agent/rentedProperty/${tenantName}`, rentalAgreementID.rentalAgreementID, e)} 
+                        style={{ cursor: 'pointer', color: '#1890ff' }}>
                         {tenantName}
-                    </Link>
+                    </div>
                 </Tooltip>
             ),
         },
