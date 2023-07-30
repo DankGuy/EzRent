@@ -1,4 +1,4 @@
-import { Button, Modal, Steps, theme, message, Form, Input, Select, DatePicker, Radio, Divider, Card, InputNumber, Slider } from "antd";
+import { Button, Modal, Steps, theme, message, Form, Input, Select, DatePicker, Radio, Divider, Card, InputNumber, Slider, Row, Col } from "antd";
 import { useState, useRef } from "react";
 import { supabase } from "../../../supabase-client";
 
@@ -28,11 +28,11 @@ function CreateRoommatePost({ value, onChange }) {
         const { data: post, error } = await supabase
             .from('rental_agreement')
             .select('*, postID(*)')
-            .eq('postID', value)
+            .eq('rentalAgreementID', value)
             .single();
 
         if (error) {
-            message.error("Invalid property post ID");
+            message.error("Invalid rental agreement ID");
         }
         setRentedProperty(post);
         setIsLoading(false);
@@ -42,7 +42,7 @@ function CreateRoommatePost({ value, onChange }) {
         {
             title: 'Property Details',
             formRef: useRef(),
-            content: <div style={{marginLeft: '5%'}}>
+            content: <div style={{ marginLeft: '5%' }}>
                 <Form.Item name="rentedProperty" label="Do you have a rented property?">
                     <Radio.Group onChange={handleYesNo}>
                         <Radio value="yes">Yes</Radio>
@@ -51,8 +51,8 @@ function CreateRoommatePost({ value, onChange }) {
                 </Form.Item>
                 {hasRentedProperty &&
                     <>
-                        <Form.Item name="rentedPropertyId" label="Enter your rented property post ID">
-                            <Input.Search placeholder="Rented Property ID" enterButton={true} allowClear loading={isLoading} onSearch={handleSearch} />
+                        <Form.Item name="rentedPropertyId" label="Enter your rental agreement ID">
+                            <Input.Search placeholder="Rental Agreement ID" enterButton={true} allowClear loading={isLoading} onSearch={handleSearch} />
                         </Form.Item>
                     </>}
                 <div>
@@ -62,8 +62,8 @@ function CreateRoommatePost({ value, onChange }) {
                         <Card
                             style={{ width: '50%', marginBottom: "15px" }}
                             title="Property Details"
-                            headStyle={{ backgroundColor: "#fafafa" }}
-                            bodyStyle={{ padding: "10px" }}
+                            headStyle={{ backgroundColor: "#fafafa", borderBottom: "1px solid #e8e8e8" }}
+                            bodyStyle={{ padding: "2px 0 2px 10px" }}
                         >
                             <p>Property Name: {rentedProperty.postID.propertyName}</p>
                             <p>Property Address: {rentedProperty.postID.propertyAddress}, {rentedProperty.postID.propertyPostcode}, {rentedProperty.postID.propertyCity}, {rentedProperty.postID.propertyState}</p>
@@ -78,21 +78,32 @@ function CreateRoommatePost({ value, onChange }) {
                 </div>
                 {!hasRentedProperty &&
                     <div>
-                        <Form.Item name="locationSelection" label="Preferred Location">
-                            <Input placeholder="Location" style={{width: '30%'}}/>
-                        </Form.Item>
-                        <Form.Item name="propertySelection" label="Property Type">
-                            <Select placeholder="All Property Type" style={{ width: '30%' }}
-                                options={[
-                                    { value: 'Apartment', label: 'Apartment' },
-                                    { value: 'Condominium', label: 'Condominium' },
-                                    { value: 'Flat', label: 'Flat' },
-                                    { value: 'Terrace house', label: 'Terrace house' },
-                                ]} />
-                        </Form.Item>
-                        <Form.Item name="budgetInput" label="Budget">
-                            <InputNumber placeholder="Budget" style={{ width: '21%' }} />
-                        </Form.Item>
+                        <Row>
+                            <Col span={12}>
+                                <Form.Item name="locationSelection" label="Preferred Location">
+                                    <Input placeholder="Location" style={{ width: '80%' }} />
+                                </Form.Item>
+                            </Col>
+                            <Col span={12}>
+                                <Form.Item name="propertySelection" label="Property Type">
+                                    <Select placeholder="Select" style={{ width: '50%' }}
+                                        options={[
+                                            { value: 'Apartment', label: 'Apartment' },
+                                            { value: 'Condominium', label: 'Condominium' },
+                                            { value: 'Flat', label: 'Flat' },
+                                            { value: 'Terrace house', label: 'Terrace house' },
+                                        ]} />
+                                </Form.Item>
+                            </Col>
+                        </Row>
+                        <Row>
+                            <Col span={12}>
+                                <Form.Item name="budgetInput" label="Budget (RM)">
+                                    <InputNumber placeholder="Budget" style={{ width: '50%' }} min={0} />
+                                </Form.Item>
+
+                            </Col>
+                        </Row>
                     </div>}
             </div>
         }
@@ -101,13 +112,13 @@ function CreateRoommatePost({ value, onChange }) {
         {
             title: 'Rental Details',
             formRef: useRef(),
-            content: <div style={{marginLeft: '5%'}}>
+            content: <div style={{ marginLeft: '5%' }}>
 
                 <Form.Item name="moveInDate" label="Move-in Date">
-                    <DatePicker placeholder="Move-in Date" />
+                    <DatePicker placeholder="Select" />
                 </Form.Item>
                 <Form.Item name="rentDuration" label="Rent Duration">
-                    <Select placeholder="Rent Duration" style={{ width: '21%' }}
+                    <Select placeholder="Select" style={{ width: '21%' }}
                         options={[
                             { value: '3 months', label: '3 months' },
                             { value: '6 months', label: '6 months' },
@@ -120,41 +131,53 @@ function CreateRoommatePost({ value, onChange }) {
         {
             title: 'Roommate Preferences',
             formRef: useRef(),
-            content: <div style={{marginLeft: '5%'}}>
+            content: <div style={{ marginLeft: '5%' }}>
                 <Form.Item name="preferredAge" label="Age">
-                    <Slider range step={3}  min={1} max={60} style={{ margin: '10px' }} />
+                    <Slider range step={3} min={1} max={60} style={{ margin: '10px' }} />
                 </Form.Item>
-                <Form.Item name="preferredGender" label="Gender">
-                    <Radio.Group>
-                        <Radio value="male">Male</Radio>
-                        <Radio value="female">Female</Radio>
-                    </Radio.Group>
-                </Form.Item>
-                <Form.Item name="preferredRace" label= "Race">
-                    <Select placeholder="Race" style={{ width: '21%' }}
-                        options={[
-                            { value: 'Malay', label: 'Malay' },
-                            { value: 'Chinese', label: 'Chinese' },
-                            { value: 'Indian', label: 'Indian' },
-                            { value: 'Others', label: 'Others' }
-                        ]} />
-                </Form.Item>
-                <Form.Item name="preferredReligion" label="Religion">
-                    <Select placeholder="Religion" style={{ width: '21%' }}
-                        options={[
-                            { value: 'Islam', label: 'Islam' },
-                            { value: 'Buddhism', label: 'Buddhism' },
-                            { value: 'Christianity', label: 'Christianity' },
-                            { value: 'Hinduism', label: 'Hinduism' },
-                            { value: 'Others', label: 'Others' }
-                        ]} />
-                </Form.Item>
-                <Form.Item name="studentType" label="Student Type">
-                    <Radio.Group>
-                        <Radio value="local">Local</Radio>
-                        <Radio value="international">International</Radio>
-                    </Radio.Group>
-                </Form.Item>
+                <Row>
+                    <Col span={12}>
+                        <Form.Item name="preferredGender" label="Gender">
+                            <Radio.Group>
+                                <Radio value="male">Male</Radio>
+                                <Radio value="female">Female</Radio>
+                            </Radio.Group>
+                        </Form.Item>
+                    </Col>
+                    <Col span={12}>
+                        <Form.Item name="studentType" label="Student Type">
+                            <Radio.Group>
+                                <Radio value="local">Local</Radio>
+                                <Radio value="international">International</Radio>
+                            </Radio.Group>
+                        </Form.Item>
+                    </Col>
+                </Row>
+                <Row>
+                    <Col span={12}>
+                        <Form.Item name="preferredRace" label="Race">
+                            <Select placeholder="Select" style={{ width: '50%' }}
+                                options={[
+                                    { value: 'Malay', label: 'Malay' },
+                                    { value: 'Chinese', label: 'Chinese' },
+                                    { value: 'Indian', label: 'Indian' },
+                                    { value: 'Others', label: 'Others' }
+                                ]} />
+                        </Form.Item>
+                    </Col>
+                    <Col span={12}>
+                        <Form.Item name="preferredReligion" label="Religion">
+                            <Select placeholder="Select" style={{ width: '50%' }}
+                                options={[
+                                    { value: 'Islam', label: 'Islam' },
+                                    { value: 'Buddhism', label: 'Buddhism' },
+                                    { value: 'Christianity', label: 'Christianity' },
+                                    { value: 'Hinduism', label: 'Hinduism' },
+                                    { value: 'Others', label: 'Others' }
+                                ]} />
+                        </Form.Item>
+                    </Col>
+                </Row>
                 <Form.Item name="description" label="Description">
                     <Input.TextArea placeholder="Description" style={{ height: 100 }} />
                 </Form.Item>
@@ -163,57 +186,102 @@ function CreateRoommatePost({ value, onChange }) {
         {
             title: 'My Lifestyle',
             formRef: useRef(),
-            content: <div style={{marginLeft: '5%', marginRight: '20%'}}>
-                <Form.Item name="cleanliness" label="Cleanliness"> 
-                    <Select placeholder="Cleanliness" style={{ width: '50%' }}
-                        options={[
-                            { value: 'Clean', label: 'Clean' },
-                            { value: 'Average', label: 'Average' },
-                            { value: 'Messy', label: 'Messy' },
-                        ]} />
-                </Form.Item>
-                <Form.Item name="getUp" label="Get up">
-                    <Select placeholder="Get up"  style={{ width: '50%' }}
-                        options={[
-                            { value: 'Before 6am', label: 'Before 6am' },
-                            { value: 'Before 8am', label: 'Before 8am' },
-                            { value: 'Before 10am', label: 'Before 10am' },
-                            { value: 'After 10am', label: 'After 10am' },
-                            { value: 'After 12am', label: 'After 12am' },
-                        ]} />
-                </Form.Item>
-                <Form.Item name="goToBed" label="Go to bed">
-                    <Select placeholder="Go to bed" style={{ width: '50%' }}
-                        options={[
-                            { value: 'Before 10pm', label: 'Before 10pm' },
-                            { value: 'Before 12am', label: 'Before 12am' },
-                            { value: 'After 12am', label: 'After 12am' },
-                        ]} />
-                </Form.Item>
-                <Form.Item name="smoking" label="Smoking">
-                    <Select placeholder="Smoking" style={{ width: '50%' }}
-                        options={[
-                            { value: 'Yes', label: 'Yes' },
-                            { value: 'No', label: 'No' },
-                            { value: 'Outside only', label: 'Outside only' },
-                        ]} />
-                </Form.Item>
-                <Form.Item name="pets" label="Pets">
-                    <Select placeholder="Pets" style={{ width: '50%' }}
-                        options={[
-                            { value: 'Yes', label: 'Yes' },
-                            { value: 'No', label: 'No' },
-                        ]} />
-                </Form.Item>
-                <Form.Item name="foodPreference" label="Food Preference">
-                    <Select placeholder="Food Preference" style={{ width: '50%' }}
-                        options={[
-                            { value: 'Vegetarian', label: 'Vegetarian' },
-                            { value: 'Non-vegetarian', label: 'Non-vegetarian' },
-                            { value: 'Halal', label: 'Halal' },
-                            { value: 'Non-halal', label: 'Non-halal' },
-                        ]} />
-                </Form.Item>
+            content: <div style={{ marginLeft: '5%', marginRight: '5%' }}>
+                <Row>
+                    <Col span={12}>
+                        <Form.Item name="cleanliness" label="My Cleanliness">
+                            <Select placeholder="Select" style={{ width: '50%' }}
+                                options={[
+                                    { value: 'Clean', label: 'Clean' },
+                                    { value: 'Average', label: 'Average' },
+                                    { value: 'Messy', label: 'Messy' },
+                                ]} />
+                        </Form.Item>
+                    </Col>
+                    <Col span={12}>
+                        <Form.Item name="smoking" label="Smoking">
+                            <Select placeholder="Select" style={{ width: '50%' }}
+                                options={[
+                                    { value: 'Yes', label: 'Yes' },
+                                    { value: 'No', label: 'No' },
+                                    { value: 'Outside only', label: 'Outside only' },
+                                ]} />
+                        </Form.Item>
+
+                    </Col>
+                </Row>
+                <Row>
+                    <Col span={12}>
+                        <Form.Item name="getUp" label="Get up">
+                            <Select placeholder="Select" style={{ width: '50%' }}
+                                options={[
+                                    { value: 'Before 6am', label: 'Before 6am' },
+                                    { value: 'Before 8am', label: 'Before 8am' },
+                                    { value: 'Before 10am', label: 'Before 10am' },
+                                    { value: 'After 10am', label: 'After 10am' },
+                                    { value: 'After 12am', label: 'After 12am' },
+                                ]} />
+                        </Form.Item>
+                    </Col>
+                    <Col span={12}>
+                        <Form.Item name="goToBed" label="Go to bed">
+                            <Select placeholder="Select" style={{ width: '50%' }}
+                                options={[
+                                    { value: 'Before 10pm', label: 'Before 10pm' },
+                                    { value: 'Before 12am', label: 'Before 12am' },
+                                    { value: 'After 12am', label: 'After 12am' },
+                                ]} />
+                        </Form.Item>
+                    </Col>
+                </Row>
+                <Row>
+                    <Col span={12}>
+                        <Form.Item name="pets" label="Pets">
+                            <Select placeholder="Select" style={{ width: '50%' }}
+                                options={[
+                                    { value: 'Yes', label: 'Yes' },
+                                    { value: 'No', label: 'No' },
+                                ]} />
+                        </Form.Item>
+                    </Col>
+                    <Col span={12}>
+                        <Form.Item name="foodPreference" label="Food Preference">
+                            <Select placeholder="Select" style={{ width: '50%' }}
+                                options={[
+                                    { value: 'Vegetarian', label: 'Vegetarian' },
+                                    { value: 'Non-vegetarian', label: 'Non-vegetarian' },
+                                    { value: 'Halal', label: 'Halal' },
+                                    { value: 'Non-halal', label: 'Non-halal' },
+                                ]} />
+                        </Form.Item>
+                    </Col>
+                </Row>
+                <Row>
+                    <Col span={12}>
+                        <Form.Item name="guests" label="Overnight Guests">
+                            <Select placeholder="Select" style={{ width: '50%' }}
+
+                                options={[
+                                    { value: 'Never', label: 'Never' },
+                                    { value: 'Rarely', label: 'Rarely' },
+                                    { value: 'Occasionally', label: 'Occasionally' },
+                                    { value: 'Frequently', label: 'Frequently' },
+                                ]} />
+                        </Form.Item>
+                    </Col>
+                    <Col span={12}>
+                        <Form.Item name="party" label="Party Habits">
+                            <Select placeholder="Select" style={{ width: '50%' }}
+                                options={[
+                                    { value: 'Rarely', label: 'Rarely' },
+                                    { value: 'Occasionally', label: 'Occasionally' },
+                                    { value: 'Frequently', label: 'Frequently' },
+                                ]} />
+                        </Form.Item>
+                    </Col>
+                </Row>
+
+
             </div>
         },
     ]
@@ -246,13 +314,13 @@ function CreateRoommatePost({ value, onChange }) {
         >
 
             <div>
-                <Steps 
-                    current={currentStep} 
-                    size="default" 
-                    direction="horizontal" 
-                    progressDot 
+                <Steps
+                    current={currentStep}
+                    size="default"
+                    direction="horizontal"
+                    progressDot
                     items={stepsData.map((item) => ({ title: item.title }))}
-                    />
+                />
 
                 <Form
                     onFinish={handleFormFinish}
@@ -273,25 +341,25 @@ function CreateRoommatePost({ value, onChange }) {
                             {item.content}
 
                             {/* Cancel button */}
-                            <div style={{marginLeft: '5%'}}> 
-                            {index !== 0 &&
-                                <Button
-                                    style={{ marginRight: 10 }}
-                                    onClick={() => setCurrentStep((prev) => prev - 1)}
-                                >
-                                    Back
-                                </Button>
-                            }
-
-                            <Button
-                                type="primary"
-                                disabled={
-                                    index === 0 && hasRentedProperty && !rentedProperty ? true : false
+                            <div style={{ marginLeft: '5%' }}>
+                                {index !== 0 &&
+                                    <Button
+                                        style={{ marginRight: 10 }}
+                                        onClick={() => setCurrentStep((prev) => prev - 1)}
+                                    >
+                                        Back
+                                    </Button>
                                 }
-                                onClick={index === stepsData.length - 1 ? handleFormFinish : handleNextStep}
-                            >
-                                {index === stepsData.length - 1 ? 'Submit' : 'Next'}
-                            </Button>
+
+                                <Button
+                                    type="primary"
+                                    disabled={
+                                        index === 0 && hasRentedProperty && !rentedProperty ? true : false
+                                    }
+                                    onClick={index === stepsData.length - 1 ? handleFormFinish : handleNextStep}
+                                >
+                                    {index === stepsData.length - 1 ? 'Submit' : 'Next'}
+                                </Button>
                             </div>
                         </div>
                     ))}
