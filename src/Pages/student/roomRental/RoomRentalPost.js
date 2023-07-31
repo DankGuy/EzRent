@@ -27,9 +27,12 @@ import { Fragment } from 'react';
 
 function RoomRentalPost() {
     const location = useLocation();
-    const post = location.search ? JSON.parse(decodeURIComponent(location.search.replace('?state=', ''))) : null;
+    const queryParams = new URLSearchParams(location.search);
+    const stateParam = queryParams.get('state');
+    const postID = stateParam ? JSON.parse(decodeURIComponent(stateParam)) : null;
+    console.log(postID);
 
-
+    const [post, setPost] = useState({});
     const [propertyImages, setPropertyImages] = useState([]);
     const [roomImages, setRoomImages] = useState({});
 
@@ -57,29 +60,125 @@ function RoomRentalPost() {
     };
 
     useEffect(() => {
-        getImages();
-        getAgentAvatar().then((data) => setAgentAvatar(data.publicUrl));
 
-    }, [])
+        if (!postID) {
+            return;
+        }
+
+        const fetchPost = async () => {
+            const { data: post, error } = await supabase
+                .from("property_post")
+                .select('*, agent(*)')
+                .eq("postID", postID)
+                .single();
+
+            if (error) {
+                console.log(error)
+            }
+
+            console.log(post)
+
+            setPost(post);
+        }
+
+
+        fetchPost();
+
+    }, [postID])
+
+    useEffect(() => {
+
+        if (Object.keys(post).length === 0) {
+            return;
+        }
+        const getImages = async () => {
+            setLoadingImages(true);
+
+
+            // Get all images from supabase storage with id = postID 
+            const { data: propertyData, error: propertyError } = await supabase.storage
+                .from("post")
+                .list(`${post.postID}/Property`);
+
+            if (propertyData) {
+                setPropertyImages(propertyData);
+            }
+
+            // Create an array of room numbers
+            const roomNumbers = Array.from({ length: post.propertyRoomNumber }, (_, i) => i + 1);
+
+            // Map over the room numbers and retrieve room images for each
+            await Promise.all(
+                roomNumbers.map(async (roomNumber) => {
+
+                    const roomType = post.propertyRoomDetails[roomNumber].roomType;
+
+                    const { data: roomData, error: roomError } = await supabase.storage
+                        .from("post")
+                        .list(`${post.postID}/${roomType}`);
+
+                    if (roomData) {
+                        setRoomImages((prevState) => {
+                            const updatedState = { ...prevState };
+                            updatedState[roomType] = roomData;
+                            return updatedState;
+                        });
+                    }
+
+                    if (roomError) {
+                        console.log(roomError);
+                    }
+                })
+            );
+
+            setLoadingImages(false);
+
+        };
+
+        const getAvatar = async () => {
+            const { data } = await supabase.storage
+                .from("avatar")
+                .getPublicUrl(`avatar-${post.agent.agent_id}`, {
+                    select: "metadata",
+                    fileFilter: (metadata) => {
+                        const fileType = metadata.content_type.split("/")[1];
+                        return fileType === "jpg" || fileType === "png";
+                    },
+                })
+            
+            return data;
+        };
+
+        getAvatar().then((data) => {
+            setAgentAvatar(data.publicUrl);
+        });
+
+
+        getImages();
+    }, [post]);
+
 
     // useEffect(() => {
-    //     window.scrollTo(0, 0); // Scroll to the top of the page
-    //     getImages();
-    //     // getAvailableDate();
-    // }, [post]);
+    //     if (!post.agent) {
+    //         return;
+    //     }
 
-    const getAgentAvatar = async () => {
-        const { data } = supabase.storage
-            .from("avatar")
-            .getPublicUrl(`avatar-${post.agent.agent_id}`, {
-                select: "metadata",
-                fileFilter: (metadata) => {
-                    const fileType = metadata.content_type.split("/")[1];
-                    return fileType === "jpg" || fileType === "png";
-                },
-            });
-        return data;
-    };
+
+    // }, [post.agent]);
+
+
+    // const getAgentAvatar = async () => {
+    //     const { data } = supabase.storage
+    //         .from("avatar")
+    //         .getPublicUrl(`avatar-${post.agent.agent_id}`, {
+    //             select: "metadata",
+    //             fileFilter: (metadata) => {
+    //                 const fileType = metadata.content_type.split("/")[1];
+    //                 return fileType === "jpg" || fileType === "png";
+    //             },
+    //         });
+    //     return data;
+    // };
 
 
 
@@ -116,7 +215,7 @@ function RoomRentalPost() {
     }
 
 
-    const renderedFurnish = post.propertyFurnish.map((furnish, index) => {
+    const renderedFurnish = post?.propertyFurnish?.map((furnish, index) => {
         const IconComponent = getFurnishIcon(furnish);
         return <Col span={8}
             className='iconComponent'
@@ -159,7 +258,7 @@ function RoomRentalPost() {
         }
     }
 
-    const renderedFacility = post.propertyFacility.map((facility, index) => {
+    const renderedFacility = post?.propertyFacility?.map((facility, index) => {
         const IconComponent = getFacilityIcon(facility);
         return <Col span={8}
             className='iconComponent'
@@ -228,49 +327,6 @@ function RoomRentalPost() {
     }
 
 
-    const getImages = async () => {
-        setLoadingImages(true);
-
-
-        // Get all images from supabase storage with id = postID 
-        const { data: propertyData, error: propertyError } = await supabase.storage
-            .from("post")
-            .list(`${post.postID}/Property`);
-
-        if (propertyData) {
-            setPropertyImages(propertyData);
-        }
-
-        // Create an array of room numbers
-        const roomNumbers = Array.from({ length: post.propertyRoomNumber }, (_, i) => i + 1);
-
-        // Map over the room numbers and retrieve room images for each
-        await Promise.all(
-            roomNumbers.map(async (roomNumber) => {
-
-                const roomType = post.propertyRoomDetails[roomNumber].roomType;
-
-                const { data: roomData, error: roomError } = await supabase.storage
-                    .from("post")
-                    .list(`${post.postID}/${roomType}`);
-
-                if (roomData) {
-                    setRoomImages((prevState) => {
-                        const updatedState = { ...prevState };
-                        updatedState[roomType] = roomData;
-                        return updatedState;
-                    });
-                }
-
-                if (roomError) {
-                    console.log(roomError);
-                }
-            })
-        );
-
-        setLoadingImages(false);
-
-    };
 
 
 
@@ -373,6 +429,7 @@ function RoomRentalPost() {
 
 
     return (
+
         <div style={{ marginLeft: '4%', marginRight: '6%', marginTop: '10vh', padding: '10px' }}>
             <div>
                 <Breadcrumb style={{ margin: '16px 0', fontWeight: '500' }}
@@ -441,7 +498,12 @@ function RoomRentalPost() {
                             <Col span={24} className='postSectionTitle'>Property Furnish: </Col>
                         </Row>
                         <Row>
-                            {renderedFurnish}
+                            {post.propertyFurnishType === 'Unfurnished' ?
+                                <Col span={24} style={{ fontSize: '18px', margin: '5px 20px 5px', paddingRight: '30px' }}>
+                                    No other furnishing...
+                                </Col> 
+                                    : renderedFurnish
+                            }
                         </Row>
                     </div>
 
@@ -471,19 +533,19 @@ function RoomRentalPost() {
                     <div className='postSectionContainer' style={{ padding: '20px 0px' }}>
                         <Row >
                             <Col span={24} className='postSectionTitle' style={{ display: 'flex', justifyContent: 'center', alignItems: 'center' }}>
-                                <Avatar size={140} src={agentAvatar} icon={<UserOutlined />} />
+                                <Avatar size={140} icon={<UserOutlined />} src={agentAvatar} />
                             </Col>
                         </Row>
                         <Row >
-                            <Col span={22} style={{ fontSize: '18px', marginLeft: '20px', textAlign: 'center' }}>{post.agent.name}</Col>
+                            <Col span={22} style={{ fontSize: '18px', marginLeft: '20px', textAlign: 'center' }}>{post.agent?.name}</Col>
                         </Row>
                         <Row >
                             <Col span={22} style={{ fontSize: '18px', marginLeft: '20px', textAlign: 'center' }}>
-                                Contact: <a style={{ textDecoration: 'underline' }} onClick={() => { redirectToWhatsApp(post.agent.phone, post.postID) }}>{post.agent.phone}</a>
+                                Contact: <a style={{ textDecoration: 'underline' }} onClick={() => { redirectToWhatsApp(post.agent?.phone, post.postID) }}>{post.agent?.phone}</a>
                             </Col>
                         </Row>
                         <Row>
-                            <Col span={22} style={{ fontSize: '18px', marginLeft: '20px', textAlign: 'center' }}>Rating: {post.agent.rating}/5.0</Col>
+                            <Col span={22} style={{ fontSize: '18px', marginLeft: '20px', textAlign: 'center' }}>Rating: {post.agent?.rating}/5.0</Col>
                         </Row>
                         <Row>
                             <Col span={22} style={{ fontSize: '18px', marginLeft: '20px', marginTop: '10px', textAlign: 'center' }}>

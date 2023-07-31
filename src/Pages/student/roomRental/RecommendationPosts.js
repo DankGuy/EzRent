@@ -21,12 +21,18 @@ function RecommendationPosts({ postID }) {
             .eq('postID', postID);
 
         //get all posts with the same state
-        const { data: posts } = await supabase
+        const { data: posts, error } = await supabase
             .from('property_post')
             .select('*, agent(*)')
             .eq('propertyState', currentPost[0].propertyState)
             .neq('postID', postID)
             .contains('propertyStatus', { status: 'active' });
+
+        if (error) {
+            console.log(error);
+            return;
+        }
+            
 
         setPost(posts);
 
@@ -53,10 +59,19 @@ function RecommendationPosts({ postID }) {
 
 
     useEffect(() => {
+
+        if (!postID) {
+            return;
+        }
+
         fetchPosts();
     }, []);
 
     useEffect(() => {
+
+        if (!postID) {
+            return;
+        }
         fetchPosts();
     }, [postID]);
 
@@ -160,7 +175,7 @@ function RecommendationPosts({ postID }) {
                                 <Button
                                     type="primary"
                                     className='viewButton'
-                                    onClick={(e) => openLinkInNewTab(`/student/roomRental/${post.postID}`, post, e)}                                        >View
+                                    onClick={(e) => openLinkInNewTab(`/student/roomRental/${post.postID}`, post.postID, e)}                                        >View
                                 </Button>
                             </Col>
                             <Col span={11} style={{ fontSize: '16px', marginLeft: '0px', display: 'flex', justifyContent: 'end', alignItems: 'end' }}>{post.agent.name}</Col>

@@ -244,6 +244,7 @@ function RoomRental() {
     };
 
     const openLinkInNewTab = (url, stateData, event) => {
+        console.log(stateData)
         event.preventDefault();
         const serializedState = JSON.stringify(stateData);
         window.open(`${url}?state=${encodeURIComponent(serializedState)}`, '_blank');
@@ -313,7 +314,7 @@ function RoomRental() {
                                     <Button
                                         type='primary'
                                         className='viewButton'
-                                        onClick={(e) => openLinkInNewTab(`/student/roomRental/${post.postID}`, post, e)}
+                                        onClick={(e) => openLinkInNewTab(`/student/roomRental/${post.postID}`, post.postID, e)}
                                         >
                                             View
                                     </Button>
@@ -439,7 +440,7 @@ function RoomRental() {
             style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', marginTop: '20px', marginBottom: '20px' }}
         />
 
-        <FloatButton.BackTop />
+        {/* <FloatButton.BackTop /> */}
 
     </>
 };

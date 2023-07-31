@@ -9,6 +9,8 @@ import { message } from 'antd';
 
 function AppointmentModalForm({ post }) {
 
+    console.log(post);
+
     const { Option } = Select;
 
     const [isModalOpen, setIsModalOpen] = useState(false);
@@ -23,6 +25,11 @@ function AppointmentModalForm({ post }) {
 
 
     useEffect(() => {
+        
+        if (!post.agent) {
+            return;
+        }
+
         getAvailableDate();
     }, []);
 

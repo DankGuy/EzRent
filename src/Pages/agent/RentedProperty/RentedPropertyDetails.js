@@ -14,7 +14,7 @@ function RentedPropertyDetails() {
 
     console.log(rentalAgreementID);
 
-    const [occupants, setOccupants] = useState([]);
+    const [occupants, setOccupants] = useState({});
     const [tenant, setTenant] = useState(null);
 
     useEffect(() => {
@@ -62,48 +62,68 @@ function RentedPropertyDetails() {
 
                 const occupantIDs = data.occupantID;
 
-                let details = [];
+                // let details = [];
 
-                if (occupantIDs.length > 0) {
-                    occupantIDs.forEach(async (occID) => {
+                if (occupantIDs.length > 0){
+                    for (let i = 0; i < occupantIDs.length; i++) {
 
-                        const { data: occupant, error } = await supabase
+                        const { data: occupantData, error } = await supabase
                             .from('student')
                             .select('*')
-                            .eq('student_id', occID)
+                            .eq('student_id', occupantIDs[i])
                             .single();
-
-                        console.log(occupant);
-
+    
                         if (error) {
                             console.log(error);
                             // Handle the error (e.g., show an error message)
                             return;
                         }
-
-                        if (occupant) {
-                            details.push(
-                                <Fragment key={occID}>
-                                    <Descriptions.Item label="Name" span={3}>{occupant.name}</Descriptions.Item>
-                                    <Descriptions.Item label="Email">{occupant.email}</Descriptions.Item>
-                                    <Descriptions.Item label="Phone Number">{occupant.phone}</Descriptions.Item>
-                                </Fragment>
-                            );
-                        }
+    
+                        console.log(occupantData);
+                        
+                        setOccupants(prevState => ({
+                            ...prevState,
+                            [i]: occupantData
+                        }));
                     }
-                    );
+    
                 }
-                console.log(details);
-                setOccupants(details);
+
             } catch (error) {
                 console.log(error);
-                // Handle the error (e.g., show an error message)
             }
         };
 
         fetchTenantDetails();
         fetchOccupantDetails();
     }, [rentalAgreementID]);
+
+    useEffect(()=>{
+        console.log(occupants)
+    }, [occupants])
+
+    const renderedOccupants = () => {
+        console.log(occupants)
+        return (
+            <>
+                <Divider orientation="left" style={{ borderColor: 'gray' }}>Occupant Info</Divider>
+                {Object.keys(occupants).map((key, index) => {
+                    return (
+                        <Fragment key={index}>
+                            <Descriptions bordered>
+                                <Descriptions.Item label="Name" span={3}>{occupants[key].name}</Descriptions.Item>
+                                <Descriptions.Item label="Email">{occupants[key].email}</Descriptions.Item>
+                                <Descriptions.Item label="Phone Number">{occupants[key].phone}</Descriptions.Item>
+                            </Descriptions>
+                            
+                        </Fragment>
+                    )
+                })}
+                <br />
+            </>
+        )
+    }
+
 
     return (
         <div>
@@ -114,14 +134,7 @@ function RentedPropertyDetails() {
                     <Descriptions.Item label="Phone Number">{tenant.studentID.phone}</Descriptions.Item>
                 </Descriptions>
             )}
-            {occupants.length > 0 && (
-                <>
-                    <Divider orientation="left" style={{ borderColor: 'gray' }}>Occupant Info</Divider>
-                    <Descriptions bordered>
-                        {occupants}
-                    </Descriptions>
-                </>
-            )}
+            {Object.entries(occupants).length !== 0 && renderedOccupants()}
         </div>
     );
 }
