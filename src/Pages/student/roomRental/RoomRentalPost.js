@@ -436,7 +436,7 @@ function RoomRentalPost() {
                     items={[
                         { href: '/student', title: 'Home' },
                         { href: '/student/roomRental', title: 'Room Rental' },
-                        { href: `/student/roomRental/${post.postID}`, title: `${post.propertyName}` },
+                        { title: `${post.propertyName}` },
                     ]}
                 />
             </div>

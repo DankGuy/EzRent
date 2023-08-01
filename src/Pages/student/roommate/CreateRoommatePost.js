@@ -1,6 +1,7 @@
 import { Button, Modal, Steps, theme, message, Form, Input, Select, DatePicker, Radio, Divider, Card, InputNumber, Slider, Row, Col } from "antd";
 import { useState, useRef } from "react";
 import { supabase } from "../../../supabase-client";
+import { getCurrentDateTime } from "../../../Components/timeUtils";
 
 
 function CreateRoommatePost({ value, onChange }) {
@@ -286,11 +287,74 @@ function CreateRoommatePost({ value, onChange }) {
         },
     ]
 
+    const insertPost = async (values) => {
+        const currentDate = getCurrentDateTime();
+        const userID = (await supabase.auth.getUser()).data.user.id;
+
+        try {
+            const { data, error } = await supabase
+                .from('roommate_post')
+                .insert([
+                    {
+                        postDate: currentDate,
+                        lastModifiedDate: currentDate,
+                        postType: 'roommate',
+                        moveInDate: values.moveInDate,
+                        roommate: {
+                            age: values.preferredAge,
+                            gender: values.preferredGender,
+                            studentType: values.studentType,
+                            race: values.preferredRace,
+                            religion: values.preferredReligion,
+                            description: values.description,
+                        },
+                        myLifestyle: {
+                            cleanliness: values.cleanliness,
+                            smoking: values.smoking,
+                            getUp: values.getUp,
+                            goToBed: values.goToBed,
+                            pets: values.pets,
+                            foodPreference: values.foodPreference,
+                            guests: values.guests,
+                            party: values.party,
+                        },
+                        moveInDate: values.moveInDate,
+                        duration: values.rentDuration,
+                        location: (values.rentedPropertyId) ? null : values.locationSelection,
+                        propertyType: (values.rentedPropertyId) ? null : values.propertySelection,
+                        budget: (values.rentedPropertyId) ? null : values.budgetInput,
+                        propertyPostID: (values.rentedPropertyId) ? values.rentedPropertyId : null,
+                        studentID: userID,
+                    },
+                ]);
+
+            if (error) {
+                throw error;
+            }
+
+            message.success("Post created successfully");
+            onChange(false);
+        } catch (error) {
+            message.error(error.message);
+        }
+    }
+
+
+
+
     const handleFormFinish = () => {
         const currentForm = stepsData[currentStep].formRef.current;
         currentForm.validateFields().then((values) => {
-            console.log(values);
             setFormData((prev) => ({ ...prev, ...values }));
+
+
+            insertPost(values);
+            //reset form
+            currentForm.resetFields();
+            setCurrentStep(0);
+            setHasRentedProperty(false);
+            setRentedProperty(null);
+            
         });
     };
 

@@ -26,6 +26,10 @@ function Roommate() {
         setPostModal(true);
     }
 
+    const handleViewListings = () => {
+        window.location.href = '/student/roommate/listings';
+    }
+
     return <div style={{ margin: '8.55vh 5% 0px' }}>
         <Breadcrumb style={{ margin: '16px 0', fontWeight: '500' }}
             items={[
@@ -81,7 +85,7 @@ function Roommate() {
             icon={<BiMenu style={{color: 'white'}}/>}
         >
             <FloatButton type="primary" tooltip="Create post" icon={<BiEditAlt/>} onClick={handleCreateModal}/>
-            <FloatButton type="primary" tooltip="View listings" icon={<AiOutlineHistory />} />
+            <FloatButton type="primary" tooltip="View listings" icon={<AiOutlineHistory />} onClick={handleViewListings} />
         </FloatButton.Group>
 
         <CreateRoommatePost value={postModal} onChange={setPostModal} />

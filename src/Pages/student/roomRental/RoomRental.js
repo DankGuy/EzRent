@@ -312,7 +312,8 @@ function RoomRental() {
                         <Row>
                             <Col span={6}>
                                     <Button
-                                        type='primary'
+
+                                        type='link'
                                         className='viewButton'
                                         onClick={(e) => openLinkInNewTab(`/student/roomRental/${post.postID}`, post.postID, e)}
                                         >
