@@ -1038,10 +1038,11 @@ function AgentCreatePost() {
 
                 <Form.Item>
                     <Button
-                        onClick={() => { onFinish(form.getFieldsValue(), "SaveDraft") }}
+                        // onClick={() => { onFinish(form.getFieldsValue(), "SaveDraft") }}
                         style={{ marginRight: '20px' }}
                         className="viewButton"
                         type="primary"
+                        htmlType='submit'
                         disabled={isButtonDisabled}>
                         Save Draft
                     </Button>
@@ -1051,9 +1052,10 @@ function AgentCreatePost() {
                     {contextHolder}
 
                     <Button
-                        onClick={() => { onFinish(form.getFieldsValue(), "Submit") }}
+                        // onClick={() => { onFinish(form.getFieldsValue(), "Submit") }}
                         className="viewButton"
                         type="primary"
+                        htmlType='submit'
                         disabled={isButtonDisabled}>
                         Submit
                     </Button>

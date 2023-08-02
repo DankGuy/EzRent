@@ -84,8 +84,8 @@ function Roommate() {
             // type="primary"
             icon={<BiMenu style={{color: 'white'}}/>}
         >
-            <FloatButton type="primary" tooltip="Create post" icon={<BiEditAlt/>} onClick={handleCreateModal}/>
-            <FloatButton type="primary" tooltip="View listings" icon={<AiOutlineHistory />} onClick={handleViewListings} />
+            <FloatButton type="primary" tooltip="Create Post" icon={<BiEditAlt/>} onClick={handleCreateModal}/>
+            <FloatButton type="primary" tooltip="My Listings" icon={<AiOutlineHistory />} onClick={handleViewListings} />
         </FloatButton.Group>
 
         <CreateRoommatePost value={postModal} onChange={setPostModal} />
