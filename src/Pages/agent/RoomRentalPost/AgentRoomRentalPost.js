@@ -981,9 +981,9 @@ function AgentRoomRentalPost() {
             setTimeout(() => {
                 messageApi.success('Edit successful. You will be redirected to the previous page within 1 second...', 1);
 
-                // setTimeout(() => {
-                //     navigate("/agent/roomRental");
-                // }, 1000);
+                setTimeout(() => {
+                    navigate("/agent/roomRental");
+                }, 1000);
             }, 3000);
 
         }

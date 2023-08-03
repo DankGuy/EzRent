@@ -55,7 +55,7 @@ function MyListings() {
             </div>
             <Row>
                 <Col span={24}>
-                    <h1>My Listings</h1>
+                    <h1>My Listings ({myListings.length})</h1>
                 </Col>
             </Row>
             
