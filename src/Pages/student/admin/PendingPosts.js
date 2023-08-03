@@ -78,7 +78,7 @@ function PendingPosts() {
               <Button
                 type="text"
                 onClick={() => {
-                  viewPost(post.post_ID);
+                  viewPost();
                   setModalData(post);
                   getImages(post);
                 }}
@@ -545,6 +545,7 @@ function PendingPosts() {
     return (
       <div style={{ display: "flex", flexDirection: "column" }}>
         <Table
+          key={fetchTrigger}
           rowSelection={{
             type: selectionType,
             ...rowSelection,
@@ -700,9 +701,9 @@ function PendingPosts() {
             {modalData?.propertyCategory === "Room"
               ? roomDetailForm(1)
               : Array.from(
-                  { length: modalData?.propertyRoomNumber },
-                  (v, i) => i + 1
-                ).map((roomNumber) => roomDetailForm(roomNumber))}
+                { length: modalData?.propertyRoomNumber },
+                (v, i) => i + 1
+              ).map((roomNumber) => roomDetailForm(roomNumber))}
           </fieldset>
           <fieldset style={fieldsetStyle}>
             <legend style={legendStyle}>Property Furnish</legend>
