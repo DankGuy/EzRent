@@ -8,34 +8,44 @@ import { BiEditAlt, BiMenu } from "react-icons/bi";
 import CreateRoommatePost from "./CreateRoommatePost";
 import "./Roommate.css"
 import { supabase } from "../../../supabase-client";
+import ScrollToTopButton from "../../../Components/ScrollToTopButton";
 
 function Roommate() {
 
     const [form] = Form.useForm();
 
     const [listings, setListings] = useState([]);
+    const [trigger, setTrigger] = useState(0);
+
+    const fetchListings = async () => {
+        const { data, error } = await supabase
+            .from('roommate_post')
+            .select('*, student(*), rental_agreement(*, postID(*))')
+            .order('postDate', { ascending: false })
+
+        if (error) {
+            console.log(error);
+            return;
+        }
+
+        console.log(data);
+        setListings(data);
+    }
+
+
+
+    // useEffect(() => {
+    //     form.resetFields();
+    //     fetchListings();
+    // }, []);
 
     useEffect(() => {
         form.resetFields();
-
-
-        const fetchListings = async () => {
-            const { data, error } = await supabase
-                .from('roommate_post')
-                .select('*, student(*), rental_agreement(*, postID(*))')
-                .order('postDate', { ascending: false })
-
-            if (error) {
-                console.log(error);
-                return;
-            }
-
-            console.log(data);
-            setListings(data);
-        }
-
         fetchListings();
-    }, []);
+        console.log(trigger);
+    }, [trigger]);
+
+    
 
     const onFinish = async (values) => {
 
@@ -82,6 +92,13 @@ function Roommate() {
     const handleViewListings = () => {
         window.location.href = '/student/roommate/listings';
     }
+
+    const handleTrigger = () => {
+        setTrigger((prev) => prev + 1);
+    }
+
+
+    
 
     return (<>
         <div style={{ margin: '2% 0px 0px', padding: '0px 10px 0px', border: '0px solid black', boxShadow: '0px 4px 6px -2px rgba(0, 0, 0, 0.2)' }}>
@@ -142,12 +159,6 @@ function Roommate() {
 
         <FloatButton.Group
             trigger="click"
-            style={{
-                right: '24',
-                bottom: '24',
-                position: 'fixed',
-                color: 'white',
-            }}
             className="floatButton"
             // type="primary"
             icon={<BiMenu style={{ color: 'white' }} />}
@@ -156,7 +167,9 @@ function Roommate() {
             <FloatButton type="primary" tooltip="My Listings" icon={<AiOutlineHistory />} onClick={handleViewListings} />
         </FloatButton.Group>
 
-        <CreateRoommatePost value={postModal} onChange={setPostModal} />
+        <CreateRoommatePost value={postModal} onChange={setPostModal} onTrigger={handleTrigger}/>
+
+        <ScrollToTopButton />
 
     </>
     )

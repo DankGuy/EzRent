@@ -17,8 +17,6 @@ const { Meta } = Card;
 
 function RoommatePostLayout({ listing }) {
 
-    console.log(listing);
-
     const [agentAvatar, setAgentAvatar] = useState(null);
 
     useEffect(() => {

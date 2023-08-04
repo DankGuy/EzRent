@@ -13,6 +13,7 @@ import { TfiLocationPin } from 'react-icons/tfi'
 import './RoomRental.css'
 import { getDateOnly, getElapsedTime } from '../../../Components/timeUtils';
 import { supabase } from '../../../supabase-client';
+import ScrollToTopButton from '../../../Components/ScrollToTopButton';
 
 
 function RoomRental() {
@@ -447,6 +448,8 @@ function RoomRental() {
         />
 
         {/* <FloatButton.BackTop /> */}
+
+        <ScrollToTopButton />
 
     </>
 };

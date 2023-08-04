@@ -4,7 +4,7 @@ import { supabase } from "../../../supabase-client";
 import { getCurrentDateTime } from "../../../Components/timeUtils";
 
 
-function CreateRoommatePost({ value, onChange }) {
+function CreateRoommatePost({ value, onChange, onTrigger }) {
 
     const { Step } = Steps;
     const [currentStep, setCurrentStep] = useState(0);
@@ -287,6 +287,11 @@ function CreateRoommatePost({ value, onChange }) {
         },
     ]
 
+    
+    const handleTrigger = () => {
+        onTrigger();
+    }
+    
     const insertPost = async (values) => {
         const currentDate = getCurrentDateTime();
         const userID = (await supabase.auth.getUser()).data.user.id;
@@ -334,6 +339,8 @@ function CreateRoommatePost({ value, onChange }) {
 
             message.success("Post created successfully");
             onChange(false);
+            handleTrigger();
+
         } catch (error) {
             message.error(error.message);
         }
@@ -349,7 +356,6 @@ function CreateRoommatePost({ value, onChange }) {
 
 
             insertPost(values);
-            //reset form
             currentForm.resetFields();
             setCurrentStep(0);
             setHasRentedProperty(false);

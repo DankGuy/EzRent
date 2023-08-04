@@ -14,7 +14,7 @@ import { FiEdit3 } from "react-icons/fi";
 const { Meta } = Card;
 
 
-function MyListingPost({ listing }) {
+function MyListingPost({ listing, onTrigger }) {
 
     console.log(listing);
 
@@ -56,6 +56,10 @@ function MyListingPost({ listing }) {
 
     const iconSize = 15;
 
+    const handleTrigger = () => {
+        onTrigger();
+    }
+
     const deletePost = async (postID) => {
         console.log(postID);
 
@@ -68,6 +72,10 @@ function MyListingPost({ listing }) {
             console.log(error);
             return;
         }
+
+        handleTrigger();
+
+        setIsOpen(false);
 
         messageApi.open({
             type: 'success',
@@ -132,7 +140,7 @@ function MyListingPost({ listing }) {
         <Card
             hoverable
             style={{
-                width: '40%',
+                width: '100%',
                 boxSizing: 'border-box',
                 boxShadow: '0 -1px 1px 0 rgba(0, 28, 36, .3), 0 1px 1px 0 rgba(0, 28, 36, .3), 1px 1px 1px 0 rgba(0, 28, 36, .15), -1px 1px 1px 0 rgba(0, 28, 36, .15)',
                 margin: '1em 0',
