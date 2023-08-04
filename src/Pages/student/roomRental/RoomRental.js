@@ -431,7 +431,7 @@ function RoomRental() {
                     fontSize: '20px',
                     fontFamily: 'sans-serif',
                 }}>
-                {posts.length} results found...
+                {posts.length} result(s) found...
             </span>
         </div>}
 

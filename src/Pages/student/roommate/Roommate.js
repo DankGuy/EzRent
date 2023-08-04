@@ -141,11 +141,22 @@ function Roommate() {
             </Form>
         </div>
 
-        {listings.length === 0 && <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', height: '50vh' }}>
+        {listings.length === 0 ? <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', height: '50vh' }}>
             <Empty description={<span style={{ color: '#b80606', fontStyle: 'italic', fontSize: '20px' }}>No listings found. Please try refining your search.</span>} />
-        </div>}
+        </div> : 
+        <div style={{ display: 'flex', alignItems: 'center', height: '50px', marginLeft: '10%', marginTop: '10px' }}>
+        <span
+            style={{
+                fontStyle: 'italic',
+                fontSize: '20px',
+                fontFamily: 'sans-serif',
+            }}>
+            {listings.length} result(s) found...
+        </span>
+    </div>
+        }
 
-        <Row style={{ margin: '2% 5% 2% 8%' }}>
+        <Row style={{ margin: '0% 5% 2% 8%' }}>
             {listings.map((listing, index) => {
                 return (
                     <Col span={11} key={index} style={{ marginRight: '4%' }}>
