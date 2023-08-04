@@ -42,6 +42,7 @@ import AuthProvider, { useAuth } from "./context/AuthProvider";
 import LoginCard from "./Components/LoginCard";
 import RentedPropertyDetails from "./Pages/agent/RentedProperty/RentedPropertyDetails";
 import MyListings from "./Pages/student/roommate/MyListings";
+import ListingPostDetails from "./Pages/student/roommate/ListingPostDetails";
 
 function App() {
     const { user, userSession } = useAuth();  
@@ -71,11 +72,12 @@ function App() {
             } else if (user.user_metadata.userType === "student") {
                 return (
                     <>
-                        <Route path="/student" element={<StudentLayout />}>
+                        <Route path="/student/" element={<StudentLayout />}>
                             <Route index element={<Home />} />
                             <Route path="roomRental" element={<RoomRental />} />
                             <Route path="roommate" element={<Roommate />} />
                             <Route path="roommate/listings" element={<MyListings />} />
+                            <Route path="roommate/listings/:id" element={<ListingPostDetails />} />
                             <Route path="aboutUs" element={<AboutUs />} />
 
                             <Route path="/student/admin/" element={<AdminLayout />}>

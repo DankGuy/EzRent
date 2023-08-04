@@ -5,12 +5,17 @@ function GenderSelection({onChange, bordered, ...rest}){
 
     const defaultOption = [
         {
+            label: 'Any',
+            value: 'any'
+        }
+        ,
+        {
             label: 'Male',
-            value: 'male'
+            value: 'Male'
         },
         {
             label: 'Female',
-            value: 'female'
+            value: 'Female'
         },
     ]
 

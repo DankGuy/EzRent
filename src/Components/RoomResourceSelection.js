@@ -4,6 +4,11 @@ function RoomResourceSelection({onChange, bordered, ...rest}){
  
     const defaultOption = [
         {
+            label: 'Any',
+            value: 'any'
+        }
+        ,
+        {
             label: 'Yes',
             value: 'yes'
         },

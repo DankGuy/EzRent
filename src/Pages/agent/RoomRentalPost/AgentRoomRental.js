@@ -271,7 +271,6 @@ function AgentRoomRental() {
                     pageSize={draftItemsPerPage}
                     total={draftPosts.length}
                     onChange={handleDraftPageChange}
-                    showQuickJumper
                     showTotal={() => `Total ${draftPosts.length} items`}
                 />
             </div>
@@ -370,7 +369,6 @@ function AgentRoomRental() {
                     pageSize={itemsPerPage}
                     total={posts.length}
                     onChange={handlePageChange}
-                    showQuickJumper
                     showTotal={() => `Total ${posts.length} items`}
                 />
             </div>
