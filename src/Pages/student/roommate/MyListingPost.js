@@ -147,7 +147,7 @@ function MyListingPost({ listing }) {
                         <>
                             {listing.student.name}
                             <span style={{ marginLeft: '1em' }}>
-                                {listing.student.gender === "Male" ? <BsGenderMale size={iconSize} color="blue" /> : <BsGenderFemale size={iconSize} color="pink" />}
+                                {listing.student.gender === "Male" ? <BsGenderMale size={iconSize} color="blue" /> : <BsGenderFemale size={iconSize} color="#E75480" />}
                             </span>
 
                         </>
@@ -172,7 +172,7 @@ function MyListingPost({ listing }) {
                 <div>
                     <Row>
                         <Col span={24} style={cardContentStyle}>
-                            <h3 style={{ marginBlockEnd: '3em' }}>Rented Property Details:</h3>
+                            <h3 style={{ marginBlockEnd: '0em' }}>Rented Property Details:</h3>
                         </Col>
                     </Row>
                     <Row>

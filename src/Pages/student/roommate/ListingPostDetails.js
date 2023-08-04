@@ -217,12 +217,13 @@ function ListingPostDetails() {
     return (
         <div
             style={{
-                marginTop: "4em",
-                display: "flex",
-                flexDirection: "column",
-                alignItems: "center",
-                justifyContent: "center",
-
+                // display: "flex",
+                // flexDirection: "column",
+                // alignItems: "center",
+                // justifyContent: "center",
+                border: '1px solid red',
+                margin: "10px 1% 10px 1%",
+                padding: "0 2em",
             }}>
             <div style={{ width: '50%' }}>
                 <Breadcrumb style={{ margin: '16px 0', fontWeight: '500' }}
@@ -240,6 +241,7 @@ function ListingPostDetails() {
                     backgroundColor: "white",
                     width: '60%',
                     padding: '20px',
+                    // margin: 'auto',
                 }}>
                 {isView ? (
                     <Title level={2} style={{ textAlign: 'center' }}>Listing Details</Title>

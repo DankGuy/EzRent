@@ -35,19 +35,15 @@ function MyListings() {
     return (
         <div
             style={{
-                // marginTop: "4em",
                 display: "flex",
                 flexDirection: "column",
-                // alignItems: "center",
-                // justifyContent: "center",
-                border: "1px solid red",
                 backgroundColor: "white",
-                margin: "4em 1% 0 1%",
-                height: "100vh",
-                padding: "2em",
+                margin: "10px 1% 10px 1%",
+                height: (myListings.length <= 2) ? "calc(100vh - 70px)": 'auto',
+                padding: "0 2em",
             }}
         >
-            <div style={{ border: '2px solid #e0e0e0', width: '50%' }}>
+            <div style={{  width: '50%' }}>
                 <Breadcrumb style={{ margin: '16px 0', fontWeight: '500' }}
                     items={[
                         { href: '/student', title: 'Home' },

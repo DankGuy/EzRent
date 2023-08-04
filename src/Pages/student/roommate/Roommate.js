@@ -128,10 +128,10 @@ function Roommate() {
             <Empty description={<span style={{ color: '#b80606', fontStyle: 'italic', fontSize: '20px' }}>No listings found. Please try refining your search.</span>} />
         </div>}
 
-        <Row style={{ margin: '2% 10%' }}>
+        <Row style={{ margin: '2% 5% 2% 8%' }}>
             {listings.map((listing, index) => {
                 return (
-                    <Col span={10} key={index} style={{ marginRight: '8%' }}>
+                    <Col span={11} key={index} style={{ marginRight: '4%' }}>
                         <RoommatePostLayout listing={listing} />
                     </Col>
                 )

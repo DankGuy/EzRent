@@ -52,7 +52,7 @@ function CreateRoommatePost({ value, onChange }) {
                 </Form.Item>
                 {hasRentedProperty &&
                     <>
-                        <Form.Item name="rentedPropertyId" label="Enter your rental agreement ID">
+                        <Form.Item name="rentalAgreementID" label="Enter your rental agreement ID">
                             <Input.Search placeholder="Rental Agreement ID" enterButton={true} allowClear loading={isLoading} onSearch={handleSearch} />
                         </Form.Item>
                     </>}
@@ -320,10 +320,10 @@ function CreateRoommatePost({ value, onChange }) {
                         },
                         moveInDate: values.moveInDate,
                         duration: values.rentDuration,
-                        location: (values.rentedPropertyId) ? null : values.locationSelection,
-                        propertyType: (values.rentedPropertyId) ? null : values.propertySelection,
-                        budget: (values.rentedPropertyId) ? null : values.budgetInput,
-                        propertyPostID: (values.rentedPropertyId) ? values.rentedPropertyId : null,
+                        location: (values.rentalAgreementID) ? null : values.locationSelection,
+                        propertyType: (values.rentalAgreementID) ? null : values.propertySelection,
+                        budget: (values.rentalAgreementID) ? null : values.budgetInput,
+                        rentalAgreementID: (values.rentalAgreementID) ? values.rentalAgreementID : null,
                         studentID: userID,
                     },
                 ]);

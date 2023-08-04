@@ -70,7 +70,7 @@ function RoommatePostLayout({ listing }) {
                         <>
                             {listing.student.name}
                             <span style={{ marginLeft: '1em' }}>
-                                {listing.student.gender === "Male" ? <BsGenderMale size={iconSize} color="blue" /> : <BsGenderFemale size={iconSize} color="pink" />}
+                                {listing.student.gender === "Male" ? <BsGenderMale size={iconSize} color="blue" /> : <BsGenderFemale size={iconSize} color="#E75480" />}
                             </span>
 
                         </>
@@ -86,7 +86,7 @@ function RoommatePostLayout({ listing }) {
             }}
             extra={
                 <>
-                    <p style={{ marginBlockStart: '-1em', fontStyle: 'italic' }}>Last modified: {getElapsedTime(listing.lastModifiedDate)}</p>
+                    <p style={{ marginBlockStart: '-1em', fontStyle: 'italic', textAlign: 'right' }}>Last modified: {getElapsedTime(listing.lastModifiedDate)}</p>
                 </>
             }
             onClick={() => {
