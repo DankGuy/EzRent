@@ -72,7 +72,7 @@ function App() {
             } else if (user.user_metadata.userType === "student") {
                 return (
                     <>
-                        <Route path="/student" element={<StudentLayout />}>
+                        <Route path="/student/" element={<StudentLayout />}>
                             <Route index element={<Home />} />
                             <Route path="roomRental" element={<RoomRental />} />
                             <Route path="roommate" element={<Roommate />} />

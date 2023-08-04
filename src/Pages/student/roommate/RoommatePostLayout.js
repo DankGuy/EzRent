@@ -54,9 +54,13 @@ function RoommatePostLayout({ listing }) {
     return (
         <Card
             hoverable
-            style={{ width: '100%', margin: '1em 0' }}
-            headStyle={{
-                padding: '10px 24px',
+            style={{
+                width: '100%',
+                boxSizing: 'border-box',
+                boxShadow: '0 -1px 1px 0 rgba(0, 28, 36, .3), 0 1px 1px 0 rgba(0, 28, 36, .3), 1px 1px 1px 0 rgba(0, 28, 36, .15), -1px 1px 1px 0 rgba(0, 28, 36, .15)',
+                margin: '1em 0',
+                borderRadius: '0px',
+
             }}
             bordered={true}
             title={
@@ -74,81 +78,76 @@ function RoommatePostLayout({ listing }) {
                     description={listing.student.email}
                 />
             }
+            headStyle={{
+                padding: '5px 24px',
+            }}
+            bodyStyle={{
+                padding: '0px 24px 24px 24px',
+            }}
             extra={
                 <>
-                    <p style={{marginBlockStart: '0em'}}>{getElapsedTime(listing.lastModifiedDate)}</p>
+                    <p style={{ marginBlockStart: '-1em', fontStyle: 'italic' }}>Last modified: {getElapsedTime(listing.lastModifiedDate)}</p>
                 </>
             }
-           
+            onClick={() => {
+                console.log(listing);
+            }
+            }
+
         >
 
-                    {listing.rentalAgreement !== null && listing.rental_agreement ? (
-                        <div>
-                            <Row>
-                                <Col span={24} style={cardContentStyle}>
-                                    <h3>Rented Property Details:</h3>
-                                </Col>
-                            </Row>
-                            <Row>
-                                <Col span={12} style={cardContentStyle}>
-                                    <AiOutlineHome size={iconSize} />
-                                    Name: {listing.rental_agreement.postID.propertyName}
-                                </Col>
-                                <Col span={12} style={cardContentStyle}>
-                                    <BiBuildingHouse size={iconSize} />
-                                    Type: {listing.rental_agreement.postID.propertyType}
-                                </Col>
-                            </Row>
-                            <Row>
-                                <Col span={12} style={cardContentStyle}>
-                                    <TfiLocationPin size={iconSize} />
-                                    Address: {listing.rental_agreement.postID.propertyAddress}
-                                </Col>
-                                <Col span={12} style={cardContentStyle}>
-                                    <BsCurrencyDollar size={iconSize} />
-                                    Price: RM{listing.rental_agreement.postID.propertyPrice}.00/month
-                                </Col>
-                            </Row>
-                            <Row>
-                                <Col span={12} style={cardContentStyle}>
-                                    <TbResize size={iconSize} />
-                                    Size: {listing.rental_agreement.postID.propertySquareFeet} sq.ft.
-                                </Col>
-                                <Col span={12} style={cardContentStyle}>
-                                    <TbCategory size={iconSize} />
-                                    Category: {listing.rental_agreement.postID.propertyCategory}
-                                </Col>
-                            </Row>
-
-                        </div>
-                    ) : (
-                        <div>
-                            <Row>
-                                <Col span={24} style={cardContentStyle}>
-                                    <h3>Preferred Property Details:</h3>
-                                </Col>
-                            </Row>
-                            <Row>
-                                <Col span={24} style={cardContentStyle}>
-                                    <TfiLocationPin size={iconSize} />
-                                    Location: {listing.location}
-                                </Col>
-                            </Row>
-                            <Row>
-                                <Col span={12} style={cardContentStyle}>
-                                    <BiBuildingHouse size={iconSize} />
-                                    Property Type: {listing.propertyType}
-                                </Col>
-                                <Col span={12} style={cardContentStyle}>
-                                    <BsCurrencyDollar size={iconSize} />
-                                    Budget: RM{listing.budget}.00/month
-                                </Col>
-                            </Row>
-                        </div>
-                    )
-                    }
-                </Card>
-            );
+            {listing.rentalAgreement !== null && listing.rental_agreement ? (
+                <div>
+                    <Row>
+                        <Col span={24} style={cardContentStyle}>
+                            <h3 style={{ marginBlockEnd: '0em' }}>Rented Property Details:</h3>
+                        </Col>
+                    </Row>
+                    <Row>
+                        <Col span={24} style={cardContentStyle}>
+                            <TfiLocationPin size={iconSize} />
+                            Location: {listing.rental_agreement.postID.propertyAddress}
+                        </Col>
+                    </Row>
+                    <Row>
+                        <Col span={12} style={cardContentStyle}>
+                            <BiBuildingHouse size={iconSize} />
+                            Type: {listing.rental_agreement.postID.propertyType}
+                        </Col>
+                        <Col span={12} style={cardContentStyle}>
+                            <BsCurrencyDollar size={iconSize} />
+                            Price: RM{listing.rental_agreement.postID.propertyPrice}.00/month
+                        </Col>
+                    </Row>
+                </div>
+            ) : (
+                <div>
+                    <Row>
+                        <Col span={24} style={cardContentStyle}>
+                            <h3 style={{ marginBlockEnd: '0em' }}>Preferred Property Details:</h3>
+                        </Col>
+                    </Row>
+                    <Row>
+                        <Col span={24} style={cardContentStyle}>
+                            <TfiLocationPin size={iconSize} />
+                            Location: {listing.location}
+                        </Col>
+                    </Row>
+                    <Row>
+                        <Col span={12} style={cardContentStyle}>
+                            <BiBuildingHouse size={iconSize} />
+                            Property Type: {listing.propertyType}
+                        </Col>
+                        <Col span={12} style={cardContentStyle}>
+                            <BsCurrencyDollar size={iconSize} />
+                            Budget: RM{listing.budget}.00/month
+                        </Col>
+                    </Row>
+                </div>
+            )
+            }
+        </Card>
+    );
 }
 
-            export default RoommatePostLayout;
+export default RoommatePostLayout;

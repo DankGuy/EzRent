@@ -19,7 +19,7 @@ function Home() {
         // gridTemplateRows: 'auto',
         // gap: '10px',
         // alignItems: 'center',
-        margin: '8.55vh 10% 0%',
+        margin: '2% 10% 0%',
         background: '#8594e4',
         borderRadius: '10px',
         boxShadow: '0px 2px 6px rgba(0, 0, 0, 0.2)',

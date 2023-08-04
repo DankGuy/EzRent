@@ -84,7 +84,7 @@ function Roommate() {
     }
 
     return (<>
-        <div style={{ margin: '10vh 0px 0px', padding: '0px 10px 0px', border: '0px solid black', boxShadow: '0px 4px 6px -2px rgba(0, 0, 0, 0.2)' }}>
+        <div style={{ margin: '2% 0px 0px', padding: '0px 10px 0px', border: '0px solid black', boxShadow: '0px 4px 6px -2px rgba(0, 0, 0, 0.2)' }}>
             <Form
                 name="search"
                 form={form}
@@ -131,7 +131,7 @@ function Roommate() {
         <Row style={{ margin: '2% 10%' }}>
             {listings.map((listing, index) => {
                 return (
-                    <Col span={10} key={index} style={{ marginRight: '2%' }}>
+                    <Col span={10} key={index} style={{ marginRight: '8%' }}>
                         <RoommatePostLayout listing={listing} />
                     </Col>
                 )

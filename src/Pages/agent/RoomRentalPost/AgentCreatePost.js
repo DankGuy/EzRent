@@ -565,8 +565,6 @@ function AgentCreatePost() {
 
     }
 
-
-
     const onFinish = async (e, buttonClicked) => {
 
         console.log(e);
@@ -694,7 +692,6 @@ function AgentCreatePost() {
     }
 
     const onFinishFailed = (e) => {
-        console.log(e)
     }
 
     const dummyRequest = ({ file, onSuccess }) => {
@@ -1038,7 +1035,16 @@ function AgentCreatePost() {
 
                 <Form.Item>
                     <Button
-                        // onClick={() => { onFinish(form.getFieldsValue(), "SaveDraft") }}
+                        onClick={() => { 
+                            form.validateFields().then((values) => {
+                                onFinish(values, "SaveDraft")
+                            }
+                            ).catch((error) => {
+                                console.log(error)
+                                messageApi.error('Please fill in all the required fields!');
+                            }
+                            )
+                        }}
                         style={{ marginRight: '20px' }}
                         className="viewButton"
                         type="primary"
@@ -1048,11 +1054,20 @@ function AgentCreatePost() {
                     </Button>
                 </Form.Item>
 
-                <Form.Item>
+                <Form.Item >
                     {contextHolder}
 
                     <Button
-                        // onClick={() => { onFinish(form.getFieldsValue(), "Submit") }}
+                        onClick={() => { 
+                            form.validateFields().then((values) => {
+                                onFinish(values, "Submit")
+                            }
+                            ).catch((error) => {
+                                console.log(error)
+                                messageApi.error('Please fill in all the required fields!');
+                            }
+                            )
+                        }}
                         className="viewButton"
                         type="primary"
                         htmlType='submit'
