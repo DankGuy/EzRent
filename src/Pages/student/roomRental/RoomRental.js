@@ -1,5 +1,5 @@
 import SearchInput from '../../../Components/SearchInput';
-import { Col, Row, Button, Form, Image, Empty, Pagination, FloatButton } from 'antd';
+import { Col, Row, Button, Form, Image, Empty, Pagination, FloatButton, Tag } from 'antd';
 import { SearchOutlined } from '@ant-design/icons';
 import { useState, useEffect } from 'react';
 import FurnishTypeSelection from '../../../Components/FurnishTypeSelection';
@@ -249,23 +249,17 @@ function RoomRental() {
         event.preventDefault();
         const serializedState = JSON.stringify(stateData);
         window.open(`${url}?state=${encodeURIComponent(serializedState)}`, '_blank');
-      };
-      
+    };
+
 
 
     const renderedPost = currentPosts.map((post) => {
-        let bgColor;
         const firstImage = firstImages[post.postID];
 
-        if (post.propertyCategory === 'Room') {
-            bgColor = '#d5def5';
-        } else {
-            bgColor = '#8594e4';
-          
-        }
-
         return (
-            <div key={post.postID} className='postContainer'>
+            <div
+                key={post.postID}
+                className='postContainer'>
                 <Row >
                     <Col span={24} style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', width: "300px", paddingLeft: '10px' }}>
                         {firstImage &&
@@ -280,17 +274,34 @@ function RoomRental() {
                 <div className='postDescription'>
                     <div>
                         <Row>
-                            <Col span={22} style={{ fontSize: '25px', fontWeight: 'normal' }}>{post.propertyName}</Col>
-                            <Col span={2} style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', backgroundColor: bgColor, fontWeight: 'bold' }}>{post.propertyCategory}</Col>
+                            <Col span={22} style={{ fontSize: '22px', fontWeight: '500' }}>{post.propertyName}</Col>
+                            <Col span={2}>
+                                {
+                                    post.propertyCategory === 'Room' ?
+                                        <Tag color='#d5def5' style={{ color: 'black', fontWeight: 'bold', borderRadius: '0px' }}>{post.propertyCategory}</Tag> :
+                                        <Tag color='#8594e4' style={{ color: 'black', fontWeight: 'bold', borderRadius: '0px' }}>{post.propertyCategory}</Tag>
+
+                                }
+                            </Col>
                         </Row>
                         <Row>
-                            <Col span={24} style={{ fontSize: '20px', fontWeight: 'lighter', marginTop: '5px' }}><TfiLocationPin size={15} /> {post.propertyAddress},{post.propertyPostcode},{post.propertyCity},{post.propertyState}</Col>
+                            <Col span={24} 
+                                style={{ 
+                                    fontSize: '20px', 
+                                    marginTop: '5px', 
+                                    whiteSpace: 'nowrap', 
+                                    overflow: 'hidden', 
+                                    textOverflow: 'ellipsis', 
+                                    color: 'gray',
+                                    width: '300px' }}>
+                                <TfiLocationPin size={15} /> {post.propertyAddress}, {post.propertyPostcode}, {post.propertyCity}, {post.propertyState}
+                            </Col>
                         </Row>
                         <Row>
-                            <Col span={24} style={{ fontSize: '20px', marginTop: '5px', fontStyle: 'italic' }}>RM{post.propertyPrice}/month </Col>
+                            <Col span={24} style={{ fontSize: '20px', marginTop: '5px' }}>RM{post.propertyPrice}/month </Col>
                         </Row>
                         <Row>
-                            <Col span={24} style={{ fontSize: '16px', marginTop: '5px', fontStyle: 'italic' }}>
+                            <Col span={24} style={{ fontSize: '16px', marginTop: '5px' }}>
                                 <span style={{ marginRight: '10px' }}>&bull;</span>
                                 {post.propertyFurnishType}
                                 <span style={{ marginLeft: '20px', marginRight: '10px' }}>&bull;</span>
@@ -312,16 +323,16 @@ function RoomRental() {
                     <div style={{ marginTop: '20px' }}>
                         <Row>
                             <Col span={6}>
-                                    <Button
+                                <Button
 
-                                        type='link'
-                                        className='viewButton'
-                                        onClick={(e) => openLinkInNewTab(`/student/roomRental/${post.postID}`, post.postID, e)}
-                                        >
-                                            View
-                                    </Button>
+                                    type='link'
+                                    className='viewButton'
+                                    onClick={(e) => openLinkInNewTab(`/student/roomRental/${post.postID}`, post.postID, e)}
+                                >
+                                    View
+                                </Button>
                             </Col>
-                            <Col span={18} style={{ textDecoration: 'underline', fontStyle: 'italic', display: 'flex', justifyContent: 'end', alignItems: 'end' }}>{`Posted on: ${getDateOnly(post.postDate)} (Last modified: ${getElapsedTime(post.lastModifiedDate)})`}</Col>
+                            <Col span={18} style={{ fontStyle: 'italic', display: 'flex', justifyContent: 'end', alignItems: 'end' }}>{`Posted on: ${getDateOnly(post.postDate)} (Last modified: ${getElapsedTime(post.lastModifiedDate)})`}</Col>
                         </Row>
 
                     </div>
@@ -333,12 +344,16 @@ function RoomRental() {
 
 
     return <>
-        <div style={{ 
-            margin: '2% 0px 0px', 
-            padding: '0px 10px 0px', 
-            border: '0px solid black', 
+        <div style={{
+            padding: '20px 10px 0px',
+            border: '0px solid black',
             width: '100%',
-            boxShadow: '0px 4px 6px -2px rgba(0, 0, 0, 0.2)' }}>
+            boxShadow: '0px 4px 6px -2px rgba(0, 0, 0, 0.2)',
+            position: 'sticky',
+            top: '50px',
+            zIndex: '1000',
+            backgroundColor: '#FFFFFF',
+        }}>
             <Form
                 onFinish={onFinish}
                 initialValues={

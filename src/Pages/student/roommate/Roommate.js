@@ -90,7 +90,7 @@ function Roommate() {
     }
 
     const handleViewListings = () => {
-        window.location.href = '/student/roommate/listings';
+        window.location.href = '/student/roommate/myListings';
     }
 
     const handleTrigger = () => {
@@ -101,7 +101,15 @@ function Roommate() {
     
 
     return (<>
-        <div style={{ margin: '2% 0px 0px', padding: '0px 10px 0px', border: '0px solid black', boxShadow: '0px 4px 6px -2px rgba(0, 0, 0, 0.2)' }}>
+        <div style={{ 
+            padding: '20px 10px 0px', 
+            border: '0px solid black', 
+            boxShadow: '0px 4px 6px -2px rgba(0, 0, 0, 0.2)',
+            position: 'sticky',
+            top: '50px',
+            zIndex: '1000',
+            backgroundColor: 'white',
+            }}>
             <Form
                 name="search"
                 form={form}

@@ -50,7 +50,7 @@ function MyListings() {
                 padding: "0 2em",
             }}
         >
-            <div style={{ width: '50%' }}>
+            <div style={{ width: '50%', marginLeft: '1%' }}>
                 <Breadcrumb style={{ margin: '16px 0', fontWeight: '500' }}
                     items={[
                         { href: '/student', title: 'Home' },
@@ -60,7 +60,7 @@ function MyListings() {
                 />
             </div>
             <Row>
-                <Col span={24}>
+                <Col span={24} style={{ marginLeft: '1%'}}>
                     <h1>My Listings ({myListings.length})</h1>
                 </Col>
             </Row>

@@ -43,6 +43,7 @@ import LoginCard from "./Components/LoginCard";
 import RentedPropertyDetails from "./Pages/agent/RentedProperty/RentedPropertyDetails";
 import MyListings from "./Pages/student/roommate/MyListings";
 import ListingPostDetails from "./Pages/student/roommate/ListingPostDetails";
+import RoommatePost from "./Pages/student/roommate/RoommatePost";
 
 function App() {
     const { user, userSession } = useAuth();  
@@ -76,8 +77,9 @@ function App() {
                             <Route index element={<Home />} />
                             <Route path="roomRental" element={<RoomRental />} />
                             <Route path="roommate" element={<Roommate />} />
-                            <Route path="roommate/listings" element={<MyListings />} />
-                            <Route path="roommate/listings/:id" element={<ListingPostDetails />} />
+                            <Route path="roommate/myListings" element={<MyListings />} />
+                            <Route path="roommate/myListings/:id" element={<ListingPostDetails />} />
+                            <Route path="roommate/post/:id" element={<RoommatePost />} />
                             <Route path="aboutUs" element={<AboutUs />} />
 
                             <Route path="/student/admin/" element={<AdminLayout />}>

@@ -83,7 +83,7 @@ function MyListingPost({ listing, onTrigger }) {
         });
 
         setTimeout(() => {
-            navigate("/student/roommate/listings")
+            navigate("/student/roommate/myListings")
         }, 3000);
     }
 
@@ -104,7 +104,7 @@ function MyListingPost({ listing, onTrigger }) {
         >
             <Row className="popOutBox">
                 <Col span={24} style={popOverStyle}>
-                    <Link to={`/student/roommate/listings/${listing.postID}`} key="view" state={{ listing: listing, isView: true }} style={{ color: 'black', display: 'flex', alignItems: 'center' }}>
+                    <Link to={`/student/roommate/myListings/${listing.postID}`} key="view" state={{ listing: listing, isView: true }} style={{ color: 'black', display: 'flex', alignItems: 'center' }}>
                         <span style={{ flexGrow: 1 }}>View</span>
                         <GrView size={18} />
                     </Link>
@@ -112,7 +112,7 @@ function MyListingPost({ listing, onTrigger }) {
             </Row>
             <Row className="popOutBox">
                 <Col span={24} style={popOverStyle}>
-                    <Link to={`/student/roommate/listings/${listing.postID}`} key="view" state={{ listing: listing, isView: false }} style={{ color: 'black', display: 'flex', alignItems: 'center' }}>
+                    <Link to={`/student/roommate/myListings/${listing.postID}`} key="view" state={{ listing: listing, isView: false }} style={{ color: 'black', display: 'flex', alignItems: 'center' }}>
                         <span style={{ flexGrow: 1 }}>Edit</span>
                         <FiEdit3 size={18} />
                     </Link>

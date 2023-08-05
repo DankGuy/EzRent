@@ -140,16 +140,16 @@ function CreateRoommatePost({ value, onChange, onTrigger }) {
                     <Col span={12}>
                         <Form.Item name="preferredGender" label="Gender">
                             <Radio.Group>
-                                <Radio value="male">Male</Radio>
-                                <Radio value="female">Female</Radio>
+                                <Radio value="Male">Male</Radio>
+                                <Radio value="Female">Female</Radio>
                             </Radio.Group>
                         </Form.Item>
                     </Col>
                     <Col span={12}>
                         <Form.Item name="studentType" label="Student Type">
                             <Radio.Group>
-                                <Radio value="local">Local</Radio>
-                                <Radio value="international">International</Radio>
+                                <Radio value="Local">Local</Radio>
+                                <Radio value="International">International</Radio>
                             </Radio.Group>
                         </Form.Item>
                     </Col>
@@ -400,9 +400,9 @@ function CreateRoommatePost({ value, onChange, onTrigger }) {
                     initialValues={
                         {
                             rentedProperty: 'no',
-                            preferredGender: 'male',
+                            preferredGender: 'Male',
                             preferredAge: [18, 30],
-                            studentType: 'local',
+                            studentType: 'Local',
                         }
                     }
                 >

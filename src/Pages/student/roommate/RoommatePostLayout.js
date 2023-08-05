@@ -1,4 +1,4 @@
-import { Card, Avatar, Row, Col, Tooltip, Popconfirm, message } from "antd";
+import { Card, Avatar, Row, Col, Tooltip, Popconfirm, message, Button } from "antd";
 import { useEffect, useState } from "react";
 import { supabase } from "../../../supabase-client";
 import { BsCurrencyDollar, BsGenderMale, BsGenderFemale } from "react-icons/bs";
@@ -17,7 +17,7 @@ const { Meta } = Card;
 
 function RoommatePostLayout({ listing }) {
 
-    const [agentAvatar, setAgentAvatar] = useState(null);
+    const [avatar, setAvatar] = useState(null);
 
     useEffect(() => {
         const getAvatar = async () => {
@@ -35,7 +35,7 @@ function RoommatePostLayout({ listing }) {
         };
 
         getAvatar().then((data) => {
-            setAgentAvatar(data.publicUrl);
+            setAvatar(data.publicUrl);
         });
 
     }, [listing]);
@@ -47,6 +47,13 @@ function RoommatePostLayout({ listing }) {
     }
 
     const iconSize = 15;
+
+    const openLinkInNewTab = (url, stateData, event) => {
+        console.log(stateData)
+        event.preventDefault();
+        const serializedState = JSON.stringify(stateData);
+        window.open(`${url}?state=${encodeURIComponent(serializedState)}`, '_blank');
+      };
 
 
     return (
@@ -63,7 +70,7 @@ function RoommatePostLayout({ listing }) {
             bordered={true}
             title={
                 <Meta style={{ paddingTop: '1em' }}
-                    avatar={<Avatar src={agentAvatar} size={"large"} icon={<UserOutlined />} />}
+                    avatar={<Avatar src={avatar} size={"large"} icon={<UserOutlined />} />}
                     title={
                         <>
                             {listing.student.name}
@@ -108,13 +115,23 @@ function RoommatePostLayout({ listing }) {
                         </Col>
                     </Row>
                     <Row>
-                        <Col span={12} style={cardContentStyle}>
+                        <Col span={10} style={cardContentStyle}>
                             <BiBuildingHouse size={iconSize} />
                             Type: {listing.rental_agreement.postID.propertyType}
                         </Col>
-                        <Col span={12} style={cardContentStyle}>
+                        <Col span={10} style={cardContentStyle}>
                             <BsCurrencyDollar size={iconSize} />
                             Price: RM{listing.rental_agreement.postID.propertyPrice}.00/month
+                        </Col>
+                        <Col span={4}>
+                            < Button
+                                type='link'
+                                className='viewButton'
+                                onClick={(e) => openLinkInNewTab(`/student/roommate/post/${listing.postID}`, listing.postID, e)}
+
+                            >
+                                View
+                            </Button>
                         </Col>
                     </Row>
                 </div>
@@ -132,13 +149,22 @@ function RoommatePostLayout({ listing }) {
                         </Col>
                     </Row>
                     <Row>
-                        <Col span={12} style={cardContentStyle}>
+                        <Col span={10} style={cardContentStyle}>
                             <BiBuildingHouse size={iconSize} />
                             Property Type: {listing.propertyType}
                         </Col>
-                        <Col span={12} style={cardContentStyle}>
+                        <Col span={10} style={cardContentStyle}>
                             <BsCurrencyDollar size={iconSize} />
                             Budget: RM{listing.budget}.00/month
+                        </Col>
+                        <Col span={4}>
+                            <Button
+                                type='link'
+                                className='viewButton'
+                                onClick={(e) => openLinkInNewTab(`/student/roommate/post/${listing.postID}`, listing.postID, e)}
+                            >
+                                View
+                            </Button>
                         </Col>
                     </Row>
                 </div>

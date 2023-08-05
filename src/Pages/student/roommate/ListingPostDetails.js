@@ -15,7 +15,7 @@ import {
     message,
     InputNumber,
 } from "antd"
-import { useEffect } from "react";
+import { useEffect, useRef } from "react";
 import { useLocation } from "react-router-dom"
 import moment from 'moment';
 import { Link, useNavigate } from "react-router-dom";
@@ -34,6 +34,12 @@ function ListingPostDetails() {
     const [form] = Form.useForm();
     const [messageApi, contextHolder] = message.useMessage();
     const navigate = useNavigate();
+
+    const propertyDetailsRef = useRef(null);
+    const rentalDetailsRef = useRef(null);
+    const roommatePreferencesRef = useRef(null);
+    const myLifestyleRef = useRef(null);
+
 
     console.log(listing);
     console.log(isView);
@@ -108,15 +114,15 @@ function ListingPostDetails() {
         });
 
         setTimeout(() => {
-            navigate("/student/roommate/listings")
+            navigate("/student/roommate/myListings")
         }, 3000);
     }
 
     const showButton = () => {
         if (isView) {
             return (
-                <div style={{ display: 'flex', justifyContent: 'center', padding: '10px' }}>
-                    <Link to={`/student/roommate/listings/${listing.postID}`} state={{ listing, isView: false }}>
+                <div style={{ display: 'flex', justifyContent: 'center', padding: '10px', marginTop: '20px' }}>
+                    <Link to={`/student/roommate/myListings/${listing.postID}`} state={{ listing, isView: false }}>
                         <Button className='viewButton' style={{ marginRight: '20px', width: '100px' }} type="primary" >
                             Edit
                         </Button>
@@ -137,7 +143,7 @@ function ListingPostDetails() {
         }
         else {
             return (
-                <div style={{ display: 'flex', justifyContent: 'center', padding: '10px' }}>
+                <div style={{ display: 'flex', justifyContent: 'center', padding: '10px', marginTop: '20px' }}>
                     <Button className='viewButton' style={{ marginRight: '20px', width: '100px' }} type="primary" onClick={handleButtonCancel}>
                         Cancel
                     </Button>
@@ -204,7 +210,7 @@ function ListingPostDetails() {
             messageApi.success('Edit successful. You will be redirected to the previous page within 1 second...', 1);
 
             setTimeout(() => {
-                navigate("/student/roommate/listings");
+                navigate("/student/roommate/myListings");
             }, 1000);
         }, 3000);
     }
@@ -213,24 +219,46 @@ function ListingPostDetails() {
         console.log(errorInfo);
     }
 
+    const handleClick = (sec) => () => {
+        const offset = -50; // Adjust this value to set the desired offset from the top of the element
+
+        let targetRef;
+
+        if (sec === 1) {
+            targetRef = propertyDetailsRef;
+        } else if (sec === 2) {
+            targetRef = rentalDetailsRef;
+        } else if (sec === 3) {
+            targetRef = roommatePreferencesRef;
+        } else if (sec === 4) {
+            targetRef = myLifestyleRef;
+        }
+
+        if (targetRef && targetRef.current) {
+            const elementPosition = targetRef.current.getBoundingClientRect().top;
+            const offsetPosition = elementPosition + window.pageYOffset + offset;
+
+            window.scrollTo({
+                top: offsetPosition,
+                behavior: "smooth",
+            });
+        }
+    };
+
+
 
     return (
         <div
             style={{
-                // display: "flex",
-                // flexDirection: "column",
-                // alignItems: "center",
-                // justifyContent: "center",
-                border: '1px solid red',
                 margin: "10px 1% 10px 1%",
-                padding: "0 2em",
+                padding: "0em 2em 1em 2em",
             }}>
-            <div style={{ width: '50%' }}>
+            <div style={{ width: '50%', marginLeft: '1%' }}>
                 <Breadcrumb style={{ margin: '16px 0', fontWeight: '500' }}
                     items={[
                         { href: '/student', title: 'Home' },
                         { href: '/student/roommate', title: 'Roommate' },
-                        { href: '/student/roommate/listings', title: 'My Listings' },
+                        { href: '/student/roommate/myListings', title: 'My Listings' },
                         { title: 'Listing Details' },
                     ]}
                 />
@@ -239,9 +267,10 @@ function ListingPostDetails() {
             <div
                 style={{
                     backgroundColor: "white",
+                    margin: "0px 1% 0px 1%",
                     width: '60%',
                     padding: '20px',
-                    // margin: 'auto',
+                    boxShadow: '0 -1px 1px 0 rgba(0, 28, 36, .3), 0 1px 1px 0 rgba(0, 28, 36, .3), 1px 1px 1px 0 rgba(0, 28, 36, .15), -1px 1px 1px 0 rgba(0, 28, 36, .15)',
                 }}>
                 {isView ? (
                     <Title level={2} style={{ textAlign: 'center' }}>Listing Details</Title>
@@ -256,7 +285,7 @@ function ListingPostDetails() {
                     onFinish={onFinish}
                     onFinishFailed={onFinishFailed}
                 >
-                    <fieldset style={fieldsetStyle}>
+                    <fieldset style={fieldsetStyle} ref={propertyDetailsRef}>
                         <legend style={legendStyle}>Property Details</legend>
                         <Descriptions
                             layout="vertical"
@@ -309,7 +338,7 @@ function ListingPostDetails() {
                             </>
                         )}
                     </fieldset>
-                    <fieldset style={fieldsetStyle}>
+                    <fieldset style={fieldsetStyle} ref={rentalDetailsRef}>
                         <legend style={legendStyle}>Rental Details</legend>
                         <Form.Item name="moveInDate" label="Move-in Date">
                             <DatePicker placeholder="Select" />
@@ -324,7 +353,7 @@ function ListingPostDetails() {
                                 ]} />
                         </Form.Item>
                     </fieldset>
-                    <fieldset style={fieldsetStyle}>
+                    <fieldset style={fieldsetStyle} ref={roommatePreferencesRef}>
                         <legend style={legendStyle}>Roommate Preferences</legend>
                         <Row>
                             <Col span={12}>
@@ -380,7 +409,7 @@ function ListingPostDetails() {
                             <Input.TextArea placeholder="Description" style={{ height: 100 }} />
                         </Form.Item>
                     </fieldset>
-                    <fieldset style={fieldsetStyle}>
+                    <fieldset style={fieldsetStyle} ref={myLifestyleRef}>
                         <legend style={legendStyle}>My Lifestyle</legend>
                         <Row>
                             <Col span={12}>
@@ -480,6 +509,45 @@ function ListingPostDetails() {
                 </Form>
                 {showButton()}
 
+            </div>
+
+            <div
+                style={{
+                    position: 'fixed',
+                    top: '115px',
+                    right: '300px',
+                    height: 'auto',
+                    width: '200px',
+                    backgroundColor: 'white',
+                    padding: '10px',
+                    boxShadow: '0 -1px 1px 0 rgba(0, 28, 36, .3), 0 1px 1px 0 rgba(0, 28, 36, .3), 1px 1px 1px 0 rgba(0, 28, 36, .15), -1px 1px 1px 0 rgba(0, 28, 36, .15)',
+
+                }}>
+                <Row>
+                    <Col span={24} style={{ fontWeight: 'bold', marginBottom: '5px' }}>
+                        On this page:
+                    </Col>
+                </Row>
+                <Row>
+                    <Col span={24}>
+                        <a onClick={handleClick(1)}>Property Details</a>
+                    </Col>
+                </Row>
+                <Row>
+                    <Col span={24}>
+                        <a onClick={handleClick(2)}>Rental Details</a>
+                    </Col>
+                </Row>
+                <Row>
+                    <Col span={24}>
+                        <a onClick={handleClick(3)}>Roommate Preferences</a>
+                    </Col>
+                </Row>
+                <Row>
+                    <Col span={24}>
+                        <a onClick={handleClick(4)}>My Lifestyle</a>
+                    </Col>
+                </Row>
             </div>
         </div>
     )
