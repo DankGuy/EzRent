@@ -3,6 +3,7 @@ import { Row, Col, Image, Button } from 'antd';
 import { BsCurrencyDollar } from 'react-icons/bs'
 import { supabase } from '../../../supabase-client';
 import Carousel from 'react-multi-carousel';
+import { LoadingOutlined } from '@ant-design/icons';
 
 
 function RecommendationPosts({ postID }) {
@@ -11,6 +12,8 @@ function RecommendationPosts({ postID }) {
     const [recommendedPosts, setPost] = useState([]);
 
     const [firstImage, setFirstImage] = useState({});
+
+    const [loadingImages, setLoadingImages] = useState(true);
 
     const fetchPosts = async () => {
 
@@ -32,11 +35,13 @@ function RecommendationPosts({ postID }) {
             console.log(error);
             return;
         }
-            
+
 
         setPost(posts);
 
         const firstImageObject = {};
+
+        setLoadingImages(true);
 
         for (let i = 0; i < posts.length; i++) {
             const { data, error } = await supabase.storage
@@ -49,11 +54,14 @@ function RecommendationPosts({ postID }) {
             }
 
             if (data) {
+                console.log(data);
                 firstImageObject[posts[i].postID] = data[0];
             }
         }
 
         setFirstImage(firstImageObject);
+
+        setLoadingImages(false);
     }
 
 
@@ -114,7 +122,8 @@ function RecommendationPosts({ postID }) {
                         position: 'relative',
                         margin: '10px 25px 10px 30px',
                         height: 'auto',
-                        width: '380px'
+                        width: '380px',
+                        padding: '10px',
                     }}>
                     <div
                         style={{
@@ -134,6 +143,13 @@ function RecommendationPosts({ postID }) {
                         {post.propertyCategory}
                     </div>
                     <Row >
+                        {loadingImages &&
+                            <Col span={24} style={{ display: 'flex', justifyContent: 'center' }}>
+                                <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center' }}>
+                                    <LoadingOutlined style={{ fontSize: '24px', marginBottom: '8px' }} />
+                                    <p style={{ fontFamily: 'arial' }}>Loading images...</p>
+                                </div>
+                            </Col>}
                         {firstImage[post.postID] &&
                             <Col span={24} style={{ display: 'flex', justifyContent: 'center' }}>
                                 <Image style={{ justifyContent: 'center' }} height={200}
@@ -143,7 +159,7 @@ function RecommendationPosts({ postID }) {
                     </Row>
                     <div style={{ margin: '10px' }}>
                         <Row>
-                            <Col span={24} style={{ fontSize: '20px' }}><BsCurrencyDollar size={15} />Rental: RM{post.propertyPrice}.00</Col>
+                            <Col span={24} style={{ fontSize: '18px' }}><BsCurrencyDollar size={15} />Rental: RM{post.propertyPrice}.00</Col>
                         </Row>
                         <br />
                         <Row>
@@ -163,14 +179,14 @@ function RecommendationPosts({ postID }) {
                             <Col span={24} style={{ fontSize: '16px' }}>{post.propertyType}</Col>
                         </Row>
                         <Row>
-                            <Col span={10} style={{ fontSize: '14px', fontStyle: 'italic' }}>
+                            <Col span={10} style={{ fontSize: '14px' }}>
                                 <span style={{ marginRight: '3px' }}>&bull;</span>{post.propertyFurnishType}
                             </Col>
-                            <Col span={14} style={{ fontSize: '14px', fontStyle: 'italic' }}>
+                            <Col span={14} style={{ fontSize: '14px' }}>
                                 <span style={{ marginRight: '3px' }}>&bull;</span>Built-up size: {post.propertySquareFeet} sq.ft.
                             </Col>
                         </Row>
-                        <Row style={{ margin: '10px 0px', paddingBottom: '10px' }}>
+                        <Row style={{ margin: '20px 0px 0px 0px', paddingBottom: '0px' }}>
                             <Col span={12}>
                                 <Button
                                     type="primary"

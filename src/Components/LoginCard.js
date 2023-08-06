@@ -6,10 +6,39 @@ import { Link, useNavigate } from "react-router-dom";
 import { supabase } from "../supabase-client";
 import { InfoCircleOutlined } from "@ant-design/icons";
 import "./auth.css";
+import { useAuth } from "../context/AuthProvider";
+// import { NavigateHomePage } from "./navigateHomePage";
 
 function LoginCard() {
   const [isHoveredForgot, setIsHoveredForgot] = useState(false);
   const [isHoveredSignup, setIsHoveredSignup] = useState(false);
+
+
+  const [isReady, setIsReady] = useState(true);
+
+
+  const { userSession, auth } = useAuth();
+
+  console.log(userSession);
+
+  console.log(auth);
+
+  const navigate = useNavigate();
+
+
+  // useEffect(() => {
+  //   if (auth === true) {
+  //     if (userSession?.user.user_metadata.userType === "agent") {
+  //       navigate("/agent");
+  //     } else if (userSession?.user.user_metadata.userType === "student") {
+  //       navigate("/student");
+  //     }
+  //   } 
+
+  //   setIsReady(true);
+
+  // }, [auth, userSession]);
+
   const hoverStyleForgot = {
     color: isHoveredForgot ? "#430f58" : "#6643b5",
   };
@@ -22,7 +51,6 @@ function LoginCard() {
     password: "",
   });
 
-  const navigate = useNavigate();
 
   function handleChange(e) {
     setFormData(() => ({ ...formData, [e.target.name]: e.target.value }));
@@ -61,147 +89,149 @@ function LoginCard() {
   // if the switch is on admin, but the student is not admin, then show error message
 
   return (
-    <div
-      className="login-container"
-      style={{
-        display: "flex",
-        alignItems: "center",
-        justifyContent: "center",
-        margin: "0",
-        background: "rgb(255,255,255)",
-        maxHeight: "100vh",
-        maxWidth: "100vw",
-      }}
-    >
+    <>{isReady &&
       <div
+        className="login-container"
         style={{
-          height: "100vh",
-          maxHeight: "100vh",
-          width: "55vw",
-          backgroundImage: `url(${loginBg})`,
-          backgroundSize: "55vw 100vh",
-          backgroundPosition: "center",
-          backgroundRepeat: "no-repeat",
-        }}
-      ></div>
-
-      <div
-        className="login-card"
-        style={{
-          backgroundColor: "#FFFFFF",
-          height: "60vh",
-          width: "45vw",
-          maxWidth: "500px",
-          maxHeight: "100vh",
-          margin: "0",
-          padding: "0",
           display: "flex",
           alignItems: "center",
-          flexDirection: "column",
           justifyContent: "center",
-          padding: "20px",
-          borderRadius: "10px",
-          opacity: "0.9",
+          margin: "0",
+          background: "rgb(255,255,255)",
+          maxHeight: "100vh",
+          maxWidth: "100vw",
         }}
       >
-        <Form
-          className="login-form"
-          name="basic"
-          wrapperCol={{
-            span: 24,
-          }}
+        <div
           style={{
-            maxWidth: 800,
+            height: "100vh",
+            maxHeight: "100vh",
+            width: "55vw",
+            backgroundImage: `url(${loginBg})`,
+            backgroundSize: "55vw 100vh",
+            backgroundPosition: "center",
+            backgroundRepeat: "no-repeat",
           }}
-          initialValues={{
-            remember: true,
+        ></div>
+
+        <div
+          className="login-card"
+          style={{
+            backgroundColor: "#FFFFFF",
+            height: "60vh",
+            width: "45vw",
+            maxWidth: "500px",
+            maxHeight: "100vh",
+            margin: "0",
+            padding: "0",
+            display: "flex",
+            alignItems: "center",
+            flexDirection: "column",
+            justifyContent: "center",
+            padding: "20px",
+            borderRadius: "10px",
+            opacity: "0.9",
           }}
-          onFinish={handleSubmit}
         >
-          <h1 style={{ textAlign: "center", fontSize: "2rem" }}>
-            Hi, <br /> Welcome Back!{" "}
-          </h1>
-          <Form.Item className="emailInput" style={{ width: "100%" }}>
-            <Input
-              name="email"
-              onChange={handleChange}
-              placeholder="Enter your email"
-              suffix={
-                <Tooltip title="email@domain.com">
-                  <InfoCircleOutlined
-                    style={{
-                      color: "rgba(0,0,0,.45)",
-                    }}
-                  />
-                </Tooltip>
-              }
-            />
-          </Form.Item>
-
-          <Form.Item name="password">
-            <Input.Password
-              className="passwordInput"
-              name="password"
-              onChange={handleChange}
-              placeholder="Enter your password"
-            />
-          </Form.Item>
-
-          <Form.Item
+          <Form
+            className="login-form"
+            name="basic"
             wrapperCol={{
-              offset: 8,
-              span: 16,
+              span: 24,
             }}
             style={{
-              marginBottom: 0,
+              maxWidth: 800,
             }}
-          ></Form.Item>
+            initialValues={{
+              remember: true,
+            }}
+            onFinish={handleSubmit}
+          >
+            <h1 style={{ textAlign: "center", fontSize: "2rem" }}>
+              Hi, <br /> Welcome Back!{" "}
+            </h1>
+            <Form.Item className="emailInput" style={{ width: "100%" }}>
+              <Input
+                name="email"
+                onChange={handleChange}
+                placeholder="Enter your email"
+                suffix={
+                  <Tooltip title="email@domain.com">
+                    <InfoCircleOutlined
+                      style={{
+                        color: "rgba(0,0,0,.45)",
+                      }}
+                    />
+                  </Tooltip>
+                }
+              />
+            </Form.Item>
 
-          <Form.Item style={{ display: "flex", justifyContent: "center" }}>
-            <Button
-              type="primary"
-              className="loginButton"
-              block
-              style={{
-                width: "22.5vw",
-                fontSize: "1.2rem",
-                height: "auto",
-                backgroundColor: "#0062D1",
-                borderColor: "#0062D1",
+            <Form.Item name="password">
+              <Input.Password
+                className="passwordInput"
+                name="password"
+                onChange={handleChange}
+                placeholder="Enter your password"
+              />
+            </Form.Item>
+
+            <Form.Item
+              wrapperCol={{
+                offset: 8,
+                span: 16,
               }}
-              htmlType="submit"
-            >
-              Login
-            </Button>
-          </Form.Item>
-        </Form>
+              style={{
+                marginBottom: 0,
+              }}
+            ></Form.Item>
 
-        <p
-          style={{
-            marginBottom: -5,
-          }}
-        >
-          <Link
-            to="/forgot-password"
-            style={hoverStyleForgot}
-            onMouseEnter={() => setIsHoveredForgot(true)}
-            onMouseLeave={() => setIsHoveredForgot(false)}
+            <Form.Item style={{ display: "flex", justifyContent: "center" }}>
+              <Button
+                type="primary"
+                className="loginButton"
+                block
+                style={{
+                  width: "22.5vw",
+                  fontSize: "1.2rem",
+                  height: "auto",
+                  backgroundColor: "#0062D1",
+                  borderColor: "#0062D1",
+                }}
+                htmlType="submit"
+              >
+                Login
+              </Button>
+            </Form.Item>
+          </Form>
+
+          <p
+            style={{
+              marginBottom: -5,
+            }}
           >
-            Forgot your password?
-          </Link>
-        </p>
-        <p>
-          <Link
-            to="/signup"
-            style={hoverStyleSignUp}
-            onMouseEnter={() => setIsHoveredSignup(true)}
-            onMouseLeave={() => setIsHoveredSignup(false)}
-          >
-            Don't have an account? Sign up here!
-          </Link>
-        </p>
+            <Link
+              to="/forgot-password"
+              style={hoverStyleForgot}
+              onMouseEnter={() => setIsHoveredForgot(true)}
+              onMouseLeave={() => setIsHoveredForgot(false)}
+            >
+              Forgot your password?
+            </Link>
+          </p>
+          <p>
+            <Link
+              to="/signup"
+              style={hoverStyleSignUp}
+              onMouseEnter={() => setIsHoveredSignup(true)}
+              onMouseLeave={() => setIsHoveredSignup(false)}
+            >
+              Don't have an account? Sign up here!
+            </Link>
+          </p>
+        </div>
       </div>
-    </div>
+    }</>
   );
 }
 

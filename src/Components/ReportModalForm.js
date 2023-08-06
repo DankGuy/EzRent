@@ -61,7 +61,11 @@ function ReportModalForm({ buttonContent, postID }) {
 
     return (
         <>
-            <Button onClick={showModal} type="primary" className="viewButton">{buttonContent}</Button>
+            <Button 
+                onClick={showModal} 
+                type="primary" 
+                style={{width: '100%'}}
+                className="viewButton">{buttonContent}</Button>
 
             <Modal
                 open={open}

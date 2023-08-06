@@ -22,7 +22,7 @@ import Carousel from "react-multi-carousel";
 import 'react-multi-carousel/lib/styles.css';
 import { getDateOnly, getElapsedTime } from '../../../Components/timeUtils';
 import AppointmentModalForm from './AppointmentModalForm';
-import { UserOutlined } from '@ant-design/icons';
+import { UserOutlined, LoadingOutlined } from '@ant-design/icons';
 import { Fragment } from 'react';
 
 function RoomRentalPost() {
@@ -145,7 +145,7 @@ function RoomRentalPost() {
                         return fileType === "jpg" || fileType === "png";
                     },
                 })
-            
+
             return data;
         };
 
@@ -220,6 +220,7 @@ function RoomRentalPost() {
         return <Col span={8}
             className='iconComponent'
             key={index}
+
         >
             {IconComponent && <IconComponent style={{ verticalAlign: 'middle', marginRight: '5px' }} />} {furnish}
         </Col>
@@ -335,7 +336,12 @@ function RoomRentalPost() {
 
 
         if (loadingImages) {
-            return <p style={{ fontFamily: 'arial' }}>Loading images...</p>;
+            return (
+                <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center' }}>
+                    <LoadingOutlined style={{ fontSize: '24px', marginBottom: '8px' }} />
+                    <p style={{ fontFamily: 'arial' }}>Loading images...</p>
+                </div>
+            )
         }
 
         if (propertyImages === undefined || propertyImages.length === 0) {
@@ -356,8 +362,12 @@ function RoomRentalPost() {
 
 
         if (loadingImages) {
-            return <p>Loading room images...</p>;
-        }
+            return (
+                <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center' }}>
+                    <LoadingOutlined style={{ fontSize: '24px', marginBottom: '8px' }} />
+                    <p style={{ fontFamily: 'arial' }}>Loading images...</p>
+                </div>
+            )        }
 
         if (images === undefined || images.length === 0) {
             return <p>No images available</p>;
@@ -380,11 +390,12 @@ function RoomRentalPost() {
 
     function redirectToWhatsApp(phoneNumber, postID) {
         const processedNumber = phoneNumber.replace(/-/g, '');
-        const text = `Hi, I would like to inquire about the room rental with the post id '${postID}'.`;
+        const text = `Hi, I would like to inquire about the room rental following post: http://localhost:3000/student/roomRental/${postID}?state=${postID}`;
         const encodedText = encodeURIComponent(text);
         const whatsappUrl = `https://wa.me/6${processedNumber}?text=${encodedText}`;
-        window.location.href = whatsappUrl;
+        window.open(whatsappUrl, '_blank');
     }
+    
 
 
 
@@ -500,8 +511,8 @@ function RoomRentalPost() {
                             {post.propertyFurnishType === 'Unfurnished' ?
                                 <Col span={24} style={{ fontSize: '18px', margin: '5px 20px 5px', paddingRight: '30px' }}>
                                     No other furnishing...
-                                </Col> 
-                                    : renderedFurnish
+                                </Col>
+                                : renderedFurnish
                             }
                         </Row>
                     </div>
@@ -547,7 +558,7 @@ function RoomRentalPost() {
                             <Col span={22} style={{ fontSize: '18px', marginLeft: '20px', textAlign: 'center' }}>Rating: {post.agent?.rating}/5.0</Col>
                         </Row>
                         <Row>
-                            <Col span={22} style={{ fontSize: '18px', marginLeft: '20px', marginTop: '10px', textAlign: 'center' }}>
+                            <Col span={24} style={{ fontSize: '18px', marginLeft: '0px', marginTop: '10px', textAlign: 'center' }}>
                                 <AppointmentModalForm post={post} />
                             </Col>
                         </Row>

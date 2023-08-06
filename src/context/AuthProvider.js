@@ -27,21 +27,16 @@ const AuthProvider = ({ children }) => {
   useEffect(() => {
     setLoading(true);
 
-    const getUser = async () => {
-      const { data } = await supabase.auth.getUser();
-      const { user: currentUser } = data;
-      setUser(currentUser ?? null);
-      setAuth(currentUser ? true : false);
-      setLoading(false);
-    };
-    getUser();
-
-
     //get user session
     const getSession = async () => {
       const { data } = await supabase.auth.getSession();
-      const { session: currentSession } = data;
-      setUserSession(currentSession ?? null);
+
+      console.log(data);
+      if (data) {
+        setUserSession(data.session ?? null);
+        setAuth(data.user ? true : false);
+      }
+      setLoading(false);
     };
 
     getSession();
@@ -53,13 +48,13 @@ const AuthProvider = ({ children }) => {
         setUserSession(session);
         setLoading(false);
       } else if (event === "SIGNED_IN") {
-        setUser(session.user);
+        // setUser(session.user);
         setAuth(true);
         setUserSession(session);
         setLoading(false);
       } else if (event === "SIGNED_OUT") {
+        console.log("signed out");
         setAuth(false);
-        setUser(null);
         setUserSession(null);
         setLoading(false);
       }
@@ -75,12 +70,12 @@ const AuthProvider = ({ children }) => {
     <AuthContext.Provider
       value={{
         auth,
-        user,
+        // user,
         userSession,
-        login,
-        signOut,
-        passwordReset,
-        updatePassword
+        // login,
+        // signOut,
+        // passwordReset,
+        // updatePassword
       }}>
       {!loading && children}
     </AuthContext.Provider>

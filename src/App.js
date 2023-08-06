@@ -46,10 +46,12 @@ import ListingPostDetails from "./Pages/student/roommate/ListingPostDetails";
 import RoommatePost from "./Pages/student/roommate/RoommatePost";
 
 function App() {
-    const { user, userSession } = useAuth();  
+    const { userSession } = useAuth();  
+    // console.log(user);
+    console.log(userSession);
     const userTypeRoutes = () => {
-        if (user && userSession) {
-            if (user.user_metadata.userType === "agent") {
+        if (userSession) {
+            if (userSession.user.user_metadata.userType === "agent") {
                 return (
                     <>
                         <Route path="/agent/" element={<AgentLayout />}>
@@ -70,7 +72,7 @@ function App() {
                         <Route path="*" element={<NotFound />} />
                     </>
                 );
-            } else if (user.user_metadata.userType === "student") {
+            } else if (userSession.user.user_metadata.userType === "student") {
                 return (
                     <>
                         <Route path="/student/" element={<StudentLayout />}>
@@ -119,7 +121,7 @@ function App() {
     return (
         <Routes>
             {/* Authentication routes */}
-            <Route element={<AuthRoute />} />
+            {/* <Route element={<AuthRoute />} /> */}
 
             {userTypeRoutes()}
 

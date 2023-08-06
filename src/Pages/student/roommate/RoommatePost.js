@@ -1,10 +1,10 @@
-import { Avatar, Breadcrumb, Button, Col, Divider, Row } from "antd";
+import { Avatar, Breadcrumb, Button, Col, message, Row, Popconfirm } from "antd";
 import { useEffect, useState } from "react";
 import { useLocation } from "react-router-dom";
 import { supabase } from "../../../supabase-client";
 import { UserOutlined } from '@ant-design/icons';
 import { BsGenderFemale, BsGenderMale } from "react-icons/bs";
-import { getDateOnly, getElapsedTime } from "../../../Components/timeUtils";
+import { getCurrentDateTime, getDateOnly, getElapsedTime } from "../../../Components/timeUtils";
 
 function RoommatePost() {
 
@@ -17,6 +17,9 @@ function RoommatePost() {
     const [listing, setListing] = useState({});
 
     const [avatar, setAvatar] = useState(null);
+
+    const [messageApi, contextHolder] = message.useMessage();
+
 
     useEffect(() => {
         if (!postID) {
@@ -93,6 +96,42 @@ function RoommatePost() {
 
     const myLifestyleLabelSpan = 8;
     const myLifestyleValueSpan = 16;
+
+    function redirectToWhatsApp(phoneNumber, postID) {
+        const processedNumber = phoneNumber.replace(/-/g, '');
+        const text = `Hi, I would like to inquire about the room rental following post: http://localhost:3000/student/roommate/post/${postID}?state=${postID}`;
+        const encodedText = encodeURIComponent(text);
+        const whatsappUrl = `https://wa.me/6${processedNumber}?text=${encodedText}`;
+        window.open(whatsappUrl, '_blank');
+    }
+
+    const sendRoommateRequest = async (studentID, postID) => {
+
+        const currentDate = getCurrentDateTime();
+
+        const { data, error } = await supabase
+            .from('roommate_request')
+            .insert([
+                {
+                    studentID: studentID,
+                    postID: postID,
+                    requestStatus: 'Pending',
+                    requestedDateTime: currentDate,
+                },
+            ]);
+
+        if (error) {
+            console.log(error);
+            return;
+        }
+
+        console.log(data);
+        messageApi.open({
+            type: 'success',
+            content: 'Successfully sent roommate request',
+        });
+    }
+
 
     return (
         <>
@@ -271,7 +310,7 @@ function RoommatePost() {
                             <Row>
                                 <Col span={12} >
                                     {
-                                        listing.roommate!== null ? (
+                                        listing.roommate !== null ? (
                                             <>
 
                                                 <div className="postSectionContainer" style={{ marginRight: '20px' }}>
@@ -377,7 +416,7 @@ function RoommatePost() {
                                 </Col>
                                 <Col span={12}>
                                     {
-                                         Object.keys(listing.myLifestyle).length !== 0 ? (
+                                        Object.keys(listing.myLifestyle).length !== 0 ? (
                                             <>
                                                 <div className="postSectionContainer">
                                                     <Row>
@@ -528,15 +567,28 @@ function RoommatePost() {
                                     </Col>
                                 </Row>
                                 <Row>
-                                    <Col span={24} style={{ display: 'flex', justifyContent: 'center', alignItems: 'center' }}>
-                                        <Button type="primary" style={{ width: '100%' }} className="viewButton">
-                                            Interested
-                                        </Button>
+                                    <Col span={24} >
+                                        <Popconfirm
+                                            title="Are you sure you want to apply as a roommate?"
+                                            onConfirm={() => {
+                                                sendRoommateRequest(listing.student.student_id, listing.postID);
+                                            }}
+                                        >
+                                            {contextHolder}
+                                            <Button className="viewButton" style={{ width: '100%', marginLeft: '0px' }} type="primary">
+                                                Interested
+                                            </Button>
+                                        </Popconfirm>
                                     </Col>
                                 </Row>
                                 <Row>
-                                    <Col span={24} style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', marginTop: '10px' }}>
-                                        <Button type="primary" style={{ width: '100%' }} className="viewButton">
+                                    <Col span={24} style={{ marginTop: '10px' }}>
+                                        <Button
+                                            type="primary"
+                                            style={{ width: '100%', marginLeft: '0px' }}
+                                            className="viewButton"
+                                            onClick={() => redirectToWhatsApp(listing.student.phone, listing.postID)}
+                                        >
                                             Contact
                                         </Button>
                                     </Col>

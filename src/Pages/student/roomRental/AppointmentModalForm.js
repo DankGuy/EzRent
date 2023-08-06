@@ -216,6 +216,7 @@ function AppointmentModalForm({ post }) {
         <Button
             onClick={showModal}
             type="primary"
+            style={{ width: '80%', margin: '0px' }}
             className='viewButton'>Book Appointment</Button>
 
         <Modal

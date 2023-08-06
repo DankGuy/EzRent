@@ -70,7 +70,9 @@ function SignUpCard() {
         // Currently the response of signUp returns a fake user object instead of an error.
         // For now we check the identities object which would be empty if a user already exits.
         emailIsTaken = data.user && data.user.identities?.length === 0;
-        if (error) throw error;
+        if (error){
+          console.log(error);
+        }
       } else {
         const { data, error } = await supabase.auth.signUp({
           email: formData.email,
