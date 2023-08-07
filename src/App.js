@@ -2,7 +2,7 @@ import React from "react";
 import SignupCard from "./Components/SignUpCard";
 import ForgotPasswordCard from "./Components/ForgotPasswordCard";
 import UpdatePasswordCard from "./Components/UpdatePasswordCard";
-import { Routes, Route } from "react-router-dom";
+import { Routes, Route, Navigate } from "react-router-dom";
 import AgentLayout from "./Pages/agent/AgentLayout";
 import StudentLayout from "./Pages/student/StudentLayout";
 import NotFound from "./Pages/Result/NotFound";
@@ -54,6 +54,12 @@ function App() {
             if (userSession.user.user_metadata.userType === "agent") {
                 return (
                     <>
+                        <Route path="/" element={<Navigate to="/agent/" />} />
+                        <Route path="/login" element={<Navigate to="/agent/" />} />
+                        <Route path="/signup" element={<Navigate to="/agent/" />} />
+                        <Route path="/forgot-password" element={<Navigate to="/agent/" />} />
+                        <Route path="/update-password" element={<Navigate to="/agent/" />} />
+
                         <Route path="/agent/" element={<AgentLayout />}>
                             <Route index element={<AgentHome />} />
                             <Route path="rentedProperty" element={<AgentRentedProperty />} />
@@ -75,6 +81,13 @@ function App() {
             } else if (userSession.user.user_metadata.userType === "student") {
                 return (
                     <>
+
+                        <Route path="/" element={<Navigate to="/student/" />} />
+                        <Route path="/login" element={<Navigate to="/student/" />} />
+                        <Route path="/signup" element={<Navigate to="/student/" />} />
+                        <Route path="/forgot-password" element={<Navigate to="/student/" />} />
+                        <Route path="/update-password" element={<Navigate to="/student/" />} />
+                        
                         <Route path="/student/" element={<StudentLayout />}>
                             <Route index element={<Home />} />
                             <Route path="roomRental" element={<RoomRental />} />
