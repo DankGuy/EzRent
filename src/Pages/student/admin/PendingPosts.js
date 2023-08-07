@@ -34,6 +34,41 @@ function PendingPosts() {
   const [roomImages, setRoomImages] = useState({});
   const [loadingImages, setLoadingImages] = useState(false);
 
+  const [userID, setUserID] = useState("");
+
+  const getUser = async () => {
+    try {
+      const { data: { user } } = await supabase.auth.getUser();
+      if (user) {
+        setUserID(user.id);
+      }
+    } catch (error) {
+      console.log("Error fetching user:", error);
+    }
+  };
+  useEffect(() => {
+    getUser();
+  }, []);
+
+  const generateLog = async (action, target) => {
+    // generate log
+    let { data, error } = await supabase
+      .from("activity_log")
+      .insert([
+        {
+          managed_by: userID,
+          action: action,
+          target: target,
+        },
+      ])
+      .select("*");
+
+    if (error) {
+      console.log("error", error);
+    }
+  }
+
+
   const viewPost = () => {
     setIsModalOpen(true);
   };
@@ -104,6 +139,9 @@ function PendingPosts() {
         console.log("error", error);
         approveStatus = false;
       }
+      else {
+        generateLog("approve_post", postIDArr[i]);
+      }
     }
     if (approveStatus) {
       message.success("Post(s) approved successfully");
@@ -120,7 +158,10 @@ function PendingPosts() {
       if (error) {
         console.log("error", error);
         rejectStatus = false;
+      } else {
+        generateLog("reject_post", postIDArr[i]);
       }
+
     }
     if (rejectStatus) {
       message.success("Post(s) rejected successfully");

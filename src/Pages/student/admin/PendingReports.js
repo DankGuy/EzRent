@@ -32,6 +32,40 @@ function PendingReports() {
   const [roomImages, setRoomImages] = useState({});
   const [loadingImages, setLoadingImages] = useState(false);
 
+  const [userID, setUserID] = useState("");
+
+  const getUser = async () => {
+    try {
+        const { data: { user } } = await supabase.auth.getUser();
+      if (user) {
+        setUserID(user.id);
+      }
+    } catch (error) {
+      console.log("Error fetching user:", error);
+    }
+  };
+  useEffect(() => {
+    getUser();
+  }, []);
+
+  const generateLog = async (action, target) => {
+    // generate log
+    let { data, error } = await supabase
+      .from("activity_log")
+      .insert([
+        {
+          managed_by: userID,
+          action: action,
+          target: target,
+        },
+      ])
+      .select("*");
+
+    if (error) {
+      console.log("error", error);
+    }
+  }
+
   const viewPost = () => {
     setIsModalOpen(true);
   };
@@ -157,6 +191,9 @@ function PendingReports() {
         status = false;
         console.log("error", error);
       }
+      else {
+        generateLog("resolve_report", reportID[i]);
+      }
     }
     if (status) {
       message.success("Report resolved successfully");
@@ -195,6 +232,8 @@ function PendingReports() {
         if (error) {
           console.log("post error", error);
           status = false;
+        } else {
+          generateLog("deactivate_post", postID);
         }
       }
       else {
@@ -226,6 +265,8 @@ function PendingReports() {
           .eq('agent_id', agentID)
         if (error) {
           console.log("error", agentError);
+        } else {
+          generateLog("deactivate_account", agentID);
         }
       }
     }
