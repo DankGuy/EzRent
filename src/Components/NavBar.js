@@ -5,13 +5,19 @@ import { supabase } from "../supabase-client";
 import { useEffect, useState } from "react";
 
 function NavBar() {
-  const logout = () => {
-    supabase.auth.signOut();
-    localStorage.removeItem("selectedKey");
-  };
+  
+  
 
   const [profileSelectedKey, setProfileSelectedKey] = useState("");
   const [user, setUser] = useState(null);
+
+  const navigate = useNavigate();
+
+  const logout = async () => {
+    await supabase.auth.signOut();
+    localStorage.removeItem("selectedKey");
+    navigate("/");
+  };
 
   async function getUser() {
     const {

@@ -24,38 +24,38 @@ const AuthRoute = () => {
     const { auth, userSession } = useAuth();
 
     console.log(auth);
-    // return auth ? (
-    //     <Outlet />
-    // ) : (
-    //     <Navigate to={"/login"} />
-    // );
-
-    return (
-        <>
-            {!auth ? (
-                <Navigate to={"/login"} />
-            ) : (
-                <>
-                    <Route path="/agent/" element={<AgentLayout />}>
-                        <Route index element={<AgentHome />} />
-                        <Route path="rentedProperty" element={<AgentRentedProperty />} />
-                        <Route path="rentedProperty/:id" element={<RentedPropertyDetails />} />
-                        <Route path="profile" element={<AgentProfile />} />
-                        <Route path="profile/editProfile" element={<AgentEditProfile />} />
-                        <Route path="roomRental/createNewPost" element={<AgentCreatePost />} />
-                        <Route path="roomRental" element={<AgentRoomRental />} />
-                        <Route path="appointment" element={<AgentAppointment />} />
-                        <Route path="appointment/:id" element={<AppointmentDetails />} />
-                        <Route path="rentalAgreement" element={<AgentRentalAgreement />} />
-                        <Route path="roomRental/editPost/:id" element={<AgentRoomRentalPost />} />
-                        <Route path="roomRental/viewPost/:id" element={<AgentRoomRentalPost />} />
-                        <Route path="*" element={<NotFound />} />
-                    </Route>
-                    <Route path="*" element={<NotFound />} />
-                </>
-            )}
-        </>
+    return auth ? (
+        <Outlet />
+    ) : (
+        <Navigate to={"/login"} />
     );
+
+    // return (
+    //     <>
+    //         {!auth ? (
+    //             <Navigate to={"/login"} />
+    //         ) : (
+    //             <>
+    //                 <Route path="/agent/" element={<AgentLayout />}>
+    //                     <Route index element={<AgentHome />} />
+    //                     <Route path="rentedProperty" element={<AgentRentedProperty />} />
+    //                     <Route path="rentedProperty/:id" element={<RentedPropertyDetails />} />
+    //                     <Route path="profile" element={<AgentProfile />} />
+    //                     <Route path="profile/editProfile" element={<AgentEditProfile />} />
+    //                     <Route path="roomRental/createNewPost" element={<AgentCreatePost />} />
+    //                     <Route path="roomRental" element={<AgentRoomRental />} />
+    //                     <Route path="appointment" element={<AgentAppointment />} />
+    //                     <Route path="appointment/:id" element={<AppointmentDetails />} />
+    //                     <Route path="rentalAgreement" element={<AgentRentalAgreement />} />
+    //                     <Route path="roomRental/editPost/:id" element={<AgentRoomRentalPost />} />
+    //                     <Route path="roomRental/viewPost/:id" element={<AgentRoomRentalPost />} />
+    //                     <Route path="*" element={<NotFound />} />
+    //                 </Route>
+    //                 <Route path="*" element={<NotFound />} />
+    //             </>
+    //         )}
+    //     </>
+    // );
 };
 
 export default AuthRoute;

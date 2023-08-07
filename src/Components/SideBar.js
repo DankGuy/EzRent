@@ -46,9 +46,9 @@ function Sidebar({ value, setTitle }) {
                     height: '100%',
                     overflowY: 'auto',
                 }}
-                onClick={({ key }) => {
+                onClick={async({ key }) => {
                     if (key === '/logout') {
-                        supabase.auth.signOut();
+                        await supabase.auth.signOut();
                         localStorage.removeItem('selectedKey');
                         navigate('/');
                         return;

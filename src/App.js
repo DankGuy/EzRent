@@ -46,9 +46,10 @@ import ListingPostDetails from "./Pages/student/roommate/ListingPostDetails";
 import RoommatePost from "./Pages/student/roommate/RoommatePost";
 
 function App() {
-    const { userSession } = useAuth();  
+    const { userSession, auth } = useAuth();
     // console.log(user);
     console.log(userSession);
+    console.log(auth);
     const userTypeRoutes = () => {
         if (userSession) {
             if (userSession.user.user_metadata.userType === "agent") {
@@ -65,14 +66,14 @@ function App() {
                             <Route path="rentedProperty" element={<AgentRentedProperty />} />
                             <Route path="rentedProperty/:id" element={<RentedPropertyDetails />} />
                             <Route path="profile" element={<AgentProfile />} />
-                            <Route path="profile/editProfile" element={<AgentEditProfile />}/>
-                            <Route path="roomRental/createNewPost" element={<AgentCreatePost />}/>
+                            <Route path="profile/editProfile" element={<AgentEditProfile />} />
+                            <Route path="roomRental/createNewPost" element={<AgentCreatePost />} />
                             <Route path="roomRental" element={<AgentRoomRental />} />
                             <Route path="appointment" element={<AgentAppointment />} />
                             <Route path="appointment/:id" element={<AppointmentDetails />} />
                             <Route path="rentalAgreement" element={<AgentRentalAgreement />} />
-                            <Route path="roomRental/editPost/:id"element={<AgentRoomRentalPost />}/>
-                            <Route path="roomRental/viewPost/:id" element={<AgentRoomRentalPost />}/>
+                            <Route path="roomRental/editPost/:id" element={<AgentRoomRentalPost />} />
+                            <Route path="roomRental/viewPost/:id" element={<AgentRoomRentalPost />} />
                             <Route path="*" element={<NotFound />} />
                         </Route>
                         <Route path="*" element={<NotFound />} />
@@ -87,7 +88,7 @@ function App() {
                         <Route path="/signup" element={<Navigate to="/student/" />} />
                         <Route path="/forgot-password" element={<Navigate to="/student/" />} />
                         <Route path="/update-password" element={<Navigate to="/student/" />} />
-                        
+
                         <Route path="/student/" element={<StudentLayout />}>
                             <Route index element={<Home />} />
                             <Route path="roomRental" element={<RoomRental />} />
@@ -134,9 +135,9 @@ function App() {
     return (
         <Routes>
             {/* Authentication routes */}
-            {/* <Route element={<AuthRoute />} /> */}
-
-            {userTypeRoutes()}
+            {/* <Route element={<AuthRoute />}> */}
+                {userTypeRoutes()}
+            {/* </Route> */}
 
             <Route path="/signup" element={<SignupCard />} />
             <Route path="/login" element={<LoginCard />} />
