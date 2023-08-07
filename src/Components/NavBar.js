@@ -6,8 +6,6 @@ import { useEffect, useState } from "react";
 
 function NavBar() {
   
-  
-
   const [profileSelectedKey, setProfileSelectedKey] = useState("");
   const [user, setUser] = useState(null);
 
@@ -28,27 +26,16 @@ function NavBar() {
       .from("student")
       .select("*")
       .eq("student_id", user.id);
+
+    console.log(student[0]);
     return student[0];
   }
 
   useEffect(() => {
-    setUser(getUser());
+    getUser().then((res) => {
+      setUser(res);
+    });
   }, []);
-
-  useEffect(() => {
-    const fetchUserRole = async () => {
-      if (user) {
-        const res = await user;
-        const role = res.role;
-        console.log(role);
-        if (role === "admin") {
-          document.getElementsByClassName("adminLink")[0].style.display =
-            "block";
-        }
-      }
-    };
-    fetchUserRole();
-  }, [user]);
 
   const remainSelectedKey = () => {
     localStorage.setItem("selectedKey", "/student/profile/profileInformation");
@@ -95,15 +82,20 @@ function NavBar() {
                   Roommate
                 </Link>
               </li>
-              <li className="adminLink" style={{ display: "none" }}>
-                <Link
-                  className="link"
-                  to="/student/admin"
-                  onClick={remainSelectedKey}
-                >
-                  Admin
-                </Link>
-              </li>
+              {
+                user && user.role === "admin" ? (
+                  <li>
+                    <Link
+                      className="link"
+                      to="/student/admin"
+                      onClick={remainSelectedKey}
+
+                    >
+                      Admin
+                    </Link>
+                  </li>
+                ) : null
+              }
               <li>
                 <Link
                   className="link"

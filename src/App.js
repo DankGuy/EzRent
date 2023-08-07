@@ -46,10 +46,8 @@ import ListingPostDetails from "./Pages/student/roommate/ListingPostDetails";
 import RoommatePost from "./Pages/student/roommate/RoommatePost";
 
 function App() {
-    const { userSession, auth } = useAuth();
-    // console.log(user);
-    console.log(userSession);
-    console.log(auth);
+    const { userSession } = useAuth();
+
     const userTypeRoutes = () => {
         if (userSession) {
             if (userSession.user.user_metadata.userType === "agent") {
