@@ -1,14 +1,21 @@
-import { Breadcrumb, Col, Row } from "antd";
+import { Breadcrumb, Button, Col, Row } from "antd";
 import { useEffect, useState } from "react";
 import { supabase } from "../../../supabase-client";
 import MyListingPost from "./MyListingPost";
 import ScrollToTopButton from "../../../Components/ScrollToTopButton";
+import CreateRoommatePost from "./CreateRoommatePost";
+import { Spin } from "antd";
 
 function MyListings() {
 
     const [myListings, setMyListings] = useState([]);
 
     const [trigger, setTrigger] = useState(0);
+
+    const [postModal, setPostModal] = useState(false);
+
+    const [isLoading, setIsLoading] = useState(false);
+
 
     useEffect(() => {
 
@@ -18,6 +25,7 @@ function MyListings() {
 
     async function fetchMyListings() {
 
+        setIsLoading(true);
         const studentID = (await supabase.auth.getUser()).data.user.id;
 
         const { data, error } = await supabase
@@ -32,12 +40,16 @@ function MyListings() {
 
         console.log(data);
         setMyListings(data);
+        setIsLoading(false);
     }
 
     const handleTrigger = () => {
         setTrigger(trigger + 1);
     }
 
+    const handleCreateModal = () => {
+        setPostModal(true);
+    }
 
     return (
         <div
@@ -60,15 +72,57 @@ function MyListings() {
                 />
             </div>
             <Row>
-                <Col span={24} style={{ marginLeft: '1%'}}>
+                <Col span={18} style={{ marginLeft: '1%' }}>
                     <h1>My Listings ({myListings.length})</h1>
                 </Col>
+                <Col span={3} style={{ marginLeft: '1%', display: 'flex', alignItems: 'center' }}>
+                    <Button type="primary" className="viewButton" style={{ width: '100%' }}
+                        onClick={handleCreateModal}
+                    >
+                        Create a listing
+                    </Button>
+                </Col>
             </Row>
+
+            {isLoading &&
+                <div style={{
+                    display: 'flex',
+                    flexDirection: 'column',
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                    padding: '2% 0 2% 0',
+                    width: '30%',
+                }}>
+                    <Spin size="large" />
+                </div>
+
+                }
+
+            {myListings.length === 0 &&
+                <div style={{
+                    display: 'flex',
+                    flexDirection: 'column',
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                    padding: '2%',
+                    width: '30%',
+                }}>
+                    <p style={{ fontFamily: 'arial', fontSize: '15px' }}> You have not posted any listings yet... </p>
+                    <Button type="primary" className="viewButton" style={{ width: '40%' }}
+                        onClick={handleCreateModal}
+                    >
+                        Create a listing
+                    </Button>
+                </div>
+            }
+
+            <CreateRoommatePost value={postModal} onChange={setPostModal} onTrigger={handleTrigger} />
+
 
             <Row style={{ margin: '1% 5% 2% 1%' }}>
                 {myListings.map((listing, index) => (
                     <Col span={11} key={index} style={{ marginRight: '4%' }}>
-                        <MyListingPost listing={listing} onTrigger={handleTrigger}/>
+                        <MyListingPost listing={listing} onTrigger={handleTrigger} />
                     </Col>
                 ))}
             </Row>

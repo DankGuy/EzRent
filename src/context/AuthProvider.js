@@ -32,9 +32,10 @@ const AuthProvider = ({ children }) => {
       const { data } = await supabase.auth.getSession();
 
       console.log(data);
-      if (data) {
-        setUserSession(data.session ?? null);
-        setAuth(data.user ? true : false);
+      console.log(data.session) 
+      if (data.session) {
+        setUserSession(data.session);
+        setAuth(true);
       }
       setLoading(false);
     };
@@ -43,6 +44,7 @@ const AuthProvider = ({ children }) => {
 
 
     const { data } = supabase.auth.onAuthStateChange(async (event, session) => {
+      console.log(event)
       if (event == "PASSWORD_RECOVERY") {
         setAuth(false);
         setUserSession(session);

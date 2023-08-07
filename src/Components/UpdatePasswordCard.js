@@ -1,6 +1,6 @@
 // import loginBg from "../images/loginBg.jpeg";
 import loginBg from "../images/loginBg.jpg";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { supabase } from "../supabase-client";
 import { InfoCircleOutlined, UserOutlined } from "@ant-design/icons";
 import { Input, Tooltip, Form, Button, Spin, message } from "antd";
@@ -14,6 +14,8 @@ function ForgotPasswordCard() {
 
   const [email, setEmail] = useState("");
   const [isLoading, setIsLoading] = useState(true);
+
+  const navigate = useNavigate();
 
   const formItemLayout = {
     labelCol: {
@@ -35,13 +37,17 @@ function ForgotPasswordCard() {
   };
 
   async function getEmail() {
-    const { data, error } = await supabase.auth.getUser();
+    const { data, error } = await supabase.auth.getSession();
+
+    console.log(data);
     if (error) {
       // Handle error case
       message.error(error.error_description || error.message);
-    } else {
-      const email = data.user.email;
-      setEmail(email);
+    } 
+    
+    if (data.session) {
+      // Handle success case
+      setEmail(data.session.user.email);
       setIsLoading(false);
     }
   }
@@ -59,6 +65,11 @@ function ForgotPasswordCard() {
       });
       if (error) throw error;
       message.success("Password updated!");
+
+      setTimeout(() => {
+        navigate("/login");
+      }, 2000);
+        
     } catch (error) {
       message.error(error.error_description || error.message);
     }

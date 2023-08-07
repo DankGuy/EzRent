@@ -10,6 +10,7 @@ import { Link, useNavigate } from "react-router-dom";
 import { getElapsedTime } from "../../../Components/timeUtils";
 import { GrView } from "react-icons/gr";
 import { FiEdit3 } from "react-icons/fi";
+import { UserOutlined } from "@ant-design/icons";
 
 const { Meta } = Card;
 
@@ -25,6 +26,7 @@ function MyListingPost({ listing, onTrigger }) {
     const navigate = useNavigate();
 
     const [isOpen, setIsOpen] = useState(false);
+
 
 
     useEffect(() => {
@@ -150,7 +152,7 @@ function MyListingPost({ listing, onTrigger }) {
             bordered={true}
             title={
                 <Meta style={{ paddingTop: '1em', paddingBottom: '5px' }}
-                    avatar={<Avatar src={agentAvatar} size={"large"} />}
+                    avatar={<Avatar src={agentAvatar} size={"large"} icon={<UserOutlined />} /> }
                     title={
                         <>
                             {listing.student.name}
