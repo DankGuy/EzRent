@@ -119,23 +119,64 @@ function ActivityLog() {
     const fetchData = async () => {
         let { data: activity_log, error } = await supabase
             .from('activity_log')
-            .select('*')
-        if (error) { 
-            console.log('error', error)
-        }
-        else {
-            const newData = activity_log.map((log, index) => {
+            .select('*');
+
+        if (error) {
+            console.log('error', error);
+        } else {
+            const newData = await Promise.all(activity_log.map(async (log, index) => {
+                let adminName, category;
+
+                let { data: admin, adminError } = await supabase
+                    .from('student')
+                    .select('name')
+                    .eq('student_id', log.managed_by);
+
+                if (adminError) {
+                    console.log('adminError', adminError);
+                } else {
+                    adminName = admin[0]?.name || '';
+                }
+
+                let { data: post, postError } = await supabase
+                    .from('property_post')
+                    .select('*')
+                    .eq('postID', log.target);
+
+                if (!postError && post.length > 0) {
+                    category = 'post';
+                }
+
+                let { data: report, reportError } = await supabase
+                    .from('report')
+                    .select('*')
+                    .eq('reportID', log.target);
+
+                if (!reportError && report.length > 0) {
+                    category = 'report';
+                }
+
+                let { data: account, accountError } = await supabase
+                    .from('agent')
+                    .select('*')
+                    .eq('agent_id', log.target);
+
+                if (!accountError && account.length > 0) {
+                    category = 'account';
+                }
+
                 return {
                     key: index,
-                    managed_by: log.managed_by,
+                    managed_by: adminName,
                     action: log.action,
+                    category: category,
                     target: log.target,
                     date: log.date,
-                }
-            })
+                };
+            }));
             setData(newData);
         }
-    }
+    };
 
     useEffect(() => {
         fetchData();
@@ -175,6 +216,26 @@ function ActivityLog() {
                 },
             ],
             onFilter: (value, record) => record.action.indexOf(value) === 0,
+        },
+        {
+            title: 'Category',
+            dataIndex: 'category',
+            key: 'category',
+            filters: [
+                {
+                    text: 'Post',
+                    value: 'post',
+                },
+                {
+                    text: 'Report',
+                    value: 'report',
+                },
+                {
+                    text: 'Account',
+                    value: 'account',
+                },
+            ],
+            onFilter: (value, record) => record.category.indexOf(value) === 0,
         },
         {
             title: 'Target',
