@@ -115,6 +115,7 @@ function RentedPropertyDetails() {
                                 <Descriptions.Item label="Email">{occupants[key].email}</Descriptions.Item>
                                 <Descriptions.Item label="Phone Number">{occupants[key].phone}</Descriptions.Item>
                             </Descriptions>
+                            <br/>
                             
                         </Fragment>
                     )

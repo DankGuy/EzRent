@@ -18,10 +18,14 @@ function Roommate() {
     const [trigger, setTrigger] = useState(0);
 
     const fetchListings = async () => {
+
+        const userID = (await supabase.auth.getUser()).data.user.id;
+
         const { data, error } = await supabase
             .from('roommate_post')
             .select('*, student(*), rental_agreement(*, postID(*))')
             .order('postDate', { ascending: false })
+            .neq('studentID', userID);
 
         if (error) {
             console.log(error);
@@ -49,10 +53,16 @@ function Roommate() {
 
     const onFinish = async (values) => {
 
+        const userID = (await supabase.auth.getUser()).data.user.id;
+
+
         //filter post
         let { data, error } = await supabase
             .from('roommate_post')
-            .select('*, student(*), rental_agreement(*, postID(*))');
+            .select('*, student(*), rental_agreement(*, postID(*))')
+            .order('postDate', { ascending: false })
+            .neq('studentID', userID);
+
 
 
 

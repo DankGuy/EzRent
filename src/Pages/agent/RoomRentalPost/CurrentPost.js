@@ -1,6 +1,6 @@
 import { Col, Image, Popconfirm, Popover, Row, Tag, message } from "antd";
 import { FiEdit3 } from "react-icons/fi";
-import { GrView } from "react-icons/gr";
+import { GrDocumentPdf, GrView } from "react-icons/gr";
 import { MdOutlineDeleteOutline, MdOutlinePublish } from "react-icons/md";
 import { BsThreeDotsVertical } from "react-icons/bs";
 import { Link } from "react-router-dom";
@@ -53,7 +53,7 @@ function CurrentPost({ post, deletePost, uploadPost, contextHolder }) {
     const content = (
         <div
             style={{
-                width: '90px',
+                width: '100%',
                 padding: '0px',
             }}
         >
@@ -88,21 +88,35 @@ function CurrentPost({ post, deletePost, uploadPost, contextHolder }) {
                     </Popconfirm>
                 </Col>
             </Row>
-            {post.propertyStatus.stage === 'drafted' &&
+            {post.propertyStatus.stage === 'approved' &&
                 <Row className="popOutBox">
-                    <Col span={24} style={popOverStyle}
-                        onClick={
-                            () => {
-                                uploadPost(post.postID);
-                                setIsOpen(!isOpen);
-                            }}>
-                        <span
-                            style={{ display: 'flex', alignItems: 'center', cursor: 'pointer' }}>
-                            <span style={{ flexGrow: 1 }}>Post</span>
-                            <MdOutlinePublish size={18} />
-                        </span>
+                    <Col span={24} style={popOverStyle}>
+                        <Link to={`/agent/roomRental/###`} state={{ post }} style={{ color: 'black', display: 'flex', alignItems: 'center' }}>
+                            <span style={{ flexGrow: 1, marginRight: '10px' }}>Process Rental</span>
+                            <GrDocumentPdf size={18} />
+                        </Link>
                     </Col>
-                </Row>}
+                </Row>
+            }
+
+            {post.propertyStatus.stage === 'drafted' &&
+                
+                    <Row className="popOutBox">
+                        <Col span={24} style={popOverStyle}
+                            onClick={
+                                () => {
+                                    uploadPost(post.postID);
+                                    setIsOpen(!isOpen);
+                                }}>
+                            <span
+                                style={{ display: 'flex', alignItems: 'center', cursor: 'pointer' }}>
+                                <span style={{ flexGrow: 1 }}>Post</span>
+                                <MdOutlinePublish size={18} />
+                            </span>
+                        </Col>
+                    </Row>
+
+                }
         </div>
     );
 
