@@ -1,4 +1,4 @@
-import { Avatar, Breadcrumb, Button, Col, message, Row, Popconfirm } from "antd";
+import { Avatar, Breadcrumb, Button, Col, message, Row, Popconfirm, Modal, Form, Input } from "antd";
 import { useEffect, useState } from "react";
 import { useLocation } from "react-router-dom";
 import { supabase } from "../../../supabase-client";
@@ -20,6 +20,9 @@ function RoommatePost() {
 
     const [messageApi, contextHolder] = message.useMessage();
 
+    const [isModalOpen, setIsModalOpen] = useState(false);
+
+    const [form] = Form.useForm();
 
     useEffect(() => {
         if (!postID) {
@@ -105,7 +108,29 @@ function RoommatePost() {
         window.open(whatsappUrl, '_blank');
     }
 
-    const sendRoommateRequest = async (studentID, postID) => {
+    const sendRoommateRequest = async (postID, message) => {
+
+        const userID = (await supabase.auth.getUser()).data.user.id;
+
+        //Do the validation to check if the user send the request before
+        const { data: existingRequest, error: existingRequestError } = await supabase
+            .from('roommate_request')
+            .select('*')
+            .eq('studentID', userID)
+            .eq('postID', postID)
+
+        if (existingRequestError) {
+            console.log(existingRequestError);
+            return;
+        }
+
+        if (existingRequest.length !== 0) {
+            messageApi.open({
+                type: 'error',
+                content: 'You have already sent a request for this post',
+            });
+            return;
+        }
 
         const currentDate = getCurrentDateTime();
 
@@ -113,10 +138,11 @@ function RoommatePost() {
             .from('roommate_request')
             .insert([
                 {
-                    studentID: studentID,
+                    studentID: userID,
                     postID: postID,
                     requestStatus: 'Pending',
                     requestedDateTime: currentDate,
+                    message: message,
                 },
             ]);
 
@@ -568,17 +594,60 @@ function RoommatePost() {
                                 </Row>
                                 <Row>
                                     <Col span={24} >
-                                        <Popconfirm
+                                        {contextHolder}
+                                        <Button
+                                            className="viewButton"
+                                            style={{ width: '100%', marginLeft: '0px' }} type="primary"
+                                            onClick={() => setIsModalOpen(true)}
+                                        >
+                                            Interested
+                                        </Button>
+
+                                        <Modal
+                                            title="Apply as a roommate"
+                                            open={isModalOpen}
+                                            onOk={() => {
+                                                form.submit();
+                                            }}
+                                            onCancel={() => {
+                                                setIsModalOpen(false);
+                                                form.resetFields();
+                                            }}
+                                            okText="Send Request"
+                                            cancelText="Cancel"
+                                        >
+
+                                            <Form layout="vertical"
+                                                form={form}
+                                                onFinish={(values) => {
+                                                    console.log(values);
+                                                    sendRoommateRequest(listing.postID, values.message);
+                                                    setIsModalOpen(false);
+                                                }}
+                                                initialValues={{
+                                                    message: "I'd love to be your roommate and share great times together!"
+                                                }}>
+                                                <Form.Item
+                                                    label="Drop your message here"
+                                                    name="message"
+                                                >
+                                                    <Input.TextArea
+                                                        rows={4}
+                                                        placeholder="Write a description to attract attention..."
+                                                    />
+                                                </Form.Item>
+                                            </Form>
+                                        </Modal>
+                                        {/* <Popconfirm
                                             title="Are you sure you want to apply as a roommate?"
                                             onConfirm={() => {
                                                 sendRoommateRequest(listing.student.student_id, listing.postID);
                                             }}
                                         >
-                                            {contextHolder}
                                             <Button className="viewButton" style={{ width: '100%', marginLeft: '0px' }} type="primary">
                                                 Interested
                                             </Button>
-                                        </Popconfirm>
+                                        </Popconfirm> */}
                                     </Col>
                                 </Row>
                                 <Row>

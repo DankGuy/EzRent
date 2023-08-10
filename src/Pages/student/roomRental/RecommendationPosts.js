@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Row, Col, Image, Button } from 'antd';
+import { Row, Col, Image, Button, Spin } from 'antd';
 import { BsCurrencyDollar } from 'react-icons/bs'
 import { supabase } from '../../../supabase-client';
 import Carousel from 'react-multi-carousel';
@@ -144,10 +144,12 @@ function RecommendationPosts({ postID }) {
                     </div>
                     <Row >
                         {loadingImages &&
-                            <Col span={24} style={{ display: 'flex', justifyContent: 'center' }}>
+                            <Col span={24} style={{ display: 'flex', justifyContent: 'center', height: '200px' }}>
                                 <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center' }}>
-                                    <LoadingOutlined style={{ fontSize: '24px', marginBottom: '8px' }} />
-                                    <p style={{ fontFamily: 'arial' }}>Loading images...</p>
+                                    <Spin size="small" />
+                                    <span style={{ marginTop: '10px', fontFamily: 'arial', fontSize: '15px' }}>
+                                        Loading...
+                                    </span>
                                 </div>
                             </Col>}
                         {firstImage[post.postID] &&

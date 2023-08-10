@@ -1,6 +1,6 @@
 import { useLocation } from 'react-router-dom'
 import { useState, useEffect } from 'react'
-import { Col, Row, Image, Breadcrumb, Avatar, Divider } from 'antd';
+import { Col, Row, Image, Breadcrumb, Avatar, Divider, Spin } from 'antd';
 import { TfiLocationPin, TfiBasketball } from 'react-icons/tfi'
 import { BsHouseFill, BsCurrencyDollar, BsPeopleFill } from 'react-icons/bs'
 import { FaBed, FaShower, FaCar, FaSwimmer, FaRunning, FaSwimmingPool, FaDumbbell, FaTableTennis, FaShoppingCart } from 'react-icons/fa'
@@ -337,10 +337,14 @@ function RoomRentalPost() {
 
         if (loadingImages) {
             return (
-                <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center' }}>
-                    <LoadingOutlined style={{ fontSize: '24px', marginBottom: '8px' }} />
-                    <p style={{ fontFamily: 'arial' }}>Loading images...</p>
+                <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', 
+                    height: '200px', width: '200px'}}>
+                    <Spin size="small" />
+                    <span style={{ marginTop: '10px', fontFamily: 'arial', fontSize: '15px' }}>
+                        Loading...
+                    </span>
                 </div>
+
             )
         }
 
@@ -363,11 +367,14 @@ function RoomRentalPost() {
 
         if (loadingImages) {
             return (
-                <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center' }}>
-                    <LoadingOutlined style={{ fontSize: '24px', marginBottom: '8px' }} />
-                    <p style={{ fontFamily: 'arial' }}>Loading images...</p>
+                <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', height: '200px', width: '200px' }}>
+                    <Spin size="small"/>
+                    <span style={{ marginTop: '10px', fontFamily: 'arial', fontSize: '15px' }}>
+                        Loading...
+                    </span>
                 </div>
-            )        }
+            )
+        }
 
         if (images === undefined || images.length === 0) {
             return <p>No images available</p>;
@@ -395,7 +402,7 @@ function RoomRentalPost() {
         const whatsappUrl = `https://wa.me/6${processedNumber}?text=${encodedText}`;
         window.open(whatsappUrl, '_blank');
     }
-    
+
 
 
 

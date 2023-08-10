@@ -44,6 +44,7 @@ import RentedPropertyDetails from "./Pages/agent/RentedProperty/RentedPropertyDe
 import MyListings from "./Pages/student/roommate/MyListings";
 import ListingPostDetails from "./Pages/student/roommate/ListingPostDetails";
 import RoommatePost from "./Pages/student/roommate/RoommatePost";
+import RoommateRequest from "./Pages/student/roommate/RoommateRequest";
 
 function App() {
     const { userSession, auth } = useAuth();
@@ -92,6 +93,7 @@ function App() {
                             <Route path="roomRental" element={<RoomRental />} />
                             <Route path="roommate" element={<Roommate />} />
                             <Route path="roommate/myListings" element={<MyListings />} />
+                            <Route path="roommate/myListings/request/:id" element={<RoommateRequest />} />
                             <Route path="roommate/myListings/:id" element={<ListingPostDetails />} />
                             <Route path="roommate/post/:id" element={<RoommatePost />} />
                             <Route path="aboutUs" element={<AboutUs />} />

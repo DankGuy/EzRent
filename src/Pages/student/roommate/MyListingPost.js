@@ -1,4 +1,4 @@
-import { Card, Avatar, Row, Col, Tooltip, Popconfirm, message, Popover } from "antd";
+import { Card, Avatar, Row, Col, Tooltip, Popconfirm, message, Popover, Badge } from "antd";
 import { useEffect, useState } from "react";
 import { supabase } from "../../../supabase-client";
 import { BsCurrencyDollar, BsGenderFemale, BsGenderMale, BsThreeDotsVertical } from "react-icons/bs";
@@ -10,6 +10,7 @@ import { Link, useNavigate } from "react-router-dom";
 import { getElapsedTime } from "../../../Components/timeUtils";
 import { GrView } from "react-icons/gr";
 import { FiEdit3 } from "react-icons/fi";
+import { BsPeople } from "react-icons/bs";
 import { UserOutlined } from "@ant-design/icons";
 
 const { Meta } = Card;
@@ -27,6 +28,7 @@ function MyListingPost({ listing, onTrigger }) {
 
     const [isOpen, setIsOpen] = useState(false);
 
+    const [postRequestCount, setPostRequestCount] = useState(0);
 
 
     useEffect(() => {
@@ -44,8 +46,31 @@ function MyListingPost({ listing, onTrigger }) {
             return data;
         };
 
+        const getPostRequestCount = async () => {
+            const { data, error } = await supabase
+                .from('roommate_request')
+                .select('*')
+                .eq('postID', listing.postID)
+                .eq('requestStatus', 'Pending');
+
+            if (error) {
+                console.log(error);
+                return;
+            }
+
+            console.log(data);
+
+            return data;
+        }
+
+
+
         getAvatar().then((data) => {
             setAgentAvatar(data.publicUrl);
+        });
+
+        getPostRequestCount().then((data) => {
+            setPostRequestCount(data.length);
         });
 
     }, []);
@@ -100,7 +125,7 @@ function MyListingPost({ listing, onTrigger }) {
     const content = (
         <div
             style={{
-                width: '90px',
+                width: '150px',
                 padding: '0px',
             }}
         >
@@ -135,6 +160,28 @@ function MyListingPost({ listing, onTrigger }) {
                     </Popconfirm>
                 </Col>
             </Row>
+            {
+                postRequestCount > 0 ? (
+
+                    <Row className="popOutBox">
+                        <Col span={24} style={popOverStyle}>
+                            <Link to={`/student/roommate/myListings/request/${listing.postID}`} key="view" state={{ listingID: listing.postID }} style={{ color: 'black', display: 'flex', alignItems: 'center' }}>
+                                <span style={{ flexGrow: 1 }}>View Request</span>
+                                <Badge count={postRequestCount} >
+                                    <BsPeople size={18} />
+                                </Badge>
+                            </Link>
+                        </Col>
+                    </Row>
+                ) : (
+                    <Row style={{ padding: '0px 5px' }}>
+                        <Col span={24} style={{ ...popOverStyle, display: 'flex', alignItems: 'center', color: 'lightgrey', borderRadius: '5px', pointerEvents: 'none', cursor: 'not-allowed' }}>
+                            <span style={{ flexGrow: 1 }}>View Request</span>
+                            <BsPeople size={18} />
+                        </Col>
+                    </Row>
+                )
+            }
         </div>
     );
 
@@ -152,7 +199,7 @@ function MyListingPost({ listing, onTrigger }) {
             bordered={true}
             title={
                 <Meta style={{ paddingTop: '1em', paddingBottom: '5px' }}
-                    avatar={<Avatar src={agentAvatar} size={"large"} icon={<UserOutlined />} /> }
+                    avatar={<Avatar src={agentAvatar} size={"large"} icon={<UserOutlined />} />}
                     title={
                         <>
                             {listing.student.name}
@@ -161,7 +208,7 @@ function MyListingPost({ listing, onTrigger }) {
                             </span>
 
                         </>
-                    } 
+                    }
                     description={listing.student.email}
                 />
             }
@@ -212,11 +259,13 @@ function MyListingPost({ listing, onTrigger }) {
                                 open={isOpen}
                                 trigger="click">
                                 <span>
-                                    <BsThreeDotsVertical size={18}
-                                        style={{
-                                            color: 'black',
-                                            cursor: 'pointer',
-                                        }} />
+                                    <Badge dot={true} offset={[-5, 5]} style={{ display: postRequestCount > 0 ? 'block' : 'none' }}>
+                                        <BsThreeDotsVertical size={18}
+                                            style={{
+                                                color: 'black',
+                                                cursor: 'pointer',
+                                            }} />
+                                    </Badge>
                                 </span>
                             </Popover>
                         </Col>
@@ -244,7 +293,7 @@ function MyListingPost({ listing, onTrigger }) {
                             <BsCurrencyDollar size={iconSize} />
                             Budget: RM{listing.budget}.00/month
                         </Col>
-                        <Col span={2} offset={2}>
+                        <Col span={1} offset={2} >
                             <Popover
                                 placement="leftTop"
                                 arrow={false}
@@ -256,11 +305,13 @@ function MyListingPost({ listing, onTrigger }) {
                                 open={isOpen}
                                 trigger="click">
                                 <span>
-                                    <BsThreeDotsVertical size={18}
-                                        style={{
-                                            color: 'black',
-                                            cursor: 'pointer',
-                                        }} />
+                                    <Badge dot={true} offset={[-5, 5]} style={{display: postRequestCount > 0 ? 'block' : 'none'}}>
+                                        <BsThreeDotsVertical size={18}
+                                            style={{
+                                                color: 'black',
+                                                cursor: 'pointer',
+                                            }} />
+                                    </Badge>
                                 </span>
                             </Popover>
                         </Col>

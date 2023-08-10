@@ -5,18 +5,18 @@ const AuthContext = createContext({});
 
 export const useAuth = () => useContext(AuthContext);
 
-const login = (email, password) =>
-  supabase.auth.signInWithPassword({ email, password });
+// const login = (email, password) =>
+//   supabase.auth.signInWithPassword({ email, password });
 
-const signOut = () => supabase.auth.signOut();
+// const signOut = () => supabase.auth.signOut();
 
-const passwordReset = (email) =>
-  supabase.auth.resetPasswordForEmail(email, {
-    redirectTo: "http://localhost:5173/update-password"
-  });
+// const passwordReset = (email) =>
+//   supabase.auth.resetPasswordForEmail(email, {
+//     redirectTo: "http://localhost:5173/update-password"
+//   });
 
-const updatePassword = (updatedPassword) =>
-  supabase.auth.updateUser({ password: updatedPassword });
+// const updatePassword = (updatedPassword) =>
+//   supabase.auth.updateUser({ password: updatedPassword });
 
 const AuthProvider = ({ children }) => {
   const [auth, setAuth] = useState(false);

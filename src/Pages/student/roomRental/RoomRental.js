@@ -1,5 +1,5 @@
 import SearchInput from '../../../Components/SearchInput';
-import { Col, Row, Button, Form, Image, Empty, Pagination, FloatButton, Tag } from 'antd';
+import { Col, Row, Button, Form, Image, Empty, Pagination, FloatButton, Tag, Badge, Spin } from 'antd';
 import { SearchOutlined } from '@ant-design/icons';
 import { useState, useEffect } from 'react';
 import FurnishTypeSelection from '../../../Components/FurnishTypeSelection';
@@ -36,6 +36,8 @@ function RoomRental() {
     const itemsPerPage = 10;
 
     const [currentPage, setCurrentPage] = useState(1);
+
+    const [isLoading, setIsLoading] = useState({});
 
     const startIndex = (currentPage - 1) * itemsPerPage;
     const endIndex = currentPage * itemsPerPage;
@@ -232,17 +234,23 @@ function RoomRental() {
 
     //Get the first image from supabase storage with id = postID
     const getFirstImage = async (post) => {
+        setIsLoading((prevLoading) => ({ ...prevLoading, [post.postID]: true }));
         const { data } = await supabase.storage
             .from('post')
             .list(`${post.postID}/Property`);
 
         if (data) {
-            setFirstImages((prevState) => ({
-                ...prevState,
+            setFirstImages((prevImages) => ({
+                ...prevImages,
                 [post.postID]: data[0],
             }));
         }
+
+        setIsLoading((prevLoading) => ({ ...prevLoading, [post.postID]: false }));
     };
+
+   
+
 
     const openLinkInNewTab = (url, stateData, event) => {
         console.log(stateData)
@@ -257,87 +265,103 @@ function RoomRental() {
         const firstImage = firstImages[post.postID];
 
         return (
-            <div
+            <Badge.Ribbon
+                text={
+                    <span style={{ fontSize: '12px', fontWeight: 'bold', color: 'black' }}>
+                        {post.propertyCategory}
+                    </span>
+                }
+                color={post.propertyCategory === 'Room' ? '#d5def5' : '#8594e4'}
                 key={post.postID}
-                className='postContainer'>
-                <Row >
-                    <Col span={24} style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', width: "300px", paddingLeft: '10px' }}>
-                        {firstImage &&
-                            <Image
-                                style={{ justifyContent: 'center' }}
-                                height={200}
-                                src={`https://exsvuquqspmbrtyjdpyc.supabase.co/storage/v1/object/public/post/${post.postID}/Property/${firstImage?.name}`} />
-                        }
+            >
+                <Row
+                    className='postContainer'>
+                    <Col span={24} style={{ display: 'flex', width: '100%' }}>
+                        <Row >
+                            <Col span={24} style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', width: "300px", paddingLeft: '10px' }}>
 
+                                {isLoading[post.postID] && 
+                                    <div style={{
+                                        display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center',
+                                        height: '200px', width: '200px'
+                                    }}>
+                                        <Spin size="small" />
+                                        <span style={{ marginTop: '10px', fontFamily: 'arial', fontSize: '15px' }}>
+                                            Loading...
+                                        </span>
+                                    </div>}
+
+                                {!isLoading[post.postID] && firstImage && 
+                                    <Image
+                                        style={{ justifyContent: 'center' }}
+                                        height={200}
+                                        src={`https://exsvuquqspmbrtyjdpyc.supabase.co/storage/v1/object/public/post/${post.postID}/Property/${firstImage?.name}`} />
+                                }
+
+                            </Col>
+                        </Row>
+                        <div className='postDescription'>
+                            <div>
+                                <Row>
+                                    <Col span={22} style={{ fontSize: '22px', fontWeight: '500' }}>{post.propertyName}</Col>
+                                </Row>
+                                <Row>
+                                    <Col span={24}
+                                        style={{
+                                            fontSize: '20px',
+                                            marginTop: '5px',
+                                            whiteSpace: 'nowrap',
+                                            overflow: 'hidden',
+                                            textOverflow: 'ellipsis',
+                                            color: 'gray',
+                                            width: '300px'
+                                        }}>
+                                        <TfiLocationPin size={15} /> {post.propertyAddress}, {post.propertyPostcode}, {post.propertyCity}, {post.propertyState}
+                                    </Col>
+                                </Row>
+                                <Row>
+                                    <Col span={24} style={{ fontSize: '20px', marginTop: '5px' }}>RM{post.propertyPrice}/month </Col>
+                                </Row>
+                                <Row>
+                                    <Col span={24} style={{ fontSize: '16px', marginTop: '5px' }}>
+                                        <span style={{ marginRight: '10px' }}>&bull;</span>
+                                        {post.propertyFurnishType}
+                                        <span style={{ marginLeft: '20px', marginRight: '10px' }}>&bull;</span>
+                                        Built-up size: {post.propertySquareFeet} sq.ft.
+
+                                        {post.propertyCategory === 'Room' ?
+                                            <>
+                                                <span style={{ marginLeft: '20px', marginRight: '10px' }}>&bull;</span>
+                                                {post.propertyRoomDetails[1].roomType}
+                                            </> :
+                                            <>
+                                                <span style={{ marginLeft: '20px', marginRight: '10px' }}>&bull;</span>
+                                                {post.propertyRoomNumber} rooms available
+                                            </>
+                                        }
+                                    </Col>
+                                </Row>
+                            </div>
+                            <div style={{ marginTop: '20px' }}>
+                                <Row>
+                                    <Col span={6}>
+                                        <Button
+
+                                            type='link'
+                                            className='viewButton'
+                                            onClick={(e) => openLinkInNewTab(`/student/roomRental/${post.postID}`, post.postID, e)}
+                                        >
+                                            View
+                                        </Button>
+                                    </Col>
+                                    <Col span={18} style={{ fontStyle: 'italic', display: 'flex', justifyContent: 'end', alignItems: 'end' }}>{`Posted on: ${getDateOnly(post.postDate)} (Last modified: ${getElapsedTime(post.lastModifiedDate)})`}</Col>
+                                </Row>
+
+                            </div>
+                        </div>
                     </Col>
                 </Row>
-                <div className='postDescription'>
-                    <div>
-                        <Row>
-                            <Col span={22} style={{ fontSize: '22px', fontWeight: '500' }}>{post.propertyName}</Col>
-                            <Col span={2}>
-                                {
-                                    post.propertyCategory === 'Room' ?
-                                        <Tag color='#d5def5' style={{ color: 'black', fontWeight: 'bold', borderRadius: '0px' }}>{post.propertyCategory}</Tag> :
-                                        <Tag color='#8594e4' style={{ color: 'black', fontWeight: 'bold', borderRadius: '0px' }}>{post.propertyCategory}</Tag>
-
-                                }
-                            </Col>
-                        </Row>
-                        <Row>
-                            <Col span={24} 
-                                style={{ 
-                                    fontSize: '20px', 
-                                    marginTop: '5px', 
-                                    whiteSpace: 'nowrap', 
-                                    overflow: 'hidden', 
-                                    textOverflow: 'ellipsis', 
-                                    color: 'gray',
-                                    width: '300px' }}>
-                                <TfiLocationPin size={15} /> {post.propertyAddress}, {post.propertyPostcode}, {post.propertyCity}, {post.propertyState}
-                            </Col>
-                        </Row>
-                        <Row>
-                            <Col span={24} style={{ fontSize: '20px', marginTop: '5px' }}>RM{post.propertyPrice}/month </Col>
-                        </Row>
-                        <Row>
-                            <Col span={24} style={{ fontSize: '16px', marginTop: '5px' }}>
-                                <span style={{ marginRight: '10px' }}>&bull;</span>
-                                {post.propertyFurnishType}
-                                <span style={{ marginLeft: '20px', marginRight: '10px' }}>&bull;</span>
-                                Built-up size: {post.propertySquareFeet} sq.ft.
-
-                                {post.propertyCategory === 'Room' ?
-                                    <>
-                                        <span style={{ marginLeft: '20px', marginRight: '10px' }}>&bull;</span>
-                                        {post.propertyRoomDetails[1].roomType}
-                                    </> :
-                                    <>
-                                        <span style={{ marginLeft: '20px', marginRight: '10px' }}>&bull;</span>
-                                        {post.propertyRoomNumber} rooms available
-                                    </>
-                                }
-                            </Col>
-                        </Row>
-                    </div>
-                    <div style={{ marginTop: '20px' }}>
-                        <Row>
-                            <Col span={6}>
-                                <Button
-
-                                    type='link'
-                                    className='viewButton'
-                                    onClick={(e) => openLinkInNewTab(`/student/roomRental/${post.postID}`, post.postID, e)}
-                                >
-                                    View
-                                </Button>
-                            </Col>
-                            <Col span={18} style={{ fontStyle: 'italic', display: 'flex', justifyContent: 'end', alignItems: 'end' }}>{`Posted on: ${getDateOnly(post.postDate)} (Last modified: ${getElapsedTime(post.lastModifiedDate)})`}</Col>
-                        </Row>
-
-                    </div>
-                </div>
-            </div>
+            </Badge.Ribbon>
         )
     });
 
@@ -450,7 +474,18 @@ function RoomRental() {
             </span>
         </div>}
 
-        {renderedPost}
+        <div style={{
+            display: 'flex',
+            flexDirection: 'column',
+            // alignItems: 'center', 
+            // height: '50px', 
+            marginLeft: '10%',
+            marginRight: '25%',
+            // border: '1px solid black',
+            marginTop: '10px'
+        }}>
+            {renderedPost}
+        </div>
 
         <Pagination
             current={currentPage}

@@ -91,14 +91,18 @@ function MyListings() {
                     alignItems: 'center',
                     justifyContent: 'center',
                     padding: '2% 0 2% 0',
-                    width: '30%',
+                    width: '100%',
+                    height: '100%',
                 }}>
                     <Spin size="large" />
+                    <span style={{ marginTop: '1%', fontFamily: 'arial', fontSize: '15px' }}>
+                        Loading...
+                    </span>
                 </div>
 
-                }
+            }
 
-            {myListings.length === 0 &&
+            {!isLoading && myListings.length === 0 &&
                 <div style={{
                     display: 'flex',
                     flexDirection: 'column',
@@ -119,13 +123,15 @@ function MyListings() {
             <CreateRoommatePost value={postModal} onChange={setPostModal} onTrigger={handleTrigger} />
 
 
-            <Row style={{ margin: '1% 5% 2% 1%' }}>
-                {myListings.map((listing, index) => (
-                    <Col span={11} key={index} style={{ marginRight: '4%' }}>
-                        <MyListingPost listing={listing} onTrigger={handleTrigger} />
-                    </Col>
-                ))}
-            </Row>
+            {!isLoading && myListings.length > 0 && <>
+                <Row style={{ margin: '1% 5% 2% 1%' }}>
+                    {myListings.map((listing, index) => (
+                        <Col span={11} key={index} style={{ marginRight: '4%' }}>
+                            <MyListingPost listing={listing} onTrigger={handleTrigger} />
+                        </Col>
+                    ))}
+                </Row>
+            </>}
 
             <ScrollToTopButton />
         </div>
