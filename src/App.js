@@ -1,7 +1,8 @@
 import React from "react";
-import SignupCard from "./Components/SignUpCard";
-import ForgotPasswordCard from "./Components/ForgotPasswordCard";
-import UpdatePasswordCard from "./Components/UpdatePasswordCard";
+import Login from "../src/Pages/authentication/Login";
+import SignUp from "../src/Pages/authentication/SignUp";
+import ForgotPassword from "../src/Pages/authentication/ForgotPassword";
+import UpdatePassword from "../src/Pages/authentication/UpdatePassword";
 import { Routes, Route, Navigate } from "react-router-dom";
 import AgentLayout from "./Pages/agent/AgentLayout";
 import StudentLayout from "./Pages/student/StudentLayout";
@@ -39,7 +40,6 @@ import AppointmentDetails from "./Pages/agent/Appointment/AppointmentDetails";
 import StudentAppointmentDetails from "./Pages/student/profile/StudentAppointmentDetails";
 import AuthRoute from "./Components/AuthRoute";
 import AuthProvider, { useAuth } from "./context/AuthProvider";
-import LoginCard from "./Components/LoginCard";
 import RentedPropertyDetails from "./Pages/agent/RentedProperty/RentedPropertyDetails";
 import MyListings from "./Pages/student/roommate/MyListings";
 import ListingPostDetails from "./Pages/student/roommate/ListingPostDetails";
@@ -139,12 +139,12 @@ function App() {
                 {userTypeRoutes()}
             {/* </Route> */}
 
-            <Route path="/signup" element={<SignupCard />} />
-            <Route path="/login" element={<LoginCard />} />
-            <Route path="/forgot-password" element={<ForgotPasswordCard />} />
-            <Route path="/update-password" element={<UpdatePasswordCard />} />
+            <Route path="/signup" element={<SignUp />} />
+            <Route path="/login" element={<Login />} />
+            <Route path="/forgot-password" element={<ForgotPassword />} />
+            <Route path="/update-password" element={<UpdatePassword />} />
             <Route path="*" element={<NotFound />} />
-            <Route path="/" element={<LoginCard />} />
+            <Route path="/" element={<Login />} />
             {/* <Route path="*" element={<NotFound />} /> */}
 
             {/* 404 Not Found route */}
