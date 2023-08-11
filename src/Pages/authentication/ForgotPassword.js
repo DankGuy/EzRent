@@ -1,6 +1,6 @@
-import ForgotpwBg from "../images/forgotpwBg.jpg";
+import ForgotpwBg from "../../images/forgotpwBg.jpg";
 import { Link } from "react-router-dom";
-import { supabase } from "../supabase-client";
+import { supabase } from "../../supabase-client";
 import { InfoCircleOutlined, UserOutlined } from "@ant-design/icons";
 import { Input, Tooltip, Form, Button, message } from "antd";
 import { useState } from "react";
@@ -117,23 +117,23 @@ function ForgotPasswordCard() {
               width: "100%",
             }}
           >
-          <Form.Item>
-            <Button
-              type="primary"
-              htmlType="submit"
-              style={{
-                backgroundColor: "#0062D1",
-                borderColor: "#0062D1",
-                marginTop: "5px",
-                width: "20vw",
-                fontSize: "1.2rem",
-                height: "auto",
-              }}
-              onClick={handleSubmit}
-            >
-              Send Reset Link
-            </Button>
-          </Form.Item>
+            <Form.Item>
+              <Button
+                type="primary"
+                htmlType="submit"
+                style={{
+                  backgroundColor: "#0062D1",
+                  borderColor: "#0062D1",
+                  marginTop: "5px",
+                  width: "20vw",
+                  fontSize: "1.2rem",
+                  height: "auto",
+                }}
+                onClick={handleSubmit}
+              >
+                Send Reset Link
+              </Button>
+            </Form.Item>
           </Form.Item>
         </Form>
         <Link

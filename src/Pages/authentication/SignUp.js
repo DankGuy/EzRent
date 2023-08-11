@@ -1,9 +1,9 @@
 // import loginBg from "../images/loginBg.jpeg";
-import signupBg from "../images/signupBg.jpg";
+import signupBg from "../../images/signupBg.jpg";
 import { Button, Form, Input, Select, message, Radio } from "antd";
 import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
-import { supabase } from "../supabase-client";
+import { supabase } from "../../supabase-client";
 import "./auth.css";
 
 const { Option } = Select;
@@ -95,7 +95,7 @@ function SignUpCard() {
         if (error) throw error;
 
         message.success("Please check your email for confirmation link!");
-        
+
         window.location.href = "/login";
       }
     } catch (error) {

@@ -1,7 +1,6 @@
-// import loginBg from "../images/loginBg.jpeg";
-import loginBg from "../images/loginBg.jpg";
+import updateBg from "../../images/updateBg.jpg";
 import { Link, useNavigate } from "react-router-dom";
-import { supabase } from "../supabase-client";
+import { supabase } from "../../supabase-client";
 import { InfoCircleOutlined, UserOutlined } from "@ant-design/icons";
 import { Input, Tooltip, Form, Button, Spin, message } from "antd";
 import { useState, useEffect } from "react";
@@ -18,20 +17,12 @@ function ForgotPasswordCard() {
   const navigate = useNavigate();
 
   const formItemLayout = {
-    labelCol: {
-      xs: {
-        span: 24,
-      },
-      sm: {
-        span: 8,
-      },
-    },
     wrapperCol: {
       xs: {
         span: 24,
       },
       sm: {
-        span: 16,
+        span: 24,
       },
     },
   };
@@ -43,8 +34,8 @@ function ForgotPasswordCard() {
     if (error) {
       // Handle error case
       message.error(error.error_description || error.message);
-    } 
-    
+    }
+
     if (data.session) {
       // Handle success case
       setEmail(data.session.user.email);
@@ -69,7 +60,7 @@ function ForgotPasswordCard() {
       setTimeout(() => {
         navigate("/login");
       }, 2000);
-        
+
     } catch (error) {
       message.error(error.error_description || error.message);
     }
@@ -96,13 +87,14 @@ function ForgotPasswordCard() {
     <div
       className="forgotpw-container"
       style={{
-        height: "100vh",
+        backgroundColor: "#FFFFFF",
+        minHeight: "100vh",
+        maxWidth: "100vw",
+        height: "auto",
         width: "100vw",
         display: "flex",
         alignItems: "center",
         justifyContent: "center",
-        background: `url(${loginBg}) no-repeat fixed`,
-        backgroundSize: "cover",
         padding: "0",
         margin: "0",
       }}
@@ -110,9 +102,8 @@ function ForgotPasswordCard() {
       <div
         className="forgotpw-card"
         style={{
-          backgroundColor: "#f0f2f5",
           height: "auto",
-          width: "40%",
+          width: "50vw",
           marginTop: "50px",
           marginBottom: "50px",
           marginLeft: "0",
@@ -122,27 +113,28 @@ function ForgotPasswordCard() {
           alignItems: "center",
           flexDirection: "column",
           justifyContent: "center",
-          boxShadow: "6px 6px 6px rgba(0, 0, 0, 0.2)",
           padding: "20px",
-          borderRadius: "10px",
-          opacity: "0.95",
           overflow: "auto",
           maxWidth: "100%",
         }}
       >
         <Form
           style={{
-            maxWidth: "65%",
+            maxWidth: "81%",
             marginBottom: "10px",
+            width: "100%",
+            alignItems: "center",
+            display: "flex",
+            flexDirection: "column",
+            justifyContent: "center",
           }}
           {...formItemLayout}
         >
           <h1 style={{ textAlign: "center" }}>Update Password</h1>
 
-          <Form.Item label="Email" name="email" initialValue={email}>
+          <Form.Item name="email" initialValue={email}>
             <Input
               disabled
-              prefix={<UserOutlined className="site-form-item-icon" />}
               suffix={
                 <Tooltip title={email}>
                   <InfoCircleOutlined
@@ -152,12 +144,15 @@ function ForgotPasswordCard() {
                   />
                 </Tooltip>
               }
+              style={{
+                width: "25vw",
+                background: "white",
+              }}
             />
           </Form.Item>
 
           <Form.Item
             name="password"
-            label="Password"
             rules={[
               {
                 required: true,
@@ -184,15 +179,25 @@ function ForgotPasswordCard() {
             ]}
             hasFeedback
           >
-            <Input.Password onChange={handleChange} />
+            <Input.Password onChange={handleChange} style={{
+              width: "25vw",
+            }}
+              placeholder="Enter your new password"
+            />
           </Form.Item>
 
           <Form.Item style={{ display: "flex", justifyContent: "center" }}>
             <Button
               type="primary"
               htmlType="submit"
-              onClick={handleSubmit}
-              style={{ width: "300px" }}
+              style={{
+                backgroundColor: "#0062D1",
+                borderColor: "#0062D1",
+                marginTop: "5px",
+                width: "20vw",
+                fontSize: "1.2rem",
+                height: "auto",
+              }}
             >
               Update Password
             </Button>
@@ -207,6 +212,17 @@ function ForgotPasswordCard() {
           Back to Login
         </Link>
       </div>
+      <div
+        style={{
+          height: "100vh",
+          maxHeight: "100vh",
+          width: "55vw",
+          backgroundImage: `url(${updateBg})`,
+          backgroundSize: "50vw 100vh",
+          backgroundPosition: "center",
+          backgroundRepeat: "no-repeat",
+        }}
+      ></div>
     </div>
   );
 }

@@ -1,12 +1,12 @@
 import { Button } from "antd";
-import loginBg from "../images/loginBg.jpg";
+import loginBg from "../../images/loginBg.jpg";
 import { Form, Input, Tooltip, message, Radio } from "antd";
 import { useEffect, useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
-import { supabase } from "../supabase-client";
+import { supabase } from "../../supabase-client";
 import { InfoCircleOutlined } from "@ant-design/icons";
 import "./auth.css";
-import { useAuth } from "../context/AuthProvider";
+import { useAuth } from "../../context/AuthProvider";
 // import { NavigateHomePage } from "./navigateHomePage";
 
 function LoginCard() {
@@ -18,10 +18,6 @@ function LoginCard() {
 
 
   const { userSession, auth } = useAuth();
-
-  console.log(userSession);
-
-  console.log(auth);
 
   const navigate = useNavigate();
 
@@ -69,8 +65,24 @@ function LoginCard() {
 
       if (user && session) {
         if (user.user_metadata.userType === "agent") {
-          localStorage.setItem("selectedKey", "/agent");
-          navigate("/agent");
+          let { data: agentData, error } = await supabase
+            .from("agent")
+            .select("*")
+            .eq('agent_id', user.id);
+          if (error) {
+            console.log("error", error);
+          }
+          else {
+            if (agentData[0].account_status === false) {
+              // const { error } = await supabase.auth.signOut();
+              message.error("Your account is not activated yet. Please contact admin for more information.");
+              // navigate("/login");
+            }
+            else {
+              localStorage.setItem("selectedKey", "/agent");
+              navigate("/agent");
+            }
+          }
         } else if (user.user_metadata.userType === "student") {
           localStorage.setItem(
             "selectedKey",
@@ -83,10 +95,6 @@ function LoginCard() {
       message.error(error.error_description || error.message);
     }
   }
-
-  // TODO: Add switch to login as admin or student/agent
-  // TODO: Check if the student is admin or not (get userID, query from student table, check if admin or not)
-  // if the switch is on admin, but the student is not admin, then show error message
 
   return (
     <>{isReady &&
