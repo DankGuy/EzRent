@@ -205,7 +205,7 @@ function Roommate() {
             <FloatButton type="primary" tooltip="My Request" icon={<SlPeople />} onClick={handleViewRequest} />
         </FloatButton.Group>
 
-        <CreateRoommatePost value={postModal} onChange={setPostModal} onTrigger={handleTrigger}/>
+        <CreateRoommatePost value={postModal} onModalChange={setPostModal} onTrigger={handleTrigger}/>
 
         <ScrollToTopButton />
 

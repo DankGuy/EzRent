@@ -52,6 +52,9 @@ import MyRequest from "./Pages/student/roommate/MyRequest";
 
 function App() {
     const { userSession, auth } = useAuth();
+
+    console.log(userSession);
+    console.log(auth);
     const [agentStatus, setAgentStatus] = useState(null);
 
     const getAgentStatus = async (userSession) => {
@@ -85,17 +88,18 @@ function App() {
             supabase.auth.signOut();
         }
     }, [agentStatus, userSession]);
+   
 
     const userTypeRoutes = () => {
         if (userSession && auth) {
             if (userSession.user.user_metadata.userType === "agent" && agentStatus) {
                 return (
                     <>
-                        <Route path="/" element={<Navigate to="/agent/" />} />
-                        <Route path="/login" element={<Navigate to="/agent/" />} />
-                        <Route path="/signup" element={<Navigate to="/agent/" />} />
-                        <Route path="/forgot-password" element={<Navigate to="/agent/" />} />
-                        <Route path="/update-password" element={<Navigate to="/agent/" />} />
+                        <Route path="/" element={<Navigate to="/agent" />} />
+                        <Route path="/login" element={<Navigate to="/agent" />} />
+                        <Route path="/signup" element={<Navigate to="/agent" />} />
+                        <Route path="/forgot-password" element={<Navigate to="/agent" />} />
+                        <Route path="/update-password" element={<Navigate to="/agent" />} />
 
                         <Route path="/agent/" element={<AgentLayout />}>
                             <Route index element={<AgentHome />} />
@@ -119,11 +123,11 @@ function App() {
                 return (
                     <>
 
-                        <Route path="/" element={<Navigate to="/student/" />} />
-                        <Route path="/login" element={<Navigate to="/student/" />} />
-                        <Route path="/signup" element={<Navigate to="/student/" />} />
-                        <Route path="/forgot-password" element={<Navigate to="/student/" />} />
-                        <Route path="/update-password" element={<Navigate to="/student/" />} />
+                        <Route path="/" element={<Navigate to="/student" />} />
+                        <Route path="/login" element={<Navigate to="/student" />} />
+                        <Route path="/signup" element={<Navigate to="/student" />} />
+                        <Route path="/forgot-password" element={<Navigate to="/student" />} />
+                        <Route path="/update-password" element={<Navigate to="/student" />} />
 
                         <Route path="/student/" element={<StudentLayout />}>
                             <Route index element={<Home />} />
@@ -170,6 +174,8 @@ function App() {
         }
     };
 
+    
+    
     return (
         <Routes>
             {/* Authentication routes */}

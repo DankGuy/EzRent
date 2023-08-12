@@ -3,6 +3,7 @@ import { useState, useRef } from "react";
 import { supabase } from "../../../supabase-client";
 import { getCurrentDateTime } from "../../../Components/timeUtils";
 import { useEffect } from "react";
+import { MdOutlineCancel } from "react-icons/md";
 
 
 function CreateRoommatePost({ value, onModalChange, onTrigger }) {
@@ -20,11 +21,12 @@ function CreateRoommatePost({ value, onModalChange, onTrigger }) {
 
 
     const [form] = Form.useForm();
+    const inputRef = useRef(null);
 
     // useEffect(() => {
     //     console.log("Selected values:", selectedValues);
     // }, [selectedValues]);
-    
+
 
     const handleYesNo = (e) => {
         if (e.target.value === 'yes') {
@@ -58,22 +60,24 @@ function CreateRoommatePost({ value, onModalChange, onTrigger }) {
     const handleInputKeyPress = (event) => {
         if (event.key === 'Enter' && inputValue.trim() !== '') {
             const trimmedValue = inputValue.trim();
-            console.log("Adding value:", trimmedValue);
             setSelectedValues(prevValues => [...prevValues, trimmedValue]);
             setInputValue('');
-            console.log("Selected values:", selectedValues);
             form.setFieldValue('locationSelection', '');
+            inputRef.current.focus({ cursor: 'end' });
         }
     };
-    
+
     useEffect(() => {
         console.log("Inside useEffect - selectedValues:", selectedValues);
     }, [selectedValues]);
-    
-    
-    
+
+    // useEffect(() => {
+    //     console.log("Inside useEffect - INPUT VALUE:", inputValue);
+    // }, [inputValue]);
+
 
     const handleRemoveValue = (value) => {
+        console.log("Removing value:", value);
         setSelectedValues(selectedValues.filter((v) => v !== value));
     };
 
@@ -119,15 +123,34 @@ function CreateRoommatePost({ value, onModalChange, onTrigger }) {
                     <div>
                         <Row>
                             <Col span={12}>
-                                <Form.Item name="locationSelection" label="Preferred Location(s)">
+
+                                <Form.Item name="locationSelection" label="Preferred Location(s)" style={{ marginBottom: '0px' }}>
+                                   
                                     <Input
                                         // placeholder="Location"
                                         value={inputValue}
                                         style={{ width: '80%' }}
                                         onPressEnter={handleInputKeyPress}
                                         onChange={handleInputChange}
+                                        ref={inputRef}
                                     />
                                 </Form.Item>
+                                {selectedValues.map((v) => (
+                                        <span key={v} style={{
+                                            display: 'inline-flex',  // Use flex display to align items vertically
+                                            alignItems: 'center',    // Align items vertically centered
+                                            margin: '3px',
+                                            padding: '3px 5px',
+                                            border: '1px solid #ccc',
+                                            borderRadius: '3px',
+                                            backgroundColor: '#f0f0f0',
+                                        }}>
+                                            {v}
+                                            <MdOutlineCancel onClick={() => handleRemoveValue(v)} style={{ cursor: 'pointer', marginLeft: '5px' }} />
+                                        </span>
+
+                                    ))}
+
                             </Col>
                             <Col span={12}>
                                 <Form.Item name="propertySelection" label="Property Type">
@@ -143,11 +166,7 @@ function CreateRoommatePost({ value, onModalChange, onTrigger }) {
                             </Col>
                         </Row>
                         <Row>
-                            {selectedValues.map((v) => (
-                                <Col span={12} key={v}>
-                                    {v} <button onClick={() => handleRemoveValue(v)}>Remove</button>
-                                </Col>
-                            ))}
+
                         </Row>
                         <Row>
                             <Col span={12}>
@@ -378,7 +397,7 @@ function CreateRoommatePost({ value, onModalChange, onTrigger }) {
                         },
                         moveInDate: values.moveInDate,
                         duration: values.rentDuration,
-                        location: (values.rentalAgreementID) ? null : values.locationSelection,
+                        location: (values.rentalAgreementID) ? [] : selectedValues,
                         propertyType: (values.rentalAgreementID) ? null : values.propertySelection,
                         budget: (values.rentalAgreementID) ? null : values.budgetInput,
                         rentalAgreementID: (values.rentalAgreementID) ? values.rentalAgreementID : null,
@@ -409,12 +428,13 @@ function CreateRoommatePost({ value, onModalChange, onTrigger }) {
         currentForm.validateFields().then((values) => {
             setFormData((prev) => ({ ...prev, ...values }));
 
-
+           
             insertPost(values);
             currentForm.resetFields();
             setCurrentStep(0);
             setHasRentedProperty(false);
             setRentedProperty(null);
+            setSelectedValues([]);
 
         });
     };
@@ -482,7 +502,7 @@ function CreateRoommatePost({ value, onModalChange, onTrigger }) {
                                     disabled={
                                         index === 0 && hasRentedProperty && !rentedProperty ? true : false
                                     }
-                                    onClick={index === stepsData.length - 1 ? handleFormFinish : handleNextStep}
+                                onClick={index === stepsData.length - 1 ? handleFormFinish : handleNextStep}
                                 >
                                     {index === stepsData.length - 1 ? 'Submit' : 'Next'}
                                 </Button>

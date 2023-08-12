@@ -12,9 +12,10 @@ function NavBar() {
   const navigate = useNavigate();
 
   const logout = async () => {
-    await supabase.auth.signOut();
+    await supabase.auth.signOut().then(() => {
+      navigate("/");
+    });
     localStorage.removeItem("selectedKey");
-    navigate("/");
   };
 
   async function getUser() {
@@ -27,7 +28,7 @@ function NavBar() {
       .select("*")
       .eq("student_id", user.id);
 
-    console.log(student[0]);
+    // console.log(student[0]);
     return student[0];
   }
 

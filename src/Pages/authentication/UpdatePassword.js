@@ -190,6 +190,7 @@ function ForgotPasswordCard() {
             <Button
               type="primary"
               htmlType="submit"
+              onClick={handleSubmit}
               style={{
                 backgroundColor: "#0062D1",
                 borderColor: "#0062D1",
