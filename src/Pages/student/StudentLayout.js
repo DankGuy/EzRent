@@ -1,6 +1,8 @@
 import { Layout } from 'antd';
 import NavBar from '../../Components/NavBar'
 import { Outlet } from "react-router-dom";
+import FooterCard from './FooterCard.js';
+const { Footer } = Layout;
 
 
 function StudentLayout() {
@@ -15,6 +17,9 @@ function StudentLayout() {
             <Content style={{ marginTop: 50 }}>
                 <Outlet />
             </Content>
+            <Footer style={{padding: 0}}>
+                <FooterCard />
+            </Footer>
         </Layout>
     </>
 }

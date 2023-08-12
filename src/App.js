@@ -48,6 +48,7 @@ import RoommateRequest from "./Pages/student/roommate/RoommateRequest";
 
 import { supabase } from "./supabase-client";
 import { useEffect } from "react";
+import MyRequest from "./Pages/student/roommate/MyRequest";
 
 function App() {
     const { userSession, auth } = useAuth();
@@ -59,6 +60,8 @@ function App() {
             .select("account_status")
             .eq("agent_id", userSession.user.id)
 
+        console.log(agentStatus);
+
         if (agentStatusError) {
             console.log(agentStatusError);
         }
@@ -66,6 +69,7 @@ function App() {
             if (agentStatus.length > 0) {
                 setAgentStatus(agentStatus[0].account_status);
             }
+            
         }
     };
 
@@ -76,7 +80,7 @@ function App() {
     }, [userSession]);
 
     useEffect(() => {
-        if (agentStatus === false && userSession) {
+        if (agentStatus === false && userSession && userSession.user.user_metadata.userType === "agent") {
             console.log(agentStatus)
             supabase.auth.signOut();
         }
@@ -128,6 +132,7 @@ function App() {
                             <Route path="roommate/myListings" element={<MyListings />} />
                             <Route path="roommate/myListings/request/:id" element={<RoommateRequest />} />
                             <Route path="roommate/myListings/:id" element={<ListingPostDetails />} />
+                            <Route path="roommate/myRequest" element={<MyRequest />} />
                             <Route path="roommate/post/:id" element={<RoommatePost />} />
                             <Route path="aboutUs" element={<AboutUs />} />
 

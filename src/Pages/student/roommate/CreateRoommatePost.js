@@ -2,9 +2,10 @@ import { Button, Modal, Steps, theme, message, Form, Input, Select, DatePicker, 
 import { useState, useRef } from "react";
 import { supabase } from "../../../supabase-client";
 import { getCurrentDateTime } from "../../../Components/timeUtils";
+import { useEffect } from "react";
 
 
-function CreateRoommatePost({ value, onChange, onTrigger }) {
+function CreateRoommatePost({ value, onModalChange, onTrigger }) {
 
     const { Step } = Steps;
     const [currentStep, setCurrentStep] = useState(0);
@@ -13,6 +14,17 @@ function CreateRoommatePost({ value, onChange, onTrigger }) {
     const [hasRentedProperty, setHasRentedProperty] = useState(false);
     const [rentedProperty, setRentedProperty] = useState(null);
     const [isLoading, setIsLoading] = useState(false);
+
+    const [selectedValues, setSelectedValues] = useState([]);
+    const [inputValue, setInputValue] = useState('');
+
+
+    const [form] = Form.useForm();
+
+    // useEffect(() => {
+    //     console.log("Selected values:", selectedValues);
+    // }, [selectedValues]);
+    
 
     const handleYesNo = (e) => {
         if (e.target.value === 'yes') {
@@ -38,6 +50,32 @@ function CreateRoommatePost({ value, onChange, onTrigger }) {
         setRentedProperty(post);
         setIsLoading(false);
     }
+
+    const handleInputChange = (event) => {
+        setInputValue(event.target.value);
+    };
+
+    const handleInputKeyPress = (event) => {
+        if (event.key === 'Enter' && inputValue.trim() !== '') {
+            const trimmedValue = inputValue.trim();
+            console.log("Adding value:", trimmedValue);
+            setSelectedValues(prevValues => [...prevValues, trimmedValue]);
+            setInputValue('');
+            console.log("Selected values:", selectedValues);
+            form.setFieldValue('locationSelection', '');
+        }
+    };
+    
+    useEffect(() => {
+        console.log("Inside useEffect - selectedValues:", selectedValues);
+    }, [selectedValues]);
+    
+    
+    
+
+    const handleRemoveValue = (value) => {
+        setSelectedValues(selectedValues.filter((v) => v !== value));
+    };
 
     const stepsData = [
         {
@@ -81,8 +119,14 @@ function CreateRoommatePost({ value, onChange, onTrigger }) {
                     <div>
                         <Row>
                             <Col span={12}>
-                                <Form.Item name="locationSelection" label="Preferred Location">
-                                    <Input placeholder="Location" style={{ width: '80%' }} />
+                                <Form.Item name="locationSelection" label="Preferred Location(s)">
+                                    <Input
+                                        // placeholder="Location"
+                                        value={inputValue}
+                                        style={{ width: '80%' }}
+                                        onPressEnter={handleInputKeyPress}
+                                        onChange={handleInputChange}
+                                    />
                                 </Form.Item>
                             </Col>
                             <Col span={12}>
@@ -95,7 +139,15 @@ function CreateRoommatePost({ value, onChange, onTrigger }) {
                                             { value: 'Terrace house', label: 'Terrace house' },
                                         ]} />
                                 </Form.Item>
+
                             </Col>
+                        </Row>
+                        <Row>
+                            {selectedValues.map((v) => (
+                                <Col span={12} key={v}>
+                                    {v} <button onClick={() => handleRemoveValue(v)}>Remove</button>
+                                </Col>
+                            ))}
                         </Row>
                         <Row>
                             <Col span={12}>
@@ -287,11 +339,12 @@ function CreateRoommatePost({ value, onChange, onTrigger }) {
         },
     ]
 
-    
+
     const handleTrigger = () => {
+        console.log("Triggered");
         onTrigger();
     }
-    
+
     const insertPost = async (values) => {
         const currentDate = getCurrentDateTime();
         const userID = (await supabase.auth.getUser()).data.user.id;
@@ -338,7 +391,7 @@ function CreateRoommatePost({ value, onChange, onTrigger }) {
             }
 
             message.success("Post created successfully");
-            onChange(false);
+            onModalChange(false);
             handleTrigger();
 
         } catch (error) {
@@ -349,7 +402,9 @@ function CreateRoommatePost({ value, onChange, onTrigger }) {
 
 
 
-    const handleFormFinish = () => {
+    const handleFormFinish = (e) => {
+        e.preventDefault();
+        console.log("Form finished");
         const currentForm = stepsData[currentStep].formRef.current;
         currentForm.validateFields().then((values) => {
             setFormData((prev) => ({ ...prev, ...values }));
@@ -360,7 +415,7 @@ function CreateRoommatePost({ value, onChange, onTrigger }) {
             setCurrentStep(0);
             setHasRentedProperty(false);
             setRentedProperty(null);
-            
+
         });
     };
 
@@ -378,7 +433,7 @@ function CreateRoommatePost({ value, onChange, onTrigger }) {
             title="Create Roommate Post"
             open={value}
             footer={null}
-            onCancel={() => onChange(false)}
+            onCancel={() => onModalChange(false)}
             width={800}
             bodyStyle={{ height: 500, overflowX: 'hidden', overflowY: 'scroll', paddingRight: '10px', paddingTop: '10px' }}
         >
@@ -394,6 +449,7 @@ function CreateRoommatePost({ value, onChange, onTrigger }) {
 
                 <Form
                     onFinish={handleFormFinish}
+                    form={form}
                     ref={stepsData[currentStep].formRef}
                     style={{ marginTop: 20 }}
                     layout="vertical"

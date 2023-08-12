@@ -9,6 +9,8 @@ import CreateRoommatePost from "./CreateRoommatePost";
 import "./Roommate.css"
 import { supabase } from "../../../supabase-client";
 import ScrollToTopButton from "../../../Components/ScrollToTopButton";
+import { SlPeople } from "react-icons/sl";
+import { useNavigate } from "react-router-dom";
 
 function Roommate() {
 
@@ -16,6 +18,8 @@ function Roommate() {
 
     const [listings, setListings] = useState([]);
     const [trigger, setTrigger] = useState(0);
+
+    const navigate = useNavigate();
 
     const fetchListings = async () => {
 
@@ -100,7 +104,11 @@ function Roommate() {
     }
 
     const handleViewListings = () => {
-        window.location.href = '/student/roommate/myListings';
+        navigate('/student/roommate/myListings');
+    }
+
+    const handleViewRequest = () => {
+        navigate('/student/roommate/myRequest');
     }
 
     const handleTrigger = () => {
@@ -194,6 +202,7 @@ function Roommate() {
         >
             <FloatButton type="primary" tooltip="Create Post" icon={<BiEditAlt />} onClick={handleCreateModal} />
             <FloatButton type="primary" tooltip="My Listings" icon={<AiOutlineHistory />} onClick={handleViewListings} />
+            <FloatButton type="primary" tooltip="My Request" icon={<SlPeople />} onClick={handleViewRequest} />
         </FloatButton.Group>
 
         <CreateRoommatePost value={postModal} onChange={setPostModal} onTrigger={handleTrigger}/>
