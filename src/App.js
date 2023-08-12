@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState } from "react";
 import Login from "../src/Pages/authentication/Login";
 import SignUp from "../src/Pages/authentication/SignUp";
 import ForgotPassword from "../src/Pages/authentication/ForgotPassword";
@@ -46,12 +46,45 @@ import ListingPostDetails from "./Pages/student/roommate/ListingPostDetails";
 import RoommatePost from "./Pages/student/roommate/RoommatePost";
 import RoommateRequest from "./Pages/student/roommate/RoommateRequest";
 
+import { supabase } from "./supabase-client";
+import { useEffect } from "react";
+
 function App() {
     const { userSession, auth } = useAuth();
+    const [agentStatus, setAgentStatus] = useState(null);
+
+    const getAgentStatus = async (userSession) => {
+        let { data: agentStatus, error: agentStatusError } = await supabase
+            .from("agent")
+            .select("account_status")
+            .eq("agent_id", userSession.user.id)
+
+        if (agentStatusError) {
+            console.log(agentStatusError);
+        }
+        else {
+            if (agentStatus.length > 0) {
+                setAgentStatus(agentStatus[0].account_status);
+            }
+        }
+    };
+
+    useEffect(() => {
+        if (userSession) {
+            getAgentStatus(userSession);
+        }
+    }, [userSession]);
+
+    useEffect(() => {
+        if (agentStatus === false && userSession) {
+            console.log(agentStatus)
+            supabase.auth.signOut();
+        }
+    }, [agentStatus, userSession]);
 
     const userTypeRoutes = () => {
         if (userSession && auth) {
-            if (userSession.user.user_metadata.userType === "agent") {
+            if (userSession.user.user_metadata.userType === "agent" && agentStatus) {
                 return (
                     <>
                         <Route path="/" element={<Navigate to="/agent/" />} />
@@ -136,7 +169,7 @@ function App() {
         <Routes>
             {/* Authentication routes */}
             {/* <Route element={<AuthRoute />}> */}
-                {userTypeRoutes()}
+            {userTypeRoutes()}
             {/* </Route> */}
 
             <Route path="/signup" element={<SignUp />} />
