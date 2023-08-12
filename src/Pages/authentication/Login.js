@@ -75,7 +75,7 @@ function LoginCard() {
           else {
             if (agentData[0].account_status === false) {
               // const { error } = await supabase.auth.signOut();
-              message.error("Your account is not activated yet. Please contact admin for more information.");
+              message.error("Your account is deactivated. Please contact admin for assistance.");
               // navigate("/login");
             }
             else {
