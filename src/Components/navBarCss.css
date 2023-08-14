@@ -8,7 +8,8 @@ body{
     margin: 0;
     padding: 0;
     overflow: hidden;
-    background-color: #6643b5;
+    background-color: white;
+    display: flex;
 }
 
 .ulClass > li {
@@ -17,40 +18,31 @@ body{
 
 .link {
     display: block;
-    color: rgb(255, 255, 255);
+    color: #6643b5;
+    font-weight: bold;
     text-align: center;
     padding: 14px 26px;
     text-decoration: none;
-    font-size: 20px;
+    font-size: 18px;
     font-family: Arial, Helvetica, sans-serif;
-}
-
-.link:hover:not(.active) {
-    background-color: #430f58;
-}
-
-.nav-container .active:hover {
-    background-color: #430f58;
-}
-
-.nav-container .active {
-    background-color: #8594e4;
+    
 }
 
 .container{
     display: flex;
     align-items: flex-start;
     width: 100vw;
+    height: auto;
 }
 
 .logoClass{
-    object-fit: co ntain;
-    height: 51px;
+    object-fit: contain;
+    height: 60px;
 }
 
 .nav-container{
     width: 100%;
     justify-content: stretch;
-    box-shadow: 0px 2px 6px rgba(0, 0, 0, 0.2);
-
+    height: auto;
+    border: 2px solid blue;
 }

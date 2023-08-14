@@ -14,7 +14,7 @@ function StudentLayout() {
 
         <Layout>
             <NavBar />
-            <Content style={{ marginTop: 50 }}>
+            <Content style={{ marginTop: 40 }}>
                 <Outlet />
             </Content>
             <Footer style={{padding: 0}}>

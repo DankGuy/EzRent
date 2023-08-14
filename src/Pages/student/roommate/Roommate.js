@@ -1,4 +1,4 @@
-import { Breadcrumb, Button, Col, Empty, FloatButton, Form, Row, Slider } from "antd";
+import { Breadcrumb, Button, Col, Empty, FloatButton, Form, Row, Slider, Spin } from "antd";
 import GenderSelection from "../../../Components/GenderSelection";
 import RoomResourceSelection from "../../../Components/RoomResourceSelection";
 import { useEffect, useState } from "react";
@@ -18,11 +18,12 @@ function Roommate() {
 
     const [listings, setListings] = useState([]);
     const [trigger, setTrigger] = useState(0);
+    const [loading, setLoading] = useState(false);
 
     const navigate = useNavigate();
 
     const fetchListings = async () => {
-
+        setLoading(true);
         const userID = (await supabase.auth.getUser()).data.user.id;
 
         const { data, error } = await supabase
@@ -36,8 +37,9 @@ function Roommate() {
             return;
         }
 
-        console.log(data);
-        setListings(data);
+        return data;
+
+       
     }
 
 
@@ -49,14 +51,17 @@ function Roommate() {
 
     useEffect(() => {
         form.resetFields();
-        fetchListings();
+        fetchListings().then((data) => {
+            setListings(data);
+            setLoading(false);
+        });
         console.log(trigger);
     }, [trigger]);
 
-    
+
 
     const onFinish = async (values) => {
-
+        setLoading(true);
         const userID = (await supabase.auth.getUser()).data.user.id;
 
 
@@ -75,7 +80,7 @@ function Roommate() {
             return;
         }
 
-        
+
         if (values.genderSelection === 'Male' || values.genderSelection === 'Female') {
             data = data.filter(post => post.student && post.student.gender === values.genderSelection);
         }
@@ -91,6 +96,7 @@ function Roommate() {
 
         console.log(data);
         setListings(data);
+        setLoading(false);
     }
 
     const onFinishFailed = (errorInfo) => {
@@ -116,18 +122,18 @@ function Roommate() {
     }
 
 
-    
+
 
     return (<>
-        <div style={{ 
-            padding: '20px 10px 0px', 
-            border: '0px solid black', 
+        <div style={{
+            padding: '20px 10px 0px',
+            border: '0px solid black',
             boxShadow: '0px 4px 6px -2px rgba(0, 0, 0, 0.2)',
             position: 'sticky',
-            top: '50px',
+            top: '40px',
             zIndex: '1000',
             backgroundColor: 'white',
-            }}>
+        }}>
             <Form
                 name="search"
                 form={form}
@@ -139,7 +145,7 @@ function Roommate() {
                         roomSelection: null,
                     }
                 }>
-                <Row style={{marginLeft: '10%'}}>
+                <Row style={{ marginLeft: '10%' }}>
                     <Col span={4}>
                         <Form.Item name="genderSelection">
                             <GenderSelection bordered={true} style={{ width: '80%' }} />
@@ -167,20 +173,33 @@ function Roommate() {
             </Form>
         </div>
 
-        {listings.length === 0 ? <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', height: '50vh' }}>
-            <Empty description={<span style={{ color: '#b80606', fontStyle: 'italic', fontSize: '20px' }}>No listings found. Please try refining your search.</span>} />
-        </div> : 
-        <div style={{ display: 'flex', alignItems: 'center', height: '50px', marginLeft: '10%', marginTop: '10px' }}>
-        <span
-            style={{
-                fontStyle: 'italic',
-                fontSize: '20px',
-                fontFamily: 'sans-serif',
+        {loading ? (
+            <div style={{
+                display: 'flex',
+                justifyContent: 'center',
+                alignItems: 'center',
+                height: '50vh',
             }}>
-            {listings.length} result(s) found...
-        </span>
-    </div>
-        }
+                <Spin />
+            </div>
+        ) : <>
+
+            {listings && listings.length === 0 ? <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', height: '50vh' }}>
+                <Empty description={<span style={{ color: '#b80606', fontStyle: 'italic', fontSize: '20px' }}>No listings found. Please try refining your search.</span>} />
+            </div> :
+                <div style={{ display: 'flex', alignItems: 'center', height: '50px', marginLeft: '10%', marginTop: '10px' }}>
+                    <span
+                        style={{
+                            fontStyle: 'italic',
+                            fontSize: '20px',
+                            fontFamily: 'sans-serif',
+                        }}>
+                        {listings.length} result(s) found...
+                    </span>
+                </div>
+            }
+        </>}
+
 
         <Row style={{ margin: '0% 5% 2% 8%' }}>
             {listings.map((listing, index) => {
@@ -205,7 +224,7 @@ function Roommate() {
             <FloatButton type="primary" tooltip="My Request" icon={<SlPeople />} onClick={handleViewRequest} />
         </FloatButton.Group>
 
-        <CreateRoommatePost value={postModal} onModalChange={setPostModal} onTrigger={handleTrigger}/>
+        <CreateRoommatePost value={postModal} onModalChange={setPostModal} onTrigger={handleTrigger} />
 
         <ScrollToTopButton />
 

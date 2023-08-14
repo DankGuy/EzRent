@@ -374,7 +374,7 @@ function RoomRental() {
             width: '100%',
             boxShadow: '0px 4px 6px -2px rgba(0, 0, 0, 0.2)',
             position: 'sticky',
-            top: '50px',
+            top: '40px',
             zIndex: '1000',
             backgroundColor: '#FFFFFF',
         }}>

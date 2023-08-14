@@ -49,6 +49,7 @@ import RoommateRequest from "./Pages/student/roommate/RoommateRequest";
 import { supabase } from "./supabase-client";
 import { useEffect } from "react";
 import MyRequest from "./Pages/student/roommate/MyRequest";
+import Loading from "./Pages/Result/Loading";
 
 function App() {
     const { userSession, auth } = useAuth();
@@ -56,8 +57,10 @@ function App() {
     console.log(userSession);
     console.log(auth);
     const [agentStatus, setAgentStatus] = useState(null);
+    const [isLoading, setIsLoading] = useState(true);
 
     const getAgentStatus = async (userSession) => {
+        setIsLoading(true);
         let { data: agentStatus, error: agentStatusError } = await supabase
             .from("agent")
             .select("account_status")
@@ -70,15 +73,22 @@ function App() {
         }
         else {
             if (agentStatus.length > 0) {
-                setAgentStatus(agentStatus[0].account_status);
+                // setAgentStatus(agentStatus[0].account_status);
+                return agentStatus[0].account_status;
             }
-            
+
         }
+
     };
 
     useEffect(() => {
         if (userSession) {
-            getAgentStatus(userSession);
+            getAgentStatus(userSession).then((status) => {
+                console.log(status);
+                setAgentStatus(status);
+                setIsLoading(false);
+            });
+
         }
     }, [userSession]);
 
@@ -88,13 +98,14 @@ function App() {
             supabase.auth.signOut();
         }
     }, [agentStatus, userSession]);
-   
+
 
     const userTypeRoutes = () => {
         if (userSession && auth) {
             if (userSession.user.user_metadata.userType === "agent" && agentStatus) {
                 return (
                     <>
+
                         <Route path="/" element={<Navigate to="/agent" />} />
                         <Route path="/login" element={<Navigate to="/agent" />} />
                         <Route path="/signup" element={<Navigate to="/agent" />} />
@@ -174,25 +185,24 @@ function App() {
         }
     };
 
-    
-    
+
+
     return (
-        <Routes>
-            {/* Authentication routes */}
-            {/* <Route element={<AuthRoute />}> */}
-            {userTypeRoutes()}
-            {/* </Route> */}
-
-            <Route path="/signup" element={<SignUp />} />
-            <Route path="/login" element={<Login />} />
-            <Route path="/forgot-password" element={<ForgotPassword />} />
-            <Route path="/update-password" element={<UpdatePassword />} />
-            <Route path="*" element={<NotFound />} />
-            <Route path="/" element={<Login />} />
-            {/* <Route path="*" element={<NotFound />} /> */}
-
-            {/* 404 Not Found route */}
-        </Routes>
+        <>
+            {isLoading ? (
+                <Loading /> // Show loading component
+            ) : (
+                <Routes>
+                    {userTypeRoutes()}
+                    <Route path="/signup" element={<SignUp />} />
+                    <Route path="/login" element={<Login />} />
+                    <Route path="/forgot-password" element={<ForgotPassword />} />
+                    <Route path="/update-password" element={<UpdatePassword />} />
+                    <Route path="*" element={<NotFound />} />
+                    <Route path="/" element={<Login />} />
+                </Routes>
+            )}
+        </>
     );
 }
 

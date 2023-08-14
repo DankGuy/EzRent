@@ -19,12 +19,13 @@ function Sidebar({ value, setTitle }) {
 
     useEffect(() => {
         const storedKey = localStorage.getItem('selectedKey');
+        console.log(storedKey);
         if (storedKey) {
             setSelectedKey(storedKey);
         }
     }, []);
 
-    const [selectedKey, setSelectedKey] = useState('')
+    const [selectedKey, setSelectedKey] = useState('/agent')
 
     return (
         <Sider trigger={null} collapsible collapsed={value} collapsedWidth={90} width={220}

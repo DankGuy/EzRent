@@ -3,9 +3,11 @@ import logo from "../images/logoIcon.png";
 import "./navBarCss.css";
 import { supabase } from "../supabase-client";
 import { useEffect, useState } from "react";
+import { CgProfile } from "react-icons/cg";
+import { Menu } from "antd";
 
 function NavBar() {
-  
+
   const [profileSelectedKey, setProfileSelectedKey] = useState("");
   const [user, setUser] = useState(null);
 
@@ -39,23 +41,102 @@ function NavBar() {
   }, []);
 
   const remainSelectedKey = () => {
+
     localStorage.setItem("selectedKey", "/student/profile/profileInformation");
     setProfileSelectedKey("/student/profile/profileInformation");
   };
 
+  const [current, setCurrent] = useState("/student");
+
+  const items = [
+    {
+      label: "Home",
+      key: "/student",
+    },
+    {
+      label: "Room Rental",
+      key: "/student/roomRental",
+    },
+    {
+      label: "Roommate",
+      key: "/student/roommate",
+    },
+    {
+      label: "Admin",
+      key: "/student/admin",
+    },
+    {
+      label: "About Us",
+      key: "/student/aboutUs",
+    },
+    // {
+    //   label: "Profile",
+    //   key: "/student/profile/profileInformation",
+    // },
+    // {
+    //   label: "Logout",
+    //   key: "/",
+    // },
+  ];
+
+  const handleClick = (e) => {
+    setCurrent(e.key);
+    navigate(e.key);
+  };
+
+
   return (
     <>
-      <div
-        className="container"
-        style={{ position: "fixed", top: 0, zIndex: 999 }}
-      >
+      <div style={{
+        display: 'flex',
+      }} >
         <Link to="/student/">
           <img className="logoClass" src={logo} alt="logo" />
         </Link>
+        <Menu
+          onClick={handleClick}
+          selectedKeys={[current]}
+          items={items}
+          mode="horizontal"
+          style={{
+            width: '100%',
+            fontSize: '17px',
+            // height: '65px',
+            // border: '1px solid black',
+            paddingBottom: '-20px',
+          }}
+        />
 
+        <div style={{ marginLeft: 'auto', display: 'flex', alignItems: 'center', justifyContent: 'center', backgroundColor: 'white'}}>
+          <Link
+            className="link"
+            to="/student/profile/profileInformation"
+            onClick={remainSelectedKey}
+          >
+            <CgProfile style={{ width: "25px", height: "auto" }} />
+          </Link>
+          <Link
+            className="link"
+            to="/"
+            onClick={logout}
+          >
+            Logout
+          </Link>
+        </div>
+      </div>
+      {/* <div
+        className="container"
+        style={{ position: "fixed", top: 0, zIndex: 999 }}
+      >
         <div className="nav-container">
+
           <nav>
             <ul className="ulClass">
+              <li>
+                <Link to="/student/">
+                  <img className="logoClass" src={logo} alt="logo" />
+                </Link>
+              </li>
               <li>
                 <Link
                   className="link"
@@ -109,15 +190,17 @@ function NavBar() {
               <div style={{ float: "right" }}>
                 <li style={{ float: "left" }}>
                   <Link
-                    className="link active"
+                    className="link"
                     to={profileSelectedKey}
                     onClick={remainSelectedKey}
                   >
-                    Profile
+                    <CgProfile style={{ width: "25px", height: "auto" }} />
                   </Link>
                 </li>
                 <li style={{ float: "left" }}>
-                  <Link className="link active" to="/" onClick={logout}>
+                  <Link
+                    className="link"
+                    to="/" onClick={logout}>
                     Logout
                   </Link>
                 </li>
@@ -125,7 +208,7 @@ function NavBar() {
             </ul>
           </nav>
         </div>
-      </div>
+      </div > */}
     </>
   );
 }
