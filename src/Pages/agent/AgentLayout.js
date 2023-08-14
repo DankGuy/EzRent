@@ -55,7 +55,7 @@ function AgentLayout() {
 
   return <>
 
-    <Layout>
+    <Layout className="agentLayout" >
 
       <Sidebar value={collapsed} onChange={handleCollapsed} setTitle={handleTitle} />
 

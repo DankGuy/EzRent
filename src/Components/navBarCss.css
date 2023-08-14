@@ -46,3 +46,21 @@ body{
     height: auto;
     border: 2px solid blue;
 }
+
+.navBarClass .ant-menu-horizontal{
+    border-bottom: none;
+}
+
+.navBarClass .ant-menu-item-selected {
+    /* background-color: #430f58 !important; */
+    color: #6643b5 !important;
+    /* font-weight: bold; */
+} 
+
+.navBarClass .ant-menu-item-selected::after{
+    border-bottom: 2px solid #6643b5 !important;
+}
+
+.navBarClass .ant-menu-item:hover::after{ 
+    border-bottom: 2px solid #6643b5 !important;
+}

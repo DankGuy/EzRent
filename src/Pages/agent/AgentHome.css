@@ -6,7 +6,18 @@
     align-items: center !important; */
 }
 
-.ant-menu-item-selected {
+.adminLayout .ant-menu-item-selected {
+    background-color: #430f58 !important;
+    color: white !important;
+    font-weight: bold;
+}
+.profileLayout .ant-menu-item-selected {
+    background-color: #430f58 !important;
+    color: white !important;
+    font-weight: bold;
+}
+
+.agentLayout .ant-menu-item-selected {
     background-color: #430f58 !important;
     color: white !important;
     font-weight: bold;

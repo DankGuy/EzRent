@@ -58,7 +58,7 @@ function AdminLayout() {
 
   return (
     <>
-      <div >
+      <div className="adminLayout" style={{ marginTop: "20px" }}>
         <Layout>
           <Sider
             trigger={null}
@@ -69,8 +69,9 @@ function AdminLayout() {
             style={{
               position: "fixed",
               left: "0",
+              top: "100",
               height: "100%",
-              zIndex: "100",
+              zIndex: "1001",
             }}
           >
             <Menu

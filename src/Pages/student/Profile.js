@@ -61,7 +61,7 @@ function Profile() {
 
   const navigate = useNavigate();
   return (
-    <div>
+    <div className="profileLayout" style={{ marginTop: "23px" }}>
       <Layout>
         <Sider
           trigger={null}
@@ -73,7 +73,7 @@ function Profile() {
             position: "fixed",
             left: "0",
             height: "100%",
-            zIndex: "100",
+            zIndex: "1001",
           }}
         >
           <Menu

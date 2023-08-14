@@ -369,13 +369,13 @@ function RoomRental() {
 
     return <>
         <div style={{
-            padding: '20px 10px 0px',
+            padding: '40px 10px 0px',
             border: '0px solid black',
             width: '100%',
             boxShadow: '0px 4px 6px -2px rgba(0, 0, 0, 0.2)',
             position: 'sticky',
-            top: '40px',
-            zIndex: '1000',
+            top: '45px',
+            zIndex: '999',
             backgroundColor: '#FFFFFF',
         }}>
             <Form
