@@ -81,6 +81,7 @@ function MyListings() {
                     >
                         Create a listing
                     </Button>
+                    <CreateRoommatePost value={postModal} onModalChange={setPostModal} onTrigger={handleTrigger} />
                 </Col>
             </Row>
 
@@ -117,10 +118,10 @@ function MyListings() {
                     >
                         Create a listing
                     </Button>
+                    <CreateRoommatePost value={postModal} onModalChange={setPostModal} onTrigger={handleTrigger} />
                 </div>
             }
 
-            <CreateRoommatePost value={postModal} onChange={setPostModal} onTrigger={handleTrigger} />
 
 
             {!isLoading && myListings.length > 0 && <>

@@ -1,9 +1,10 @@
-import { Button, Modal, Steps, theme, message, Form, Input, Select, DatePicker, Radio, Divider, Card, InputNumber, Slider, Row, Col } from "antd";
+import { Button, Modal, Steps, theme, message, Form, Input, Select, DatePicker, Radio, Divider, Card, InputNumber, Slider, Row, Col, Tooltip } from "antd";
 import { useState, useRef } from "react";
 import { supabase } from "../../../supabase-client";
 import { getCurrentDateTime } from "../../../Components/timeUtils";
 import { useEffect } from "react";
 import { MdOutlineCancel } from "react-icons/md";
+import { RiInformationFill } from "react-icons/ri";
 
 
 function CreateRoommatePost({ value, onModalChange, onTrigger }) {
@@ -124,8 +125,29 @@ function CreateRoommatePost({ value, onModalChange, onTrigger }) {
                         <Row>
                             <Col span={12}>
 
-                                <Form.Item name="locationSelection" label="Preferred Location(s)" style={{ marginBottom: '0px' }}>
-                                   
+                                <Form.Item 
+                                    name="locationSelection" 
+                                    label={
+                                        <>
+                                            <span>Preferred Location(s)</span>
+                                            <Tooltip
+                                                title={
+                                                    <>
+                                                        <p>You can input multiple preferred locations by pressing 'Enter' after typing each one.</p>
+                                                    </>
+        
+                                                }
+                                                placement='right'
+                                                overlayStyle={{ maxWidth: '300px' }}
+                                            >
+                                                <div>
+                                                    <RiInformationFill style={{ marginLeft: '5px', color: 'gray' }} />
+                                                </div>
+                                            </Tooltip>
+                                        </>
+                                    }
+                                    style={{ marginBottom: '0px' }}>
+
                                     <Input
                                         // placeholder="Location"
                                         value={inputValue}
@@ -136,20 +158,20 @@ function CreateRoommatePost({ value, onModalChange, onTrigger }) {
                                     />
                                 </Form.Item>
                                 {selectedValues.map((v) => (
-                                        <span key={v} style={{
-                                            display: 'inline-flex',  // Use flex display to align items vertically
-                                            alignItems: 'center',    // Align items vertically centered
-                                            margin: '3px',
-                                            padding: '3px 5px',
-                                            border: '1px solid #ccc',
-                                            borderRadius: '3px',
-                                            backgroundColor: '#f0f0f0',
-                                        }}>
-                                            {v}
-                                            <MdOutlineCancel onClick={() => handleRemoveValue(v)} style={{ cursor: 'pointer', marginLeft: '5px' }} />
-                                        </span>
+                                    <span key={v} style={{
+                                        display: 'inline-flex',  // Use flex display to align items vertically
+                                        alignItems: 'center',    // Align items vertically centered
+                                        margin: '3px',
+                                        padding: '3px 5px',
+                                        border: '1px solid #ccc',
+                                        borderRadius: '3px',
+                                        backgroundColor: '#f0f0f0',
+                                    }}>
+                                        {v}
+                                        <MdOutlineCancel onClick={() => handleRemoveValue(v)} style={{ cursor: 'pointer', marginLeft: '5px' }} />
+                                    </span>
 
-                                    ))}
+                                ))}
 
                             </Col>
                             <Col span={12}>
@@ -410,8 +432,6 @@ function CreateRoommatePost({ value, onModalChange, onTrigger }) {
             }
 
             message.success("Post created successfully");
-            onModalChange(false);
-            handleTrigger();
 
         } catch (error) {
             message.error(error.message);
@@ -419,25 +439,89 @@ function CreateRoommatePost({ value, onModalChange, onTrigger }) {
     }
 
 
+    const validate = async (values) => {
+        const userID = (await supabase.auth.getUser()).data.user.id;
 
+        const { data: post, error } = await supabase
+            .from('roommate_post')
+            .select('*')
+            .eq('studentID', userID)
+            .eq('rentalAgreementID', values.rentalAgreementID)
 
-    const handleFormFinish = (e) => {
+        if (error) {
+            console.log(error);
+            return;
+        }
+
+        console.log("Post:", post);
+        if (post.length > 0) {
+            message.error("You have already posted a roommate post for this rental agreement");
+            return true;
+        }
+
+        console.log("Selected values:", selectedValues);
+        const { data: post2, error2 } = await supabase
+            .from('roommate_post')
+            .select('*')
+            .eq('studentID', userID)
+            .is('rentalAgreementID', null);
+
+        if (error2) {
+            console.log(error2);
+            return;
+        }
+
+        console.log("Post2:", post2);
+        let hasMatchingLocation = false; // Initialize the variable
+
+        post2.forEach((post) => {
+            if (post.location.length === selectedValues.length &&
+                post.location.every(element => selectedValues.includes(element))) {
+                hasMatchingLocation = true; // Set the variable to true if the condition is met
+            }
+        });
+
+        if (hasMatchingLocation) {
+            message.error("You have already posted a roommate post with the same location");
+            return true;
+        }
+        return false;
+    }
+
+    const handleCloseModal = () => {
+        onModalChange(false);
+    }
+
+    const handleFormFinish = async (e) => {
         e.preventDefault();
         console.log("Form finished");
         const currentForm = stepsData[currentStep].formRef.current;
-        currentForm.validateFields().then((values) => {
+
+        try {
+            const values = await currentForm.validateFields();
             setFormData((prev) => ({ ...prev, ...values }));
 
-           
-            insertPost(values);
+            // validate to ensure that the user has not reposted the same post
+            const hasSamePost = await validate(values);
+
+            if (!hasSamePost) {
+                await insertPost(values);
+            }
+
             currentForm.resetFields();
+            handleTrigger();
+            handleCloseModal();
             setCurrentStep(0);
             setHasRentedProperty(false);
             setRentedProperty(null);
             setSelectedValues([]);
 
-        });
+
+        } catch (error) {
+            console.error("Error:", error);
+        }
     };
+
 
     const handleNextStep = () => {
         const currentForm = stepsData[currentStep].formRef.current;
@@ -502,7 +586,7 @@ function CreateRoommatePost({ value, onModalChange, onTrigger }) {
                                     disabled={
                                         index === 0 && hasRentedProperty && !rentedProperty ? true : false
                                     }
-                                onClick={index === stepsData.length - 1 ? handleFormFinish : handleNextStep}
+                                    onClick={index === stepsData.length - 1 ? handleFormFinish : handleNextStep}
                                 >
                                     {index === stepsData.length - 1 ? 'Submit' : 'Next'}
                                 </Button>

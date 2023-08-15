@@ -1,4 +1,4 @@
-import { Card, Avatar, Row, Col, Tooltip, Popconfirm, message, Button } from "antd";
+import { Card, Avatar, Row, Col, Tooltip, Popconfirm, message, Button, Tag } from "antd";
 import { useEffect, useState } from "react";
 import { supabase } from "../../../supabase-client";
 import { BsCurrencyDollar, BsGenderMale, BsGenderFemale } from "react-icons/bs";
@@ -145,7 +145,15 @@ function RoommatePostLayout({ listing }) {
                     <Row>
                         <Col span={24} style={cardContentStyle}>
                             <TfiLocationPin size={iconSize} />
-                            Location: {listing.location}
+                            Location:
+                            {listing.location && 
+                                listing.location.map((location, index) => {
+                                    return (
+                                        <Tag key={index} color="blue" style={{ marginLeft: '0.5em' }}>{location}</Tag>
+                                    )
+                                }
+                                )
+                            }
                         </Col>
                     </Row>
                     <Row>
