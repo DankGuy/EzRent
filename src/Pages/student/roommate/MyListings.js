@@ -57,7 +57,7 @@ function MyListings() {
                 display: "flex",
                 flexDirection: "column",
                 backgroundColor: "white",
-                margin: "10px 1% 10px 1%",
+                margin: "2.5% 1% 10px 1%",
                 height: (myListings.length <= 2) ? "calc(100vh - 70px)" : 'auto',
                 padding: "0 2em",
             }}

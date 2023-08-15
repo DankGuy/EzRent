@@ -1,4 +1,4 @@
-import { Card, Avatar, Row, Col, Tooltip, Popconfirm, message, Popover, Badge } from "antd";
+import { Card, Avatar, Row, Col, Tooltip, Popconfirm, message, Popover, Badge, Tag } from "antd";
 import { useEffect, useState } from "react";
 import { supabase } from "../../../supabase-client";
 import { BsCurrencyDollar, BsGenderFemale, BsGenderMale, BsThreeDotsVertical } from "react-icons/bs";
@@ -125,7 +125,7 @@ function MyListingPost({ listing, onTrigger }) {
     const content = (
         <div
             style={{
-                width: '150px',
+                width: 'auto',
                 padding: '0px',
             }}
         >
@@ -160,28 +160,16 @@ function MyListingPost({ listing, onTrigger }) {
                     </Popconfirm>
                 </Col>
             </Row>
-            {
-                postRequestCount > 0 ? (
-
-                    <Row className="popOutBox">
-                        <Col span={24} style={popOverStyle}>
-                            <Link to={`/student/roommate/myListings/request/${listing.postID}`} key="view" state={{ listingID: listing.postID }} style={{ color: 'black', display: 'flex', alignItems: 'center' }}>
-                                <span style={{ flexGrow: 1 }}>View Request</span>
-                                <Badge count={postRequestCount} >
-                                    <BsPeople size={18} />
-                                </Badge>
-                            </Link>
-                        </Col>
-                    </Row>
-                ) : (
-                    <Row style={{ padding: '0px 5px' }}>
-                        <Col span={24} style={{ ...popOverStyle, display: 'flex', alignItems: 'center', color: 'lightgrey', borderRadius: '5px', pointerEvents: 'none', cursor: 'not-allowed' }}>
-                            <span style={{ flexGrow: 1 }}>View Request</span>
+            <Row className="popOutBox">
+                <Col span={24} style={popOverStyle}>
+                    <Link to={`/student/roommate/myListings/viewRoommate/${listing.postID}`} key="view" state={{ listingID: listing.postID }} style={{ color: 'black', display: 'flex', alignItems: 'center' }}>
+                        <span style={{ flexGrow: 1, marginRight: '20px' }}>View Roommate</span>
+                        <Badge count={postRequestCount} >
                             <BsPeople size={18} />
-                        </Col>
-                    </Row>
-                )
-            }
+                        </Badge>
+                    </Link>
+                </Col>
+            </Row>
         </div>
     );
 
@@ -281,8 +269,17 @@ function MyListingPost({ listing, onTrigger }) {
                     <Row>
                         <Col span={24} style={cardContentStyle}>
                             <TfiLocationPin size={iconSize} />
-                            Location: {listing.location}
+                            Location:
+                            {listing.location &&
+                                listing.location.map((location, index) => {
+                                    return (
+                                        <Tag key={index} color="blue" style={{ marginLeft: '0.5em' }}>{location}</Tag>
+                                    )
+                                }
+                                )
+                            }
                         </Col>
+
                     </Row>
                     <Row>
                         <Col span={10} style={cardContentStyle}>
@@ -305,7 +302,7 @@ function MyListingPost({ listing, onTrigger }) {
                                 open={isOpen}
                                 trigger="click">
                                 <span>
-                                    <Badge dot={true} offset={[-5, 5]} style={{display: postRequestCount > 0 ? 'block' : 'none'}}>
+                                    <Badge dot={true} offset={[-5, 5]} style={{ display: postRequestCount > 0 ? 'block' : 'none' }}>
                                         <BsThreeDotsVertical size={18}
                                             style={{
                                                 color: 'black',

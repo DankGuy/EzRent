@@ -90,6 +90,9 @@ function App() {
             });
 
         }
+        else {
+            setIsLoading(false);
+        }
     }, [userSession]);
 
     useEffect(() => {
@@ -145,7 +148,7 @@ function App() {
                             <Route path="roomRental" element={<RoomRental />} />
                             <Route path="roommate" element={<Roommate />} />
                             <Route path="roommate/myListings" element={<MyListings />} />
-                            <Route path="roommate/myListings/request/:id" element={<RoommateRequest />} />
+                            <Route path="roommate/myListings/viewRoommate/:id" element={<RoommateRequest />} />
                             <Route path="roommate/myListings/:id" element={<ListingPostDetails />} />
                             <Route path="roommate/myRequest" element={<MyRequest />} />
                             <Route path="roommate/post/:id" element={<RoommatePost />} />

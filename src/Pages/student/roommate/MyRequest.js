@@ -12,7 +12,7 @@ function MyRequest() {
                 display: "flex",
                 flexDirection: "column",
                 backgroundColor: "white",
-                margin: "10px 1% 10px 1%",
+                margin: "2.5% 1% 10px 1%",
                 height: "calc(100vh - 50px)",
                 padding: "0 2em",
             }}

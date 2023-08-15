@@ -1,8 +1,10 @@
-import { Breadcrumb, Button, Col, Row, Table, Tooltip, message } from "antd";
+import { Breadcrumb, Button, Col, Popconfirm, Row, Table, Tabs, Tooltip, message } from "antd";
 import { useEffect, useState } from "react";
 import { useLocation } from "react-router-dom";
 import { supabase } from "../../../supabase-client";
 import { getDateOnly } from "../../../Components/timeUtils";
+import { MdOutlineDeleteOutline } from "react-icons/md";
+
 
 function RoommateRequest() {
 
@@ -12,20 +14,79 @@ function RoommateRequest() {
     console.log(listingID);
 
     const [requestDetails, setRequestDetails] = useState([]);
+    const [currentRoommateDetails, setCurrentRoommateDetails] = useState([]);
 
     const [selectedPostIDs, setSelectedPostIDs] = useState([]);
 
     const [fetchTrigger, setFetchTrigger] = useState(0);
 
+    const [activeKey, setActiveKey] = useState("1");
 
     useEffect(() => {
         getRequestDetails();
+        getCurrentRoommateDetails();
 
     }, []);
 
     useEffect(() => {
         getRequestDetails();
+        getCurrentRoommateDetails();
+
     }, [fetchTrigger]);
+
+    const getCurrentRoommateDetails = async () => {
+        const { data, error } = await supabase
+            .from('roommate_request')
+            .select('*, student(*), roommate_post(*)')
+            .eq('postID', listingID)
+            .order('requestedDateTime', { ascending: false })
+            .eq('requestStatus', 'Approved');
+
+        if (error) {
+            console.log(error);
+            return;
+        }
+
+        console.log(data);
+
+        const tableData = [];
+
+        data.forEach((element) => {
+            tableData.push({
+                key: element.requestID,
+                studentName: element.student.name,
+                studentEmail: element.student.email,
+                studentPhone: element.student.phone,
+                action: <Popconfirm
+                    title="Are you sure to remove this roommate?"
+                    onConfirm={() => handleRemove(element.requestID)}
+                    okText="Yes"
+                    cancelText="No"
+                >
+                    <span>
+                     <MdOutlineDeleteOutline  size={25} color="red" style={{ cursor: 'pointer' }} />
+                    </span>
+                </Popconfirm>,
+            });
+        });
+
+        setCurrentRoommateDetails(tableData);
+
+    }
+
+    const handleRemove = async (requestID) => {
+        let { data, error } = await supabase
+            .from("roommate_request")
+            .update({ requestStatus: "Rejected" })
+            .eq("requestID", requestID);
+        if (error) {
+            console.log("error", error);
+            return;
+        }
+        message.success("Roommate removed successfully");
+        setFetchTrigger((prevTrigger) => prevTrigger + 1);
+    }
+
 
 
     const getRequestDetails = async () => {
@@ -60,12 +121,58 @@ function RoommateRequest() {
     }
 
 
-    const columns = [
+    const requestColumn = [
         {
             title: 'Student Name',
             dataIndex: 'studentName',
             key: 'studentName',
             width: '15%',
+            sorter: (a, b) => a.studentName.localeCompare(b.studentName),
+        },
+        {
+            title: 'Student Email',
+            dataIndex: 'studentEmail',
+            key: 'studentEmail',
+            width: '25%',
+        },
+        {
+            title: 'Student Phone',
+            dataIndex: 'studentPhone',
+            key: 'studentPhone',
+            width: '10%',
+        },
+        {
+            title: 'Request Date',
+            dataIndex: 'requestDate',
+            key: 'requestDate',
+            width: '15%',
+            sorter: (a, b) => a.requestDate.localeCompare(b.requestDate),
+        },
+        {
+            title: 'Message',
+            dataIndex: 'message',
+            key: 'message',
+            width: '35%',
+            ellipsis: {
+                showTitle: false,
+            },
+            render: (message) => (
+                <Tooltip placement="topLeft" title={message}>
+                    <div style={{ width: '100%', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
+                        {message}
+                    </div>
+                </Tooltip>
+            ),
+        },
+    ];
+
+    const currentRoommateColumn = [
+        {
+            title: 'Student Name',
+            dataIndex: 'studentName',
+            key: 'studentName',
+            width: '15%',
+            sorter: (a, b) => a.studentName.localeCompare(b.studentName),
         },
         {
             title: 'Student Email',
@@ -80,28 +187,13 @@ function RoommateRequest() {
             width: '10%',
         },
         {
-            title: 'Request Date',
-            dataIndex: 'requestDate',
-            key: 'requestDate',
+            title: 'Action',
+            dataIndex: 'action',
+            key: 'action',
             width: '10%',
-        },
-        {
-            title: 'Message',
-            dataIndex: 'message',
-            key: 'message',
-            width: '45%',
-            ellipsis: {
-                showTitle: false,
-            },
-            render: (message) => (
-                <Tooltip placement="topLeft" title={message}>
-                    <div style={{ width: '100%', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
-                        {message}
-                    </div>
-                </Tooltip>
-            ),
-        },
+        }
     ];
+
 
 
     // rowSelection object indicates the need for row selection
@@ -249,6 +341,39 @@ function RoommateRequest() {
         }
     };
 
+    const items = [
+        {
+            key: "1",
+            label: "Current Roommate",
+            children:
+                <Table
+                    columns={currentRoommateColumn}
+                    dataSource={currentRoommateDetails}
+                    bordered={true}
+                    pagination={{ pageSize: 5 }}
+                />
+        },
+        {
+            key: "2",
+            label: "Roommate Request",
+            children:
+                <Table
+                    columns={requestColumn}
+                    dataSource={requestDetails}
+                    bordered={true}
+                    pagination={{ pageSize: 5 }}
+                    rowSelection={{
+                        type: 'checkbox',
+                        ...rowSelection,
+                    }}
+                />
+        },
+    ];
+
+    const onChange = (activeKey) => {
+        setActiveKey(activeKey);
+    };
+
 
     return (
         <>
@@ -257,7 +382,7 @@ function RoommateRequest() {
                     display: "flex",
                     flexDirection: "column",
                     backgroundColor: "white",
-                    margin: "10px 1% 10px 1%",
+                    margin: "2.5% 1% 10px 1%",
                     height: "calc(100vh - 70px)",
                     padding: "0 2em",
                 }}
@@ -268,7 +393,7 @@ function RoommateRequest() {
                             { href: '/student', title: 'Home' },
                             { href: '/student/roommate', title: 'Roommate' },
                             { href: '/student/roommate/myListings', title: 'My Listings' },
-                            { title: 'Request' },
+                            { title: 'Roomate' },
                         ]}
                     />
                 </div>
@@ -276,58 +401,64 @@ function RoommateRequest() {
 
                 <Row>
                     <Col span={18} style={{ marginLeft: '1%' }}>
-                        <h1>Listing Request</h1>
+                        <h1>Listing Roomate</h1>
                     </Col>
                 </Row>
 
 
-                <Table
-                    columns={columns}
-                    dataSource={requestDetails}
-                    bordered={true}
-                    pagination={{ pageSize: 5 }}
-                    rowSelection={{
-                        type: 'checkbox',
-                        ...rowSelection,
-                    }}
+                <div style={{
+                    marginTop: "2%",
+                    marginLeft: "1%",
+                }}>
+                <Tabs
+                    defaultActiveKey="1"
+                    items={items}
+                    onChange={onChange}
+                    activeKey={activeKey}
                 />
-
-                <div style={{ display: "flex", flexDirection: "column" }}>
-                    <div
-                        style={{
-                            width: "30%",
-                            display: "flex",
-                            flexDirection: "row",
-                            alignSelf: "flex-end",
-                        }}
-                    >
-                        <Button
-                            type="primary"
-                            style={{
-                                width: "40%",
-                                height: "auto",
-                                margin: "10px",
-                                fontSize: "1.1rem",
-                            }}
-                            onClick={handleApproveClick}
-                        >
-                            Approve
-                        </Button>
-                        <Button
-                            type="primary"
-                            danger
-                            style={{
-                                width: "40%",
-                                height: "auto",
-                                margin: "10px",
-                                fontSize: "1.1rem",
-                            }}
-                            onClick={handleRejectClick}
-                        >
-                            Reject
-                        </Button>
-                    </div>
                 </div>
+
+
+
+                {activeKey === "2" &&
+                    <div style={{ display: "flex", flexDirection: "column" }}>
+                        <div
+                            style={{
+                                width: "30%",
+                                display: "flex",
+                                flexDirection: "row",
+                                alignSelf: "flex-end",
+                            }}
+                        >
+                            <Button
+                                type="primary"
+                                style={{
+                                    width: "40%",
+                                    height: "auto",
+                                    margin: "10px",
+                                    fontSize: "1.1rem",
+                                }}
+                                onClick={handleApproveClick}
+                            >
+                                Approve
+                            </Button>
+                            <Button
+                                type="primary"
+                                danger
+                                style={{
+                                    width: "40%",
+                                    height: "auto",
+                                    margin: "10px",
+                                    fontSize: "1.1rem",
+                                }}
+                                onClick={handleRejectClick}
+                            >
+                                Reject
+                            </Button>
+                        </div>
+                    </div>
+                }
+
 
 
 

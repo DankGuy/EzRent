@@ -104,15 +104,22 @@ function NavBar() {
       label: "Roommate",
       key: "/student/roommate",
     },
-    {
-      label: "Admin",
-      key: "/student/admin",
-    },
+    // {
+    //   label: "Admin",
+    //   key: "/student/admin",
+    // },
     {
       label: "About Us",
       key: "/student/aboutUs",
     },
   ];
+
+  if (user?.role === "admin") {
+    items.splice(3, 0, {
+      label: "Admin",
+      key: "/student/admin",
+    });
+  }
 
   const handleClick = (e) => {
     setCurrent(e.key);

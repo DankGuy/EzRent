@@ -447,7 +447,7 @@ function RoomRentalPost() {
 
 
     return (
-        <div style={{ marginLeft: '4%', marginRight: '6%', padding: '10px' }}>
+        <div style={{ margin:'2.5% 6% 0 4%', padding: '10px' }}>
             <div>
                 <Breadcrumb style={{ margin: '16px 0', fontWeight: '500' }}
                     items={[

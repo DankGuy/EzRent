@@ -250,7 +250,7 @@ function ListingPostDetails() {
     return (
         <div
             style={{
-                margin: "10px 1% 10px 1%",
+                margin: "2.5% 1% 10px 1%",
                 padding: "0em 2em 1em 2em",
             }}>
             <div style={{ width: '50%', marginLeft: '1%' }}>
