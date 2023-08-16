@@ -1,7 +1,7 @@
 import { Button, Modal, DatePicker, Select, Form } from 'antd';
 import { useEffect } from 'react';
 import { useState } from 'react';
-import { supabase } from '../../../supabase-client';
+import { supabase } from '../supabase-client';
 import dayjs from 'dayjs';
 import customParseFormat from 'dayjs/plugin/customParseFormat';
 import { message } from 'antd';

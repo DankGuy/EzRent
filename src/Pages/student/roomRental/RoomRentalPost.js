@@ -21,7 +21,7 @@ import "./RoomRentalPost.css"
 import Carousel from "react-multi-carousel";
 import 'react-multi-carousel/lib/styles.css';
 import { getDateOnly, getElapsedTime } from '../../../Components/timeUtils';
-import AppointmentModalForm from './AppointmentModalForm';
+import AppointmentModalForm from '../../../Components/AppointmentModalForm';
 import { UserOutlined, LoadingOutlined } from '@ant-design/icons';
 import { Fragment } from 'react';
 
@@ -570,7 +570,7 @@ function RoomRentalPost() {
                             </Col>
                         </Row>
                     </div>
-                    <div style={{ boxShadow: '0 2px 4px rgba(0, 0, 0, 0.2)', margin: '10px 10px 20px 10px', padding: '10px 30px 10px 30px', backgroundColor: 'white' }}>
+                    <div style={{ boxShadow: '0 2px 4px rgba(0, 0, 0, 0.2)', margin: '10px 10px 20px 10px', padding: '10px 30px 20px 30px', backgroundColor: 'white' }}>
                         <Row >
                             <Col span={24} style={{ fontSize: '18px', marginBottom: '8px' }}><GoReport style={{ verticalAlign: 'middle', marginRight: '5px' }} />Want to report the post? </Col>
                         </Row>
