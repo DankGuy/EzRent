@@ -20,7 +20,7 @@ function MyListingPost({ listing, onTrigger }) {
 
     console.log(listing);
 
-    const [agentAvatar, setAgentAvatar] = useState(null);
+    const [avatar, setAvatar] = useState(null);
 
     const [messageApi, contextHolder] = message.useMessage();
 
@@ -66,7 +66,7 @@ function MyListingPost({ listing, onTrigger }) {
 
 
         getAvatar().then((data) => {
-            setAgentAvatar(data.publicUrl);
+            setAvatar(data.publicUrl);
         });
 
         getPostRequestCount().then((data) => {
@@ -186,18 +186,18 @@ function MyListingPost({ listing, onTrigger }) {
             }}
             bordered={true}
             title={
-                <Meta style={{ paddingTop: '1em', paddingBottom: '5px' }}
-                    avatar={<Avatar src={agentAvatar} size={"large"} icon={<UserOutlined />} />}
+                <Meta style={{ paddingTop: '1em', paddingBottom: '1em' }}
+                    className="roommatePostMeta"
+                    avatar={<Avatar src={avatar} size={"large"} icon={<UserOutlined />} />}
                     title={
-                        <>
+                        <span>
                             {listing.student.name}
                             <span style={{ marginLeft: '1em' }}>
                                 {listing.student.gender === "Male" ? <BsGenderMale size={iconSize} color="blue" /> : <BsGenderFemale size={iconSize} color="#E75480" />}
                             </span>
 
-                        </>
+                        </span>
                     }
-                    description={listing.student.email}
                 />
             }
             headStyle={{
@@ -290,7 +290,7 @@ function MyListingPost({ listing, onTrigger }) {
                             <BsCurrencyDollar size={iconSize} />
                             Budget: RM{listing.budget}.00/month
                         </Col>
-                        <Col span={1} offset={2} >
+                        <Col span={1} offset={3} >
                             <Popover
                                 placement="leftTop"
                                 arrow={false}

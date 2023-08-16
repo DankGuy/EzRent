@@ -579,7 +579,6 @@ function RoomRentalPost() {
                         </Row>
                         <Row>
                             <Col span={24} style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', marginTop: '10px' }}>
-                                {/* //TODO: Pass student id to report modal */}
                                 <ReportModalForm buttonContent={"Report this post"} postID={post.postID} />
                             </Col>
                         </Row>

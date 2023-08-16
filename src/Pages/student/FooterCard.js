@@ -1,4 +1,5 @@
 import { Col, Row } from "antd";
+import { Fragment } from "react";
 import { ImFacebook2, ImTwitter, ImInstagram, ImYoutube } from "react-icons/im";
 
 
@@ -43,7 +44,7 @@ function Footer() {
     const iconSize = 20;
 
     return (
-        <>
+        <div style={{ position: 'relative', bottom: 0, width: '100%', zIndex: 50 }}>
             <Row style={{
                 backgroundColor: "#001529",
                 color: "white",
@@ -101,7 +102,7 @@ function Footer() {
                 </Col>
             </Row>
 
-        </>
+        </div>
     )
 
 }

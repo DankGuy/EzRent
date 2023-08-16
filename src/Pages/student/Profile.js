@@ -73,7 +73,7 @@ function Profile() {
             position: "fixed",
             left: "0",
             height: "100%",
-            zIndex: "1001",
+            zIndex: "20",
           }}
         >
           <Menu

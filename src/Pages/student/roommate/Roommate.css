@@ -5,10 +5,7 @@
     color: white !important;
 }
 
-/* .roommateRequestBadge:hover {
-    color: #4096ff !important;
+.roommatePostMeta .ant-card-meta-detail{
+    display: flex !important;
+    align-items: center !important;
 }
-
-.roommateRequestBadge:active{
-    color: #6643b5  !important;
-} */

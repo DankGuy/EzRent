@@ -1,4 +1,4 @@
-import { Avatar, Breadcrumb, Button, Col, message, Row, Popconfirm, Modal, Form, Input } from "antd";
+import { Avatar, Breadcrumb, Button, Col, message, Row, Popconfirm, Modal, Form, Input, Tag } from "antd";
 import { useEffect, useState } from "react";
 import { useLocation } from "react-router-dom";
 import { supabase } from "../../../supabase-client";
@@ -198,13 +198,13 @@ function RoommatePost() {
                                         <p style={{ fontStyle: 'italic' }}>{`Posted on: ${getDateOnly(listing.postDate)} (Last modified: ${getElapsedTime(listing.lastModifiedDate)})`}</p>
                                     </Col>
                                 </Row>
-                                <Row>
+                                {/* <Row>
                                     <Col span={24} style={{ marginBottom: '0px' }}>
                                         <span style={{ fontSize: '15px', fontWeight: '500', color: 'gray', marginTop: '0px' }}>
                                             {listing.student.email}
                                         </span>
                                     </Col>
-                                </Row>
+                                </Row> */}
                             </Col>
                         </Row>
                     </div>
@@ -279,7 +279,14 @@ function RoommatePost() {
                                                     <span style={labelStyle}>
                                                         Location:
                                                     </span>
-                                                    {listing.location}
+                                                    {listing.location &&
+                                                        listing.location.map((location, index) => {
+                                                            return (
+                                                                <Tag key={index} color="blue" style={{ marginLeft: '0.5em' }}>{location}</Tag>
+                                                            )
+                                                        }
+                                                        )
+                                                    }
                                                 </Col>
                                             </Row>
                                             <Row>
@@ -324,7 +331,7 @@ function RoommatePost() {
                                                             <span style={labelStyle}>
                                                                 Duration:
                                                             </span>
-                                                            {listing.duration} months
+                                                            {listing.duration}
                                                         </Col>
                                                     ) : null}
                                                 </Row>
@@ -370,7 +377,7 @@ function RoommatePost() {
                                                                                 Gender:
                                                                             </span>
                                                                         </Col>
-                                                                        <Col span={roommateValueSpan} style={colStyle}>
+                                                                        <Col span={roommateValueSpan} style={{...colStyle, textTransform: 'capitalize'}} >
                                                                             {listing.roommate.gender}
                                                                         </Col>
                                                                     </>
@@ -384,7 +391,7 @@ function RoommatePost() {
                                                                                 Student Type:
                                                                             </span>
                                                                         </Col>
-                                                                        <Col span={roommateValueSpan} style={colStyle}>
+                                                                        <Col span={roommateValueSpan} style={{...colStyle, textTransform: 'capitalize'}} >
                                                                             {listing.roommate.studentType} student
                                                                         </Col>
                                                                     </>

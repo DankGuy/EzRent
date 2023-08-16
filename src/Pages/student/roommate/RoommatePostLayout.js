@@ -69,18 +69,18 @@ function RoommatePostLayout({ listing }) {
             }}
             bordered={true}
             title={
-                <Meta style={{ paddingTop: '1em' }}
+                <Meta style={{ paddingTop: '1em', paddingBottom: '1em' }}
+                    className="roommatePostMeta"
                     avatar={<Avatar src={avatar} size={"large"} icon={<UserOutlined />} />}
                     title={
-                        <>
+                        <span>
                             {listing.student.name}
                             <span style={{ marginLeft: '1em' }}>
                                 {listing.student.gender === "Male" ? <BsGenderMale size={iconSize} color="blue" /> : <BsGenderFemale size={iconSize} color="#E75480" />}
                             </span>
 
-                        </>
+                        </span>
                     }
-                    description={listing.student.email}
                 />
             }
             headStyle={{

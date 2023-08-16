@@ -71,7 +71,7 @@ function AdminLayout() {
               left: "0",
               top: "100",
               height: "100%",
-              zIndex: "1001",
+              zIndex: "20",
             }}
           >
             <Menu

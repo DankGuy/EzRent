@@ -158,6 +158,7 @@ function NavBar() {
               width: '100%',
               fontSize: '17px',
               paddingBottom: '-20px',
+              paddingTop: '10px',
             }}
           />
 

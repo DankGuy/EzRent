@@ -14,13 +14,16 @@ import {
     Popconfirm,
     message,
     InputNumber,
+    Tooltip,
 } from "antd"
-import { useEffect, useRef } from "react";
+import { useEffect, useRef, useState } from "react";
 import { useLocation } from "react-router-dom"
 import moment from 'moment';
 import { Link, useNavigate } from "react-router-dom";
 import { supabase } from "../../../supabase-client";
 import { getCurrentDateTime } from "../../../Components/timeUtils";
+import { MdOutlineCancel } from "react-icons/md";
+import { RiInformationFill } from "react-icons/ri";
 
 
 const { Title } = Typography;
@@ -40,6 +43,10 @@ function ListingPostDetails() {
     const roommatePreferencesRef = useRef(null);
     const myLifestyleRef = useRef(null);
 
+    const [locationSelection, setLocationSelection] = useState(listing.location);
+    const [inputValue, setInputValue] = useState('');
+    const inputRef = useRef(null);
+
 
     console.log(listing);
     console.log(isView);
@@ -48,7 +55,7 @@ function ListingPostDetails() {
         form.setFieldsValue({
             moveInDate: moment(listing.moveInDate),
             rentDuration: listing.duration,
-            locationSelection: listing.location,
+            // locationSelection: listing.location,
             propertySelection: listing.propertyType,
             budgetInput: listing.budget,
             preferredAge: [listing.roommate.age[0], listing.roommate.age[1]],
@@ -173,7 +180,7 @@ function ListingPostDetails() {
         const { error } = await supabase
             .from('roommate_post')
             .update({
-                location: values.locationSelection,
+                location: locationSelection,
                 propertyType: values.propertySelection,
                 budget: values.budgetInput,
                 moveInDate: values.moveInDate,
@@ -220,7 +227,7 @@ function ListingPostDetails() {
     }
 
     const handleClick = (sec) => () => {
-        const offset = -50; // Adjust this value to set the desired offset from the top of the element
+        const offset = -80; // Adjust this value to set the desired offset from the top of the element
 
         let targetRef;
 
@@ -246,6 +253,26 @@ function ListingPostDetails() {
     };
 
 
+    const handleRemoveValue = (value) => {
+        console.log("Removing value:", value);
+        setLocationSelection(locationSelection.filter((v) => v !== value));
+        // setSelectedValues(selectedValues.filter((v) => v !== value));
+    };
+
+    const handleInputChange = (event) => {
+        setInputValue(event.target.value);
+    };
+
+    const handleInputKeyPress = (event) => {
+        if (event.key === 'Enter' && inputValue.trim() !== '') {
+            const trimmedValue = inputValue.trim();
+            setLocationSelection(prevValues => [...prevValues, trimmedValue]);
+            // setSelectedValues(prevValues => [...prevValues, trimmedValue]);
+            setInputValue('');
+            form.setFieldValue('locationSelection', '');
+            inputRef.current.focus({ cursor: 'end' });
+        }
+    };
 
     return (
         <div
@@ -308,9 +335,51 @@ function ListingPostDetails() {
                             <>
                                 <Row>
                                     <Col span={12}>
-                                        <Form.Item name="locationSelection" label="Preferred Location">
-                                            <Input placeholder="Location" style={{ width: '80%' }} />
-                                        </Form.Item>
+                                        <Form.Item name="locationSelection"
+                                            label={
+                                                <>
+                                                    <span>Preferred Location(s)</span>
+                                                    <Tooltip
+                                                        title={
+                                                            <>
+                                                                <p>You can input multiple preferred locations by pressing 'Enter' after typing each one.</p>
+                                                            </>
+
+                                                        }
+                                                        placement='right'
+                                                        overlayStyle={{ maxWidth: '300px' }}
+                                                    >
+                                                        <div>
+                                                            <RiInformationFill style={{ marginLeft: '5px', color: 'gray' }} />
+                                                        </div>
+                                                    </Tooltip>
+                                                </>
+                                            } style={{ marginBottom: '0px' }}>
+                                            <Input
+                                                // placeholder="Location"
+                                                value={inputValue}
+                                                style={{ width: '80%' }}
+                                                onPressEnter={handleInputKeyPress}
+                                                onChange={handleInputChange}
+                                                ref={inputRef}
+                                            />                                        </Form.Item>
+                                        {locationSelection.map((v) => (
+                                            <span key={v} style={{
+                                                display: 'inline-flex',  // Use flex display to align items vertically
+                                                alignItems: 'center',    // Align items vertically centered
+                                                margin: '3px',
+                                                padding: '3px 5px',
+                                                border: '1px solid #ccc',
+                                                borderRadius: '3px',
+                                                backgroundColor: '#f0f0f0',
+                                            }}>
+                                                {v}
+                                                {!isView ? (
+                                                    <MdOutlineCancel onClick={() => handleRemoveValue(v)} style={{ cursor: 'pointer', marginLeft: '5px' }} />
+                                                ) : null}
+                                            </span>
+
+                                        ))}
                                     </Col>
                                     <Col span={12}>
                                         <Form.Item name="propertySelection" label="Property Type">

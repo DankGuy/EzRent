@@ -18,7 +18,7 @@ function StudentLayout() {
                 <Outlet />
             </Content>
             <Footer style={{padding: 0}}>
-                <FooterCard />
+                <FooterCard/>
             </Footer>
         </Layout>
     </>
