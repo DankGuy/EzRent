@@ -93,7 +93,7 @@ function App() {
         else {
             setIsLoading(false);
         }
-    }, [userSession]);
+    }, [auth]);
 
     useEffect(() => {
         if (agentStatus === false && userSession && userSession.user.user_metadata.userType === "agent") {

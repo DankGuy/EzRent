@@ -1,4 +1,4 @@
-import { Breadcrumb, Button, Col, Popconfirm, Row, Table, Tabs, Tooltip, message } from "antd";
+import { Badge, Breadcrumb, Button, Col, Popconfirm, Row, Table, Tabs, Tooltip, message } from "antd";
 import { useEffect, useState } from "react";
 import { useLocation } from "react-router-dom";
 import { supabase } from "../../../supabase-client";
@@ -64,14 +64,13 @@ function RoommateRequest() {
                     cancelText="No"
                 >
                     <span>
-                     <MdOutlineDeleteOutline  size={25} color="red" style={{ cursor: 'pointer' }} />
+                        <MdOutlineDeleteOutline size={25} color="red" style={{ cursor: 'pointer' }} />
                     </span>
                 </Popconfirm>,
             });
         });
 
         setCurrentRoommateDetails(tableData);
-
     }
 
     const handleRemove = async (requestID) => {
@@ -355,7 +354,33 @@ function RoommateRequest() {
         },
         {
             key: "2",
-            label: "Roommate Request",
+            label: (<>
+                <span>Roommate Request</span>
+                {requestDetails.length > 0 &&
+                    <span style={{
+                        marginLeft: "10px",
+                        backgroundColor: "#ff4d4f",
+                        color: "#ffffff",
+                        fontSize: "12px",
+                        fontWeight: "normal",
+                        lineHeight: "20px",
+                        boxShadow: "0 0 0 1px #ffffff",
+                        borderRadius: "10px",
+                        minWidth: "20px",
+                        height: "20px",
+                        zIndex: "auto",
+                        textAlign: "center",
+                        whiteSpace: "nowrap",
+                        transition: "background 0.2s",
+                        display: "inline-block",
+                        padding: "0 6px",
+                        position: "relative",
+                        top: "-5px",
+                        left: "-5px",
+                    }} >
+                        {requestDetails.length}
+                    </span>}
+            </>),
             children:
                 <Table
                     columns={requestColumn}
@@ -410,12 +435,13 @@ function RoommateRequest() {
                     marginTop: "2%",
                     marginLeft: "1%",
                 }}>
-                <Tabs
-                    defaultActiveKey="1"
-                    items={items}
-                    onChange={onChange}
-                    activeKey={activeKey}
-                />
+                    <Tabs
+                        defaultActiveKey="1"
+                        items={items}
+                        onChange={onChange}
+                        activeKey={activeKey}
+                        tabBarStyle={{ fontWeight: "bold" }}
+                    />
                 </div>
 
 

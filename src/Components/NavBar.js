@@ -5,6 +5,7 @@ import { supabase } from "../supabase-client";
 import { useEffect, useState } from "react";
 import { Avatar, Dropdown, Menu, Space } from "antd";
 import { UserOutlined, LogoutOutlined, DownOutlined } from "@ant-design/icons";
+import { RiAdminLine } from "react-icons/ri";
 
 function NavBar() {
 
@@ -104,22 +105,13 @@ function NavBar() {
       label: "Roommate",
       key: "/student/roommate",
     },
-    // {
-    //   label: "Admin",
-    //   key: "/student/admin",
-    // },
     {
       label: "About Us",
       key: "/student/aboutUs",
     },
   ];
 
-  if (user?.role === "admin") {
-    items.splice(3, 0, {
-      label: "Admin",
-      key: "/student/admin",
-    });
-  }
+
 
   const handleClick = (e) => {
     setCurrent(e.key);
@@ -127,6 +119,26 @@ function NavBar() {
     navigate(e.key);
   };
 
+  const dropdownItems = [
+    {
+      label: "My Profile",
+      key: "/student/profile/profileInformation",
+      icon: <UserOutlined style={{ fontSize: '15px' }} />,
+    },
+    {
+      label: "Logout",
+      key: "/",
+      icon: <LogoutOutlined style={{ fontSize: '15px' }} />,
+    },
+  ];
+
+  if (user?.role === "admin") {
+    dropdownItems.splice(1, 0, {
+      label: "Admin",
+      key: "/student/admin",
+      icon: <RiAdminLine style={{ fontSize: '15px' }} />,
+    });
+  }
 
   return (
     <>
@@ -160,18 +172,7 @@ function NavBar() {
 
             <Dropdown
               menu={{
-                items: [
-                  {
-                    label: "My Profile",
-                    key: "/student/profile/profileInformation",
-                    icon: <UserOutlined style={{ fontSize: '15px' }} />,
-                  },
-                  {
-                    label: "Logout",
-                    key: "/",
-                    icon: <LogoutOutlined style={{ fontSize: '15px' }} />,
-                  },
-                ],
+                items: dropdownItems,
                 onClick: ({ key }) => {
                   if (key === "/") {
                     logout();
