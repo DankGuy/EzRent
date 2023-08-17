@@ -31,6 +31,7 @@ function RoommatePostLayout({ listing }) {
                     },
                 })
 
+                console.log(data)
             return data;
         };
 

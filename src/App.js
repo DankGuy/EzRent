@@ -54,8 +54,8 @@ import Loading from "./Pages/Result/Loading";
 function App() {
     const { userSession, auth } = useAuth();
 
-    console.log(userSession);
-    console.log(auth);
+    // console.log(userSession);
+    // console.log(auth);
     const [agentStatus, setAgentStatus] = useState(null);
     const [isLoading, setIsLoading] = useState(true);
 
@@ -66,7 +66,7 @@ function App() {
             .select("account_status")
             .eq("agent_id", userSession.user.id)
 
-        console.log(agentStatus);
+        // console.log(agentStatus);
 
         if (agentStatusError) {
             console.log(agentStatusError);
@@ -84,7 +84,7 @@ function App() {
     useEffect(() => {
         if (userSession) {
             getAgentStatus(userSession).then((status) => {
-                console.log(status);
+                // console.log(status);
                 setAgentStatus(status);
                 setIsLoading(false);
             });
@@ -97,7 +97,7 @@ function App() {
 
     useEffect(() => {
         if (agentStatus === false && userSession && userSession.user.user_metadata.userType === "agent") {
-            console.log(agentStatus)
+            // console.log(agentStatus)
             supabase.auth.signOut();
         }
     }, [agentStatus, userSession]);

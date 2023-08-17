@@ -3,7 +3,7 @@ import logo from "../images/logoIcon.png";
 import "./navBarCss.css";
 import { supabase } from "../supabase-client";
 import { useEffect, useState } from "react";
-import { Avatar, Dropdown, Menu, Space } from "antd";
+import { Avatar, Dropdown, Menu } from "antd";
 import { UserOutlined, LogoutOutlined, DownOutlined } from "@ant-design/icons";
 import { RiAdminLine } from "react-icons/ri";
 
@@ -35,7 +35,7 @@ function NavBar() {
       .select("*")
       .eq("student_id", user.id);
 
-    console.log(student[0]);
+    // console.log(student[0]);
     return student[0];
   }
 

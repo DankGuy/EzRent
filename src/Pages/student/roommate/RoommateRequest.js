@@ -17,22 +17,47 @@ function RoommateRequest() {
     const [currentRoommateDetails, setCurrentRoommateDetails] = useState([]);
 
     const [selectedPostIDs, setSelectedPostIDs] = useState([]);
+    const [selectedRoomTypes, setSelectedRoomTypes] = useState([]);
 
     const [fetchTrigger, setFetchTrigger] = useState(0);
 
     const [activeKey, setActiveKey] = useState("1");
 
+    const [hasRentalAgreement, setHasRentalAgreement] = useState(false);
+
     useEffect(() => {
+        getHasRentalAgreement();
         getRequestDetails();
         getCurrentRoommateDetails();
 
     }, []);
 
     useEffect(() => {
+        getHasRentalAgreement();
         getRequestDetails();
         getCurrentRoommateDetails();
 
     }, [fetchTrigger]);
+
+    const getHasRentalAgreement = async () => {
+        const { data, error } = await supabase
+            .from('roommate_post')
+            .select('rentalAgreementID')
+            .eq('postID', listingID);
+
+        if (error) {
+            console.log(error);
+            return;
+        }
+
+        console.log(data);
+
+        if (data[0].rentalAgreementID !== null) {
+            setHasRentalAgreement(true);
+        } else {
+            setHasRentalAgreement(false);
+        }
+    }
 
     const getCurrentRoommateDetails = async () => {
         const { data, error } = await supabase
@@ -48,7 +73,6 @@ function RoommateRequest() {
         }
 
         console.log(data);
-
         const tableData = [];
 
         data.forEach((element) => {
@@ -57,6 +81,7 @@ function RoommateRequest() {
                 studentName: element.student.name,
                 studentEmail: element.student.email,
                 studentPhone: element.student.phone,
+                roomType: element.roomType,
                 action: <Popconfirm
                     title="Are you sure to remove this roommate?"
                     onConfirm={() => handleRemove(element.requestID)}
@@ -102,7 +127,6 @@ function RoommateRequest() {
         }
 
         console.log(data);
-
         const tableData = [];
 
         data.forEach((element) => {
@@ -113,6 +137,7 @@ function RoommateRequest() {
                 studentPhone: element.student.phone,
                 requestDate: getDateOnly(element.requestedDateTime),
                 message: element.message == null ? "-" : element.message,
+                roomType: element.roomType,
             });
         });
 
@@ -138,8 +163,15 @@ function RoommateRequest() {
             title: 'Student Phone',
             dataIndex: 'studentPhone',
             key: 'studentPhone',
-            width: '10%',
+            width: '15%',
         },
+        {
+            title: 'Room Type',
+            dataIndex: 'roomType',
+            key: 'roomType',
+            width: '10%',
+        }
+        ,
         {
             title: 'Request Date',
             dataIndex: 'requestDate',
@@ -151,7 +183,7 @@ function RoommateRequest() {
             title: 'Message',
             dataIndex: 'message',
             key: 'message',
-            width: '35%',
+            width: '30%',
             ellipsis: {
                 showTitle: false,
             },
@@ -186,6 +218,13 @@ function RoommateRequest() {
             width: '10%',
         },
         {
+            title: 'Room Type',
+            dataIndex: 'roomType',
+            key: 'roomType',
+            width: '10%',
+        }
+        ,
+        {
             title: 'Action',
             dataIndex: 'action',
             key: 'action',
@@ -200,6 +239,7 @@ function RoommateRequest() {
         onChange: (selectedRowKeys, selectedRows) => {
             console.log(`selectedRowKeys: ${selectedRowKeys}`, 'selectedRows: ', selectedRows);
             setSelectedPostIDs(selectedRows.map((row) => row.key));
+            setSelectedRoomTypes(selectedRows.map((row) => row.roomType));
         },
         getCheckboxProps: (record) => ({
             disabled: record.name === 'Disabled User',
@@ -213,7 +253,77 @@ function RoommateRequest() {
             message.error("Please select at least one post to approve");
             return;
         }
-        await approvePost(selectedPostIDs);
+
+        //Get the maximum tenant allowed
+        if (hasRentalAgreement) {
+            let { data, error } = await supabase
+                .from('roommate_post')
+                .select('*, rental_agreement(*, postID(*))')
+                .eq('postID', listingID);
+
+            if (error) {
+                console.log(error);
+                return;
+            }
+
+            console.log(data);
+            console.log(data[0].rental_agreement.occupantID.length);
+
+            console.log(data[0].rental_agreement.postID.propertyRoomDetails[1].maxTenant);
+
+            //Do validation for each room type
+            const roomTypeCounts = selectedRoomTypes.reduce((acc, curr) => {
+                acc[curr] = (acc[curr] || 0) + 1;
+                return acc;
+            }, {});
+
+            console.log(roomTypeCounts);
+            // {Array.from({ length: post.propertyRoomNumber }, (_, i) => i + 1).map((roomNumber) => {
+
+
+            const idArray = [];
+            Array.from({ length: data[0].rental_agreement.postID.propertyRoomNumber }, (_, i) => i + 1).map((roomNumber) => {
+                // console.log(data[0].rental_agreement.postID.propertyRoomDetails[roomNumber].roomType);
+
+                const roomType = data[0].rental_agreement.postID.propertyRoomDetails[roomNumber].roomType;
+
+                const maxTenant = data[0].rental_agreement.postID.propertyRoomDetails[roomNumber].maxTenant;
+
+                const selectedTenant = roomTypeCounts[roomType];
+
+                const currentOccupant = data[0].rental_agreement.occupantID.length;
+
+                console.log(roomType);
+                console.log(maxTenant);
+                console.log(selectedTenant);
+                console.log(currentOccupant);
+
+                if (currentOccupant >= maxTenant) {
+                    message.error("The maximum tenant allowed has been reached");
+                    return;
+                } else {
+                    if (currentOccupant + selectedTenant > maxTenant) {
+                        message.error("The selected tenant(s) will exceed the maximum tenant allowed");
+                        return;
+                    }
+                }
+
+                //Get the postID that has same room type
+                const sameRoomTypePostID = selectedPostIDs.filter((postID) => {
+                    return selectedRoomTypes[selectedPostIDs.indexOf(postID)] === roomType;
+                });
+
+                console.log(sameRoomTypePostID);
+
+                idArray.push(sameRoomTypePostID);
+            });
+
+            if (idArray.flat().length !== 0) {
+                await approvePost(idArray.flat());
+            }
+        } else {
+            await approvePost(selectedPostIDs);
+        }
         // add fetch trigger to rerender the table
         setFetchTrigger((prevTrigger) => prevTrigger + 1);
     };
@@ -300,9 +410,25 @@ function RoommateRequest() {
 
         // Push the new occupant into the occupant array
         for (let i = 0; i < postIDArr.length; i++) {
-            if (!occupantID.includes(postIDArr[i])) {
-                occupantID.push(postIDArr[i]);
+            //Get the studentID
+            let { data: data4, error: error4 } = await supabase
+                .from("roommate_request")
+                .select("studentID")
+                .eq("requestID", postIDArr[i])
+                .single();
+                
+            if (error4) {
+                console.log("error", error4);
+                return;
+            }   
+
+            console.log(data4);
+
+            //to check no duplicated
+            if (!occupantID.includes(data4.studentID)) {
+                occupantID.push(data4.studentID);
             }
+  
         }
 
 
@@ -346,7 +472,9 @@ function RoommateRequest() {
             label: "Current Roommate",
             children:
                 <Table
-                    columns={currentRoommateColumn}
+                    columns={
+                        hasRentalAgreement ? currentRoommateColumn : currentRoommateColumn.filter((column) => column.key !== 'roomType')
+                    }
                     dataSource={currentRoommateDetails}
                     bordered={true}
                     pagination={{ pageSize: 5 }}
@@ -383,7 +511,9 @@ function RoommateRequest() {
             </>),
             children:
                 <Table
-                    columns={requestColumn}
+                    columns={
+                        hasRentalAgreement ? requestColumn : requestColumn.filter((column) => column.key !== 'roomType')
+                    }
                     dataSource={requestDetails}
                     bordered={true}
                     pagination={{ pageSize: 5 }}

@@ -1,4 +1,4 @@
-import { Avatar, Breadcrumb, Button, Col, message, Row, Popconfirm, Modal, Form, Input, Tag } from "antd";
+import { Avatar, Breadcrumb, Button, Col, message, Row, Popconfirm, Modal, Form, Input, Tag, Select } from "antd";
 import { useEffect, useState } from "react";
 import { useLocation } from "react-router-dom";
 import { supabase } from "../../../supabase-client";
@@ -12,7 +12,6 @@ function RoommatePost() {
     const queryParams = new URLSearchParams(location.search);
     const stateParam = queryParams.get('state');
     const postID = stateParam ? JSON.parse(decodeURIComponent(stateParam)) : null;
-    console.log(postID);
 
     const [listing, setListing] = useState({});
 
@@ -23,6 +22,8 @@ function RoommatePost() {
     const [isModalOpen, setIsModalOpen] = useState(false);
 
     const [form] = Form.useForm();
+
+    const [roomTypeOptions, setRoomTypeOptions] = useState([]);
 
     useEffect(() => {
         if (!postID) {
@@ -43,6 +44,28 @@ function RoommatePost() {
 
             console.log(data);
             setListing(data);
+
+            if (!data.rental_agreement) {
+                return;
+            }
+            const roomDetails = data?.rental_agreement?.postID.propertyRoomDetails;
+
+            console.log(roomDetails);
+            console.log(Object.keys(roomDetails).length);
+            console.log(roomDetails[1].roomType);
+            // console.log(typeof roomDetails)
+            // const uniqueRoomTypes = [];
+
+            const uniqueRoomTypes = Object.values(roomDetails).reduce((acc, value) => {
+                if (!acc.includes(value.roomType)) {
+                    acc.push(value.roomType);
+                }
+                return acc;
+            }, []);
+
+            setRoomTypeOptions(uniqueRoomTypes.map(roomType => ({ label: roomType, value: roomType })));
+
+            console.log(roomTypeOptions);
         }
 
         fetchListing();
@@ -71,7 +94,7 @@ function RoommatePost() {
             setAvatar(data.publicUrl);
         });
 
-    }, [listing]);
+    }, [postID]);
 
 
 
@@ -108,7 +131,7 @@ function RoommatePost() {
         window.open(whatsappUrl, '_blank');
     }
 
-    const sendRoommateRequest = async (postID, message) => {
+    const sendRoommateRequest = async (postID, values) => {
 
         const userID = (await supabase.auth.getUser()).data.user.id;
 
@@ -142,7 +165,8 @@ function RoommatePost() {
                     postID: postID,
                     requestStatus: 'Pending',
                     requestedDateTime: currentDate,
-                    message: message,
+                    message: values.message,
+                    roomType: values.roomType,
                 },
             ]);
 
@@ -237,10 +261,11 @@ function RoommatePost() {
                                                     <span style={labelStyle}>
                                                         Address:
                                                     </span>
-                                                    {listing.rental_agreement.postID.propertyAddress},
+                                                    {`${listing.rental_agreement.postID.propertyAddress}, ${listing.rental_agreement.postID.propertyPostcode}, ${listing.rental_agreement.postID.propertyCity}, ${listing.rental_agreement.postID.propertyState}`}
+                                                    {/* {listing.rental_agreement.postID.propertyAddress}, 
                                                     {listing.rental_agreement.postID.propertyPostcode},
                                                     {listing.rental_agreement.postID.propertyCity},
-                                                    {listing.rental_agreement.postID.propertyState}
+                                                    {listing.rental_agreement.postID.propertyState} */}
                                                 </Col>
                                             </Row>
                                             <Row>
@@ -377,7 +402,7 @@ function RoommatePost() {
                                                                                 Gender:
                                                                             </span>
                                                                         </Col>
-                                                                        <Col span={roommateValueSpan} style={{...colStyle, textTransform: 'capitalize'}} >
+                                                                        <Col span={roommateValueSpan} style={{ ...colStyle, textTransform: 'capitalize' }} >
                                                                             {listing.roommate.gender}
                                                                         </Col>
                                                                     </>
@@ -391,7 +416,7 @@ function RoommatePost() {
                                                                                 Student Type:
                                                                             </span>
                                                                         </Col>
-                                                                        <Col span={roommateValueSpan} style={{...colStyle, textTransform: 'capitalize'}} >
+                                                                        <Col span={roommateValueSpan} style={{ ...colStyle, textTransform: 'capitalize' }} >
                                                                             {listing.roommate.studentType} student
                                                                         </Col>
                                                                     </>
@@ -613,27 +638,54 @@ function RoommatePost() {
                                         <Modal
                                             title="Apply as a roommate"
                                             open={isModalOpen}
-                                            onOk={() => {
-                                                form.submit();
-                                            }}
+                                            // onOk={() => {
+                                            //     form.submit();
+                                            // }}
                                             onCancel={() => {
                                                 setIsModalOpen(false);
                                                 form.resetFields();
                                             }}
-                                            okText="Send Request"
-                                            cancelText="Cancel"
+                                            footer={[
+                                                <Button key="back" className="viewButton" onClick={() => {
+                                                    setIsModalOpen(false);
+                                                    form.resetFields();
+                                                }}>
+                                                    Cancel
+                                                </Button>,
+                                                <Button key="submit" className="viewButton" type="primary" onClick={() => {
+                                                    form.submit();
+                                                }}>
+                                                    Submit
+                                                </Button>,
+                                            ]}
                                         >
 
                                             <Form layout="vertical"
                                                 form={form}
                                                 onFinish={(values) => {
                                                     console.log(values);
-                                                    sendRoommateRequest(listing.postID, values.message);
+                                                    sendRoommateRequest(listing.postID, values);
                                                     setIsModalOpen(false);
                                                 }}
                                                 initialValues={{
                                                     message: "I'd love to be your roommate and share great times together!"
                                                 }}>
+
+                                                {roomTypeOptions.length !== 0 && (
+                                                    <Form.Item
+                                                        label="Room Type"
+                                                        name="roomType"
+                                                        rules={[
+                                                            {
+                                                                required: true,
+                                                                message: 'Please select a room type',
+                                                            },
+                                                        ]}
+                                                    >
+                                                        <Select placeholder="Select room type" options={roomTypeOptions} />
+                                                    </Form.Item>
+                                                )}
+
                                                 <Form.Item
                                                     label="Drop your message here"
                                                     name="message"
@@ -645,16 +697,6 @@ function RoommatePost() {
                                                 </Form.Item>
                                             </Form>
                                         </Modal>
-                                        {/* <Popconfirm
-                                            title="Are you sure you want to apply as a roommate?"
-                                            onConfirm={() => {
-                                                sendRoommateRequest(listing.student.student_id, listing.postID);
-                                            }}
-                                        >
-                                            <Button className="viewButton" style={{ width: '100%', marginLeft: '0px' }} type="primary">
-                                                Interested
-                                            </Button>
-                                        </Popconfirm> */}
                                     </Col>
                                 </Row>
                                 <Row>
