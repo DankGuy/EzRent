@@ -91,7 +91,7 @@ function CurrentPost({ post, deletePost, uploadPost, contextHolder }) {
             {post.propertyStatus.stage === 'approved' &&
                 <Row className="popOutBox">
                     <Col span={24} style={popOverStyle}>
-                        <Link to={`/agent/roomRental/###`} state={{ post }} style={{ color: 'black', display: 'flex', alignItems: 'center' }}>
+                        <Link to={`/agent/roomRental/rentalAgreement`} state={{ post }} style={{ color: 'black', display: 'flex', alignItems: 'center' }}>
                             <span style={{ flexGrow: 1, marginRight: '10px' }}>Process Rental</span>
                             <GrDocumentPdf size={18} />
                         </Link>

@@ -31,7 +31,7 @@ function RentalAgreementDocument({ componentToPrint }) {
         // Add the image to the PDF
         pdf.addImage(imgData, "JPEG", 0, 0, imgWidth, imgHeight);
 
-        pdf.setFontSize(12);
+        pdf.setFontSize(20);
 
         // Save the PDF
         pdf.save("rental_agreement.pdf");

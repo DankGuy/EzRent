@@ -125,7 +125,7 @@ function App() {
                             <Route path="roomRental" element={<AgentRoomRental />} />
                             <Route path="appointment" element={<AgentAppointment />} />
                             <Route path="appointment/:id" element={<AppointmentDetails />} />
-                            <Route path="rentalAgreement" element={<AgentRentalAgreement />} />
+                            <Route path="roomRental/rentalAgreement" element={<AgentRentalAgreement />} />
                             <Route path="roomRental/editPost/:id" element={<AgentRoomRentalPost />} />
                             <Route path="roomRental/viewPost/:id" element={<AgentRoomRentalPost />} />
                             <Route path="*" element={<NotFound />} />
