@@ -9,6 +9,7 @@ import moment from 'moment';
 import { saveAs } from 'file-saver';
 import { PDFViewer, Document, Page, Text, View } from '@react-pdf/renderer';
 import html2pdf from 'html2pdf.js';
+import { BsWindowSidebar } from "react-icons/bs";
 
 
 function AgentRentalAgreement() {
@@ -29,7 +30,7 @@ function AgentRentalAgreement() {
 
   function pdfContent(rentalAgreementInfo) {
     return (
-      <div style={{ display: "flex", flexDirection: "row", justifyContent: "center", alignItems: "center" }}>
+      <div style={{ display: "flex", flexDirection: "row", justifyContent: "center", alignItems: "center"}}>
         <div className="header" style={{
           display: "flex",
           justifyContent: "space-between",
@@ -43,13 +44,14 @@ function AgentRentalAgreement() {
             <img src={TarumtLogo} alt="tarumt-logo" style={{ margin: "10px" }} />
           </div>
           <hr style={{ width: "100%", border: "1px solid black" }} />
-          <h1 style={{ textAlign: "center", fontSize: "2rem" }}>Rental Agreement</h1>
+          <h1 style={{ textAlign: "center", fontSize: "1rem" }}>Rental Agreement</h1>
 
-          <div className="content-container" style={{ display: "flex", flexDirection: "column", justifyContent: "center", alignItems: "center" }}>
-            <div style={{ padding: "50px" }}>
+          <div className="content-container" style={{ display: "flex", flexDirection: "column", justifyContent: "center", alignItems: "center", maxWidth: "80%" }}>
+            <div style={{ padding: "10px" }}>
               <div>
-                <h2>Rental Details</h2>
-                <Descriptions>
+                <h2 style={{ fontSize: "1rem", marginLeft: "30px"}}>Rental Details</h2>
+                <div style={{ margin: "30px" }}>
+                <Descriptions size="small">
                   <Descriptions.Item label="Referral Code" span={3}>{rentalAgreementInfo.rentalAgreementID}</Descriptions.Item>
                   <Descriptions.Item label="Date" span={3}>{new Date().toJSON().slice(0, 10)}</Descriptions.Item>
                   <Descriptions.Item label="Address" span={3}>{postInfo.propertyName + ", " + postInfo.propertyAddress + ", " + postInfo.propertyCity + " " + postInfo.propertyPostcode}</Descriptions.Item>
@@ -60,9 +62,11 @@ function AgentRentalAgreement() {
                   <Descriptions.Item label="Security Deposit">{"RM" + (rentalAgreementInfo.rentalDeposit.SecurityDeposit).toFixed(2)}</Descriptions.Item>
                   <Descriptions.Item label="Utilities Deposit">{"RM" + (rentalAgreementInfo.rentalDeposit.UtilityDeposit).toFixed(2)}</Descriptions.Item>
                 </Descriptions>
+
+                </div>
               </div>
-              <div className="terms" style={{ width: "100%" }}>
-                <h2>Terms and Conditions</h2>
+              <div className="terms" style={{ width: "90%", marginLeft: "30px" }}>
+                <h2 style={{ fontSize: "1rem" }}>Terms and Conditions</h2>
                 <ol>
                   <li>Payment of rental shall be made on or before the 1st day of each month.</li>
                   <li>A security deposit has been collected. This deposit is intended to cover any damages beyond normal wear and tear. The deposit will be refunded within 7 days of the lease termination, less any deductions for damages or outstanding charges.</li>
@@ -74,25 +78,23 @@ function AgentRentalAgreement() {
                 </ol>
               </div>
 
-              <div className="signature" style={{ width: "100%", display: "flex", flexDirection: "row" }}>
-                <div className="tenant-signature" style={{ marginRight: "470px" }}>
+              <div className="signature" style={{ width: "100%", display: "flex", flexDirection: "row", marginLeft: "30px" }}>
+                <div className="tenant-signature" style={{ marginRight: "300px", fontSize: "0.8rem" }}>
                   <h3>
                     Signature by the tenant,
                   </h3>
                   <br />
-                  <br />
-                  <hr style={{ width: "20vw" }} />
+                  <hr style={{ width: "10vw" }} />
                   <p><b>Name: </b></p>
                   <p><b>IC: </b></p>
                   <p><b>Date: </b></p>
                 </div>
-                <div className="agent-signature" style={{ float: "right" }}>
+                <div className="agent-signature" style={{ float: "right", fontSize: "0.8rem" }}>
                   <h3>
                     Signature by the agent,
                   </h3>
                   <br />
-                  <br />
-                  <hr style={{ width: "20vw" }} />
+                  <hr style={{ width: "10vw" }} />
                   <p><b>Name: </b></p>
                   <p><b>IC: </b></p>
                   <p><b>Date: </b></p>
@@ -105,6 +107,9 @@ function AgentRentalAgreement() {
     );
   }
 
+  useEffect(() => {
+    window.scrollTo(0, 0);
+  }, []);
 
   const getAvatar = async (tenantID) => {
     const userID = tenantID;
@@ -322,6 +327,21 @@ function AgentRentalAgreement() {
         console.log(addRentalError);
       } else {
         pdfContent(values);
+
+        let { data: post, error: postError } = await supabase
+          .from('property_post')
+          .update({ propertyStatus: {
+            stage: "rented",
+            status: "inactive",
+          } })
+          .eq('postID', postInfo.postID)
+
+        if (postError) {
+          console.log(postError);
+        }
+        else {
+          message.success("Rental Agreement generated successfully!");
+        }
       }
     }
     else {
@@ -462,6 +482,8 @@ function AgentRentalAgreement() {
         onCancel={() => setIsModalVisible(false)}
         okText="Download PDF"
         cancelText="Cancel"
+        width="80vw"
+        style={{ height: "auto" }}
       >
         <div id="modal-content">
           {/* Display the rental agreement details in the modal */}
