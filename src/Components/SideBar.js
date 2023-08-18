@@ -2,7 +2,6 @@ import logo from '../images/icon.png'
 import { CgProfile } from 'react-icons/cg'
 import { BsFileEarmarkPostFill, BsHouses } from 'react-icons/bs'
 import { BiTimeFive, BiLogOutCircle } from 'react-icons/bi'
-import { FaFileSignature } from 'react-icons/fa'
 import { MdOutlineDashboard } from 'react-icons/md'
 import { Layout, Menu, Image } from 'antd'
 import '../Pages/agent/AgentHome.css'
@@ -28,7 +27,7 @@ function Sidebar({ value, setTitle }) {
     const [selectedKey, setSelectedKey] = useState('/agent')
 
     return (
-        <Sider trigger={null} collapsible collapsed={value} collapsedWidth={90} width={220}
+        <Sider trigger={null} collapsible collapsed={value} collapsedWidth={90} width={220} className='menuSidebar'
             style={{
                 position: 'fixed',
                 top: '0',
@@ -87,11 +86,6 @@ function Sidebar({ value, setTitle }) {
                         key: '/agent/appointment',
                         icon: <BiTimeFive style={{ width: '25px', height: 'auto' }} />,
                         label: 'Appointment',
-                    },
-                    {
-                        key: '/agent/rentalAgreement',
-                        icon: <FaFileSignature style={{ width: '25px', height: 'auto' }} />,
-                        label: 'Rental Agreement',
                     },
                     {
                         key: '/agent/profile',

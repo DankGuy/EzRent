@@ -6,6 +6,21 @@
     align-items: center !important; */
 }
 
+.menuSidebar .ant-menu-item{
+    margin-bottom: 20px !important;
+    font-weight: 500;
+}
+
+.profileLayout .ant-menu-item {
+    margin-bottom: 20px !important;
+    font-weight: 500;
+}
+
+.adminLayout .ant-menu-item {
+    margin-bottom: 20px !important;
+    font-weight: 500;
+}
+
 .adminLayout .ant-menu-item-selected {
     background-color: #430f58 !important;
     color: white !important;

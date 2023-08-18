@@ -170,11 +170,11 @@ function CurrentPost({ post, deletePost, uploadPost, contextHolder }) {
                         <Image style={{ justifyContent: 'center' }} height={200} src={`https://exsvuquqspmbrtyjdpyc.supabase.co/storage/v1/object/public/post/${post.postID}/Property/${firstImage?.name}`} />
                     </Col>}
                 </Row>
-                <Row>
+                {/* <Row>
                     <Col span={24} style={{ paddingLeft: '15px', fontSize: '13px' }}>
                         ID: {post.postID}
                     </Col>
-                </Row>
+                </Row> */}
                 <Row>
                     <Col span={24}
                         style={{

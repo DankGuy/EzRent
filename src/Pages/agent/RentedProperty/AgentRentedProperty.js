@@ -7,6 +7,7 @@ import { Input, Space } from "antd";
 import { SearchOutlined } from "@ant-design/icons";
 import Highlighter from "react-highlight-words";
 import { useRef } from "react";
+import RentedPropertyDetails from "./RentedPropertyDetails";
 
 
 function AgentRentedProperty() {
@@ -15,6 +16,10 @@ function AgentRentedProperty() {
     const [searchText, setSearchText] = useState("")
     const [searchedColumn, setSearchedColumn] = useState("")
     const searchInput = useRef(null)
+
+    const [isModalOpen, setIsModalOpen] = useState(false);
+    const [modalTenant, setModalTenant] = useState([]);
+    const [modalOccupant, setModalOccupant] = useState([]);
 
 
 
@@ -56,6 +61,8 @@ function AgentRentedProperty() {
                     duration: rentalDuration(),
                     tenantName: element.studentID.name,
                     commencementDate: element.commencementDate,
+                    student: element.studentID,
+                    occupant: element.occupantID,
                 });
             });
 
@@ -64,13 +71,6 @@ function AgentRentedProperty() {
 
         fetchProperties()
     }, [])
-
-    const openLinkInNewTab = (url, stateData, event) => {
-        event.preventDefault();
-        console.log(stateData);
-        const serializedState = JSON.stringify(stateData);
-        window.open(`${url}?state=${encodeURIComponent(serializedState)}`, '_blank');
-      };
 
     const handleSearch = (selectedKeys, confirm, dataIndex) => {
         confirm();
@@ -152,7 +152,18 @@ function AgentRentedProperty() {
     })
 
 
+    const handleModalChange = (record) => {
+        console.log(record)
 
+        setModalTenant(record.student);
+        setModalOccupant(record.occupant);
+
+        setIsModalOpen(true);
+    }
+
+    const onChangeModal = (value) => {
+        setIsModalOpen(value);
+    }
 
     const columns = [
         {
@@ -165,6 +176,7 @@ function AgentRentedProperty() {
                 showTitle: false,
             },
             className: "postIDcolumn",
+            width: '15%',
         },
         {
             title: "Property Name",
@@ -180,6 +192,7 @@ function AgentRentedProperty() {
                     {propertyName}
                 </Tooltip>
             ),
+            width: '15%',
         },
         {
             title: "Property Address",
@@ -194,6 +207,7 @@ function AgentRentedProperty() {
                     {address}
                 </Tooltip>
             ),
+            width: '20%',
 
         }
         ,
@@ -202,6 +216,7 @@ function AgentRentedProperty() {
             dataIndex: "duration",
             key: "duration",
             sorter: (a, b) => a.duration.localeCompare(b.duration),
+            width: '15%',
         },
         {
             title: "Tenant Name",
@@ -212,15 +227,19 @@ function AgentRentedProperty() {
             ellipsis: {
                 showTitle: false,
             },
-            render: (tenantName, rentalAgreementID) => (
-                <Tooltip placement="topLeft" title={tenantName}>
-                    <div 
-                        onClick={(e) => openLinkInNewTab(`/agent/rentedProperty/${tenantName}`, rentalAgreementID.rentalAgreementID, e)} 
+            render: (tenantName, record) => (
+                <>
+                    {/* <Tooltip placement="topLeft" title={tenantName}> */}
+                    <div
+                        onClick={() => handleModalChange(record)}
                         style={{ cursor: 'pointer', color: '#1890ff' }}>
                         {tenantName}
                     </div>
-                </Tooltip>
+                    {/* </Tooltip> */}
+
+                </>
             ),
+            width: '15%',
         },
         {
             title: "Commencement Date",
@@ -245,11 +264,17 @@ function AgentRentedProperty() {
                 columns={columns}
                 dataSource={properties}
                 bordered={true}
-                pagination={{ pageSize: 20, position: ['bottomCenter'] }}
-                scroll={{ x: 1300, y: 300 }}
-                tableLayout="fixed"
+                pagination={{ pageSize: 5, position: ['bottomCenter'] }}
+                // tableLayout="fixed"
                 className="propertyTable"
+                scroll={{ x: 1300 }}
             />
+
+            <RentedPropertyDetails
+                value={isModalOpen}
+                onChange={onChangeModal}
+                occupantsID={modalOccupant}
+                tenant={modalTenant} />
         </Fragment>
     );
 }

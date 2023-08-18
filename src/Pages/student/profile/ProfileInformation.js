@@ -148,7 +148,7 @@ function ProfileInformation() {
               textAlign: 'center',  
             }}
           >
-            Personal Details
+            Contact Details
           </legend>
           <Descriptions
             labelStyle={{

@@ -21,22 +21,28 @@ function RoommatePostLayout({ listing }) {
 
     useEffect(() => {
         const getAvatar = async () => {
-            const { data } = await supabase.storage
-                .from("avatar")
-                .getPublicUrl(`avatar-${listing.studentID}`, {
-                    select: "metadata",
-                    fileFilter: (metadata) => {
-                        const fileType = metadata.content_type.split("/")[1];
-                        return fileType === "jpg" || fileType === "png";
-                    },
-                })
-
-                console.log(data)
-            return data;
-        };
+            // to speed up the process, browser will use cached data instead of fetching from the server
+            const timestamp = new Date().getTime(); // Generate a timestamp to serve as the cache-busting query parameter
+            const { data, error } = supabase.storage
+              .from("avatar")
+              .getPublicUrl(`avatar-${listing.studentID}`, {
+                select: "metadata",
+                fileFilter: (metadata) => {
+                  const fileType = metadata.content_type.split("/")[1];
+                  return fileType === "jpg" || fileType === "png";
+                },
+              });
+        
+              if (error){
+                console.log(error);
+              }
+            const avatarUrlWithCacheBuster = `${data.publicUrl}?timestamp=${timestamp}`; // Append the cache-busting query parameter
+        
+            return avatarUrlWithCacheBuster;
+          };
 
         getAvatar().then((data) => {
-            setAvatar(data.publicUrl);
+            setAvatar(data);
         });
 
     }, [listing]);

@@ -47,6 +47,8 @@ function ListingPostDetails() {
     const [inputValue, setInputValue] = useState('');
     const inputRef = useRef(null);
 
+    const [isLinkClicked, setIsLinkClicked] = useState([true, false, false, false]);
+
 
     console.log(listing);
     console.log(isView);
@@ -227,6 +229,13 @@ function ListingPostDetails() {
     }
 
     const handleClick = (sec) => () => {
+
+
+        //update the use state based on the section clicked
+        let temp = [false, false, false, false];
+        temp[sec - 1] = true;
+        setIsLinkClicked(temp);
+
         const offset = -80; // Adjust this value to set the desired offset from the top of the element
 
         let targetRef;
@@ -250,6 +259,8 @@ function ListingPostDetails() {
                 behavior: "smooth",
             });
         }
+
+
     };
 
 
@@ -273,6 +284,14 @@ function ListingPostDetails() {
             inputRef.current.focus({ cursor: 'end' });
         }
     };
+
+    const linkStyle = {
+        fontSize: '14px',
+        color: 'black',
+        cursor: 'pointer',
+        padding: '5px',
+        paddingLeft: '15px',
+    }
 
     return (
         <div
@@ -312,7 +331,7 @@ function ListingPostDetails() {
                     onFinish={onFinish}
                     onFinishFailed={onFinishFailed}
                 >
-                    <fieldset style={fieldsetStyle} ref={propertyDetailsRef}>
+                    <fieldset style={fieldsetStyle} ref={propertyDetailsRef} id="propertyDetails">
                         <legend style={legendStyle}>Property Details</legend>
                         <Descriptions
                             layout="vertical"
@@ -362,7 +381,8 @@ function ListingPostDetails() {
                                                 onPressEnter={handleInputKeyPress}
                                                 onChange={handleInputChange}
                                                 ref={inputRef}
-                                            />                                        </Form.Item>
+                                            />
+                                        </Form.Item>
                                         {locationSelection.map((v) => (
                                             <span key={v} style={{
                                                 display: 'inline-flex',  // Use flex display to align items vertically
@@ -380,6 +400,7 @@ function ListingPostDetails() {
                                             </span>
 
                                         ))}
+
                                     </Col>
                                     <Col span={12}>
                                         <Form.Item name="propertySelection" label="Property Type">
@@ -407,7 +428,7 @@ function ListingPostDetails() {
                             </>
                         )}
                     </fieldset>
-                    <fieldset style={fieldsetStyle} ref={rentalDetailsRef}>
+                    <fieldset style={fieldsetStyle} ref={rentalDetailsRef} id="rentalDetails">
                         <legend style={legendStyle}>Rental Details</legend>
                         <Form.Item name="moveInDate" label="Move-in Date">
                             <DatePicker placeholder="Select" />
@@ -422,7 +443,7 @@ function ListingPostDetails() {
                                 ]} />
                         </Form.Item>
                     </fieldset>
-                    <fieldset style={fieldsetStyle} ref={roommatePreferencesRef}>
+                    <fieldset style={fieldsetStyle} ref={roommatePreferencesRef} id="roommatePreferences">
                         <legend style={legendStyle}>Roommate Preferences</legend>
                         <Row>
                             <Col span={12}>
@@ -478,7 +499,7 @@ function ListingPostDetails() {
                             <Input.TextArea placeholder="Description" style={{ height: 100 }} />
                         </Form.Item>
                     </fieldset>
-                    <fieldset style={fieldsetStyle} ref={myLifestyleRef}>
+                    <fieldset style={fieldsetStyle} ref={myLifestyleRef} id="myLifestyle">
                         <legend style={legendStyle}>My Lifestyle</legend>
                         <Row>
                             <Col span={12}>
@@ -583,8 +604,8 @@ function ListingPostDetails() {
             <div
                 style={{
                     position: 'fixed',
-                    top: '115px',
-                    right: '300px',
+                    top: '15%',
+                    right: '10%',
                     height: 'auto',
                     width: '200px',
                     backgroundColor: 'white',
@@ -598,23 +619,51 @@ function ListingPostDetails() {
                     </Col>
                 </Row>
                 <Row>
-                    <Col span={24}>
-                        <a onClick={handleClick(1)}>Property Details</a>
+                    <Col span={24}
+                        style={{
+                            ...linkStyle,
+                            borderLeft: `3px solid ${isLinkClicked[0] ? 'blue' : '#d0d0d0'}`,
+                            color: `${isLinkClicked[0] ? 'blue' : 'black'}`,
+                        }}>
+                        <p onClick={handleClick(1)} style={{ marginBlockStart: '0px', marginBlockEnd: '0px' }}>
+                            Property Details
+                        </p>
                     </Col>
                 </Row>
                 <Row>
-                    <Col span={24}>
-                        <a onClick={handleClick(2)}>Rental Details</a>
+                    <Col span={24}
+                        style={{
+                            ...linkStyle,
+                            borderLeft: `3px solid ${isLinkClicked[1] ? 'blue' : '#d0d0d0'}`,
+                            color: `${isLinkClicked[1] ? 'blue' : 'black'}`,
+                        }}>                        
+                        <p onClick={handleClick(2)} style={{ marginBlockStart: '0px', marginBlockEnd: '0px' }}>
+                            Rental Details
+                        </p>
                     </Col>
                 </Row>
                 <Row>
-                    <Col span={24}>
-                        <a onClick={handleClick(3)}>Roommate Preferences</a>
+                    <Col span={24}
+                        style={{
+                            ...linkStyle,
+                            borderLeft: `3px solid ${isLinkClicked[2] ? 'blue' : '#d0d0d0'}`,
+                            color: `${isLinkClicked[2] ? 'blue' : 'black'}`,
+                        }}>                        
+                        <p onClick={handleClick(3)} style={{ marginBlockStart: '0px', marginBlockEnd: '0px' }}>
+                            Roommate Preferences
+                        </p>
                     </Col>
                 </Row>
                 <Row>
-                    <Col span={24}>
-                        <a onClick={handleClick(4)}>My Lifestyle</a>
+                    <Col span={24}
+                        style={{
+                            ...linkStyle,
+                            borderLeft: `3px solid ${isLinkClicked[3] ? 'blue' : '#d0d0d0'}`,
+                            color: `${isLinkClicked[3] ? 'blue' : 'black'}`,
+                        }}>                        
+                        <p onClick={handleClick(4)} style={{ marginBlockStart: '0px', marginBlockEnd: '0px' }}>
+                            My Lifestyle
+                        </p>
                     </Col>
                 </Row>
             </div>

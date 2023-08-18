@@ -8,7 +8,6 @@ import AgentLayout from "./Pages/agent/AgentLayout";
 import StudentLayout from "./Pages/student/StudentLayout";
 import NotFound from "./Pages/Result/NotFound";
 
-import Home from "./Pages/student/Home";
 import RoomRental from "./Pages/student/roomRental/RoomRental";
 import Roommate from "./Pages/student/roommate/Roommate";
 import AboutUs from "./Pages/student/AboutUs";
@@ -38,9 +37,7 @@ import AgentRoomRentalPost from "./Pages/agent/RoomRentalPost/AgentRoomRentalPos
 import AgentRentedProperty from "./Pages/agent/RentedProperty/AgentRentedProperty";
 import AppointmentDetails from "./Pages/agent/Appointment/AppointmentDetails";
 import StudentAppointmentDetails from "./Pages/student/profile/StudentAppointmentDetails";
-import AuthRoute from "./Components/AuthRoute";
 import AuthProvider, { useAuth } from "./context/AuthProvider";
-import RentedPropertyDetails from "./Pages/agent/RentedProperty/RentedPropertyDetails";
 import MyListings from "./Pages/student/roommate/MyListings";
 import ListingPostDetails from "./Pages/student/roommate/ListingPostDetails";
 import RoommatePost from "./Pages/student/roommate/RoommatePost";
@@ -118,7 +115,6 @@ function App() {
                         <Route path="/agent/" element={<AgentLayout />}>
                             <Route index element={<AgentHome />} />
                             <Route path="rentedProperty" element={<AgentRentedProperty />} />
-                            <Route path="rentedProperty/:id" element={<RentedPropertyDetails />} />
                             <Route path="profile" element={<AgentProfile />} />
                             <Route path="profile/editProfile" element={<AgentEditProfile />} />
                             <Route path="roomRental/createNewPost" element={<AgentCreatePost />} />
@@ -144,7 +140,7 @@ function App() {
                         <Route path="/update-password" element={<Navigate to="/student" />} />
 
                         <Route path="/student/" element={<StudentLayout />}>
-                            <Route index element={<Home />} />
+                            <Route index element={<RoomRental />} />
                             <Route path="roomRental" element={<RoomRental />} />
                             <Route path="roommate" element={<Roommate />} />
                             <Route path="roommate/myListings" element={<MyListings />} />

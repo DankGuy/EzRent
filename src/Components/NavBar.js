@@ -58,10 +58,10 @@ function NavBar() {
     }
 
     const getAvatar = async () => {
-
       const userID = (await supabase.auth.getUser()).data.user.id;
-
-      const { data } = await supabase.storage
+      // to speed up the process, browser will use cached data instead of fetching from the server
+      const timestamp = new Date().getTime(); // Generate a timestamp to serve as the cache-busting query parameter
+      const { data, error } = supabase.storage
         .from("avatar")
         .getPublicUrl(`avatar-${userID}`, {
           select: "metadata",
@@ -69,14 +69,18 @@ function NavBar() {
             const fileType = metadata.content_type.split("/")[1];
             return fileType === "jpg" || fileType === "png";
           },
-        })
-
-
-      return data;
+        });
+  
+        if (error){
+          console.log(error);
+        }
+      const avatarUrlWithCacheBuster = `${data.publicUrl}?timestamp=${timestamp}`; // Append the cache-busting query parameter
+  
+      return avatarUrlWithCacheBuster;
     };
 
     getAvatar().then((data) => {
-      setAvatar(data.publicUrl);
+      setAvatar(data);
     });
 
 
@@ -93,10 +97,10 @@ function NavBar() {
   const [current, setCurrent] = useState("/student");
 
   const items = [
-    {
-      label: "Home",
-      key: "/student",
-    },
+    // {
+    //   label: "Home",
+    //   key: "/student",
+    // },
     {
       label: "Room Rental",
       key: "/student/roomRental",
