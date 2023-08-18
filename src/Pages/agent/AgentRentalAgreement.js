@@ -441,7 +441,7 @@ function AgentRentalAgreement() {
                 <span>Years</span>
 
                 <Form.Item name="durationMonths" style={{ display: 'inline-block', marginLeft: 16 }}>
-                  <InputNumber style={{ width: '90%' }} onChange={value => handleDurationChange(value, 'durationMonths')} min={0} max={12} placeholder="Month" />
+                  <InputNumber style={{ width: '90%' }} onChange={value => handleDurationChange(value, 'durationMonths')} min={0} max={11} placeholder="Month" />
                 </Form.Item>
                 <span>Months</span>
 
