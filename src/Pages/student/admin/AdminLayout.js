@@ -1,10 +1,11 @@
-import AdminSideBar from "../../../Components/AdminSideBar";
+import AdminSideBar from "../../../Components/StudentSideBar";
 import {
   MenuFoldOutlined,
   MenuUnfoldOutlined,
   FlagOutlined,
   AuditOutlined,
   HistoryOutlined,
+  UserAddOutlined,
 } from "@ant-design/icons";
 import { Layout, Menu, theme, Button } from "antd";
 import { useState } from "react";
@@ -50,6 +51,9 @@ function AdminLayout() {
         break;
       case "/student/admin/activityLog":
         setTitle("Activity Log");
+        break;
+      case "/student/admin/userActivation":
+        setTitle("User Activation");
         break;
     }
   };
@@ -116,6 +120,12 @@ function AdminLayout() {
                   key: "/student/admin/activityLog",
                   icon: <HistoryOutlined style={{ fontSize: '25px' }} />,
                 },
+                {
+                  label: "User Activation",
+                  key: "/student/admin/userActivation",
+                  icon: <UserAddOutlined style={{ fontSize: '25px' }} />,
+                },
+
               ]}
             />
           </Sider>

@@ -16,6 +16,7 @@ import AdminLayout from "./Pages/student/admin/AdminLayout";
 import PendingPosts from "./Pages/student/admin/PendingPosts";
 import PendingReports from "./Pages/student/admin/PendingReports";
 import ActivityLog from "./Pages/student/admin/ActivityLog";
+import UserActivation from "./Pages/student/admin/UserActivation";
 
 import Profile from "./Pages/student/Profile";
 import ProfileInformation from "./Pages/student/profile/ProfileInformation";
@@ -156,6 +157,7 @@ function App() {
                                 <Route path="pendingPosts" element={<PendingPosts />} />
                                 <Route path="pendingReports" element={<PendingReports />} />
                                 <Route path="activityLog" element={<ActivityLog />} />
+                                <Route path="userActivation" element={<UserActivation />} />
                             </Route>
 
                             <Route path="/student/profile/" element={<Profile />}>

@@ -74,6 +74,10 @@ function SignUpCard() {
           message.error("Email is already taken!");
         }
         if (error) throw error;
+
+        message.success("Please check your email for confirmation link!");
+
+        window.location.href = "/login";
       } else {
         const { data, error } = await supabase.auth.signUp({
           email: formData.email,
