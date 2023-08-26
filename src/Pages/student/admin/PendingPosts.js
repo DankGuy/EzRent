@@ -18,6 +18,7 @@ import Highlighter from "react-highlight-words";
 import { supabase } from "../../../supabase-client";
 import { formatDateTime } from "../../../Components/timeUtils";
 import Carousel from "react-multi-carousel";
+import GenerateLog from "../../../Components/GenerateLog";
 
 function PendingPosts() {
   const [data, setData] = useState([]);
@@ -49,25 +50,6 @@ function PendingPosts() {
   useEffect(() => {
     getUser();
   }, []);
-
-  const generateLog = async (action, target) => {
-    // generate log
-    let { data, error } = await supabase
-      .from("activity_log")
-      .insert([
-        {
-          managed_by: userID,
-          action: action,
-          target: target,
-        },
-      ])
-      .select("*");
-
-    if (error) {
-      console.log("error", error);
-    }
-  }
-
 
   const viewPost = () => {
     setIsModalOpen(true);
@@ -140,7 +122,7 @@ function PendingPosts() {
         approveStatus = false;
       }
       else {
-        generateLog("approve_post", postIDArr[i]);
+        GenerateLog("approve_post", postIDArr[i], userID);
       }
     }
     if (approveStatus) {
@@ -159,7 +141,7 @@ function PendingPosts() {
         console.log("error", error);
         rejectStatus = false;
       } else {
-        generateLog("reject_post", postIDArr[i]);
+        GenerateLog("reject_post", postIDArr[i], userID);
       }
 
     }

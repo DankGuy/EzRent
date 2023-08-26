@@ -11,7 +11,7 @@ import React, { useState, useEffect, useRef } from "react";
 import { supabase } from "../../../supabase-client";
 import { formatDateTime } from "../../../Components/timeUtils";
 import Carousel from "react-multi-carousel";
-
+import GenerateLog from "../../../Components/GenerateLog";
 
 
 function PendingReports() {
@@ -47,24 +47,6 @@ function PendingReports() {
   useEffect(() => {
     getUser();
   }, []);
-
-  const generateLog = async (action, target) => {
-    // generate log
-    let { data, error } = await supabase
-      .from("activity_log")
-      .insert([
-        {
-          managed_by: userID,
-          action: action,
-          target: target,
-        },
-      ])
-      .select("*");
-
-    if (error) {
-      console.log("error", error);
-    }
-  }
 
   const viewPost = () => {
     setIsModalOpen(true);
@@ -192,7 +174,7 @@ function PendingReports() {
         console.log("error", error);
       }
       else {
-        generateLog("resolve_report", reportID[i]);
+        GenerateLog("resolve_report", reportID[i], userID);
       }
     }
     if (status) {
@@ -233,7 +215,7 @@ function PendingReports() {
           console.log("post error", error);
           status = false;
         } else {
-          generateLog("deactivate_post", postID);
+          GenerateLog("deactivate_post", postID, userID);
         }
       }
       else {
@@ -266,7 +248,7 @@ function PendingReports() {
         if (error) {
           console.log("error", agentError);
         } else {
-          generateLog("deactivate_account", agentID);
+          GenerateLog("deactivate_account", agentID, userID);
         }
       }
     }
@@ -340,12 +322,12 @@ function PendingReports() {
 
           return {
             key: index,
-            report_id: report.reportID,
-            report_reason: report.reportReason,
-            description: report.reportDescription,
-            reported_by: studentName,
-            post_owner: postOwner,
-            post_name: propertyName,
+            report_id: report.reportID? report.reportID : "N/A",
+            report_reason: report.reportReason? report.reportReason : "N/A",
+            description: report.reportDescription? report.reportDescription : "N/A",
+            reported_by: studentName? studentName : "N/A",
+            post_owner: postOwner? postOwner : "N/A",
+            post_name: propertyName? propertyName : "N/A",
             view: (
               <Button
                 type="text"
@@ -382,7 +364,30 @@ function PendingReports() {
       title: "Report Reason",
       dataIndex: "report_reason",
       key: "report_reason",
-      ...getColumnSearchProps("report_reason"),
+      filters : [
+        {
+          text: 'Incorrect or inaccurate information',
+          value: 'Incorrect or inaccurate information',
+        },
+        {
+          text: 'Unresponsive or suspicious poster',
+          value: 'Unresponsive or suspicious poster',
+        },
+        {
+          text: 'Safety and security concerns',
+          value: 'Safety and security concerns',
+        },
+        {
+          text: "Discriminatory or offensive content",
+          value: "Discriminatory or offensive content",
+        },
+        {
+          text: 'Others',
+          value: 'Others',
+        }
+      ],
+      onFilter: (value, record) => record.report_reason.indexOf(value) === 0,
+
       render: (_, { report_reason }) => {
         return <Tag>{report_reason.toUpperCase()}</Tag>;
       },
@@ -736,7 +741,6 @@ function PendingReports() {
                 {formatDateTime(modalData?.postDate)}
               </Descriptions.Item>
               <Descriptions.Item label="Last Modified Date">
-                {" "}
                 {formatDateTime(modalData?.lastModifiedDate)}
               </Descriptions.Item>
               <Descriptions.Item
