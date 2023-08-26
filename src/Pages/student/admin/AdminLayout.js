@@ -11,7 +11,6 @@ import { Layout, Menu, theme, Button } from "antd";
 import { useState } from "react";
 import { useNavigate, Outlet, useLocation } from "react-router-dom";
 import { useEffect } from "react";
-import { MdOutlineDashboard } from 'react-icons/md'
 
 const { Header, Content, Sider } = Layout;
 
@@ -22,7 +21,7 @@ function AdminLayout() {
   const location = useLocation();
 
   useEffect(() => {
-    localStorage.setItem("selectedAdminKey", "/student/admin/");
+    localStorage.setItem("selectedAdminKey", "/student/admin/pendingPosts");
     const storedKey = localStorage.getItem("selectedAdminKey");
     if (storedKey) {
       setSelectedAdminKey(storedKey);
@@ -40,9 +39,6 @@ function AdminLayout() {
 
   const handleTitle = (newTitle) => {
     switch (newTitle) {
-      case "/student/admin/":
-        setTitle("Dashboard");
-        break;
       case "/student/admin/pendingPosts":
         setTitle("Pending Posts");
         break;
@@ -98,17 +94,10 @@ function AdminLayout() {
               selectedKeys={[selectedAdminKey]}
               items={[
                 {
-                  label: "Dashboard",
-                  key: "/student/admin/",
-                  icon: <MdOutlineDashboard style={{ width: '25px', height: 'auto' }} />,
-                  style: {
-                    marginTop: "15px",
-                  },
-                },
-                {
                   label: "Pending Posts",
                   key: "/student/admin/pendingPosts",
                   icon: <AuditOutlined style={{ fontSize: '25px' }} />,
+                  style: { marginTop: '15px' },
                 },
                 {
                   label: "Pending Reports",

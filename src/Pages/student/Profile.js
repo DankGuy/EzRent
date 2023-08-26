@@ -22,6 +22,7 @@ function Profile() {
   const location = useLocation();
 
   useEffect(() => {
+    localStorage.setItem("selectedKey", "/student/profile/profileInformation");
     const storedKey = localStorage.getItem('selectedKey');
     if (storedKey) {
       setSelectedKey(storedKey);
@@ -43,12 +44,6 @@ function Profile() {
     switch (newTitle) {
       case "/student/profile/profileInformation":
         setTitle("Profile Information");
-        break;
-      case "/student/profile/paymentMethods":
-        setTitle("Payment Methods");
-        break;
-      case "/student/profile/rentalPayment":
-        setTitle("Rental Payment");
         break;
       case "/student/profile/appointments":
         setTitle("Appointments");
@@ -100,16 +95,6 @@ function Profile() {
                 style: {
                   marginTop: "15px",
                 }
-              },
-              {
-                label: "Payment Methods",
-                key: "/student/profile/paymentMethods",
-                icon: <CreditCardOutlined style={{ fontSize: '25px' }} />,
-              },
-              {
-                label: "Rental Payment",
-                key: "/student/profile/rentalPayment",
-                icon: <DollarOutlined style={{ fontSize: '25px' }} />,
               },
               {
                 label: "Appointments",

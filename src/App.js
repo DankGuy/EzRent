@@ -11,7 +11,6 @@ import NotFound from "./Pages/Result/NotFound";
 import RoomRental from "./Pages/student/roomRental/RoomRental";
 import Roommate from "./Pages/student/roommate/Roommate";
 import AboutUs from "./Pages/student/AboutUs";
-import AdminDashboard from "./Pages/student/admin/AdminDashboard";
 import AdminLayout from "./Pages/student/admin/AdminLayout";
 import PendingPosts from "./Pages/student/admin/PendingPosts";
 import PendingReports from "./Pages/student/admin/PendingReports";
@@ -20,8 +19,6 @@ import UserActivation from "./Pages/student/admin/UserActivation";
 
 import Profile from "./Pages/student/Profile";
 import ProfileInformation from "./Pages/student/profile/ProfileInformation";
-import PaymentMethods from "./Pages/student/profile/PaymentMethods";
-import RentalPayment from "./Pages/student/profile/RentalPayment";
 import Appointments from "./Pages/student/profile/Appointments";
 import RentalAgreement from "./Pages/student/profile/RentalAgreement";
 import EditProfile from "./Pages/student/profile/EditProfile";
@@ -152,7 +149,7 @@ function App() {
                             <Route path="aboutUs" element={<AboutUs />} />
 
                             <Route path="/student/admin/" element={<AdminLayout />}>
-                                <Route index element={<AdminDashboard />} />
+                                <Route index element={<PendingPosts />} />
                                 <Route path="pendingPosts" element={<PendingPosts />} />
                                 <Route path="pendingPosts" element={<PendingPosts />} />
                                 <Route path="pendingReports" element={<PendingReports />} />
@@ -165,8 +162,6 @@ function App() {
                                     path="profileInformation"
                                     element={<ProfileInformation />}
                                 />
-                                <Route path="paymentMethods" element={<PaymentMethods />} />
-                                <Route path="rentalPayment" element={<RentalPayment />} />
 
                                 <Route path="appointments" element={<Appointments />} />
                                 <Route
