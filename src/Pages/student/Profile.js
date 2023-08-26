@@ -22,7 +22,6 @@ function Profile() {
   const location = useLocation();
 
   useEffect(() => {
-    localStorage.setItem("selectedKey", "/student/profile/profileInformation");
     const storedKey = localStorage.getItem('selectedKey');
     if (storedKey) {
       setSelectedKey(storedKey);

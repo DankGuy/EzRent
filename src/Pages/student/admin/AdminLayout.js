@@ -21,7 +21,6 @@ function AdminLayout() {
   const location = useLocation();
 
   useEffect(() => {
-    localStorage.setItem("selectedAdminKey", "/student/admin/pendingPosts");
     const storedKey = localStorage.getItem("selectedAdminKey");
     if (storedKey) {
       setSelectedAdminKey(storedKey);
@@ -90,7 +89,7 @@ function AdminLayout() {
               }}
               theme="light"
               mode="inline"
-              defaultSelectedKeys={["/student/admin/"]}
+              defaultSelectedKeys={["/student/admin/pendingPosts"]}
               selectedKeys={[selectedAdminKey]}
               items={[
                 {

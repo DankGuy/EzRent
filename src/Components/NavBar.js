@@ -10,6 +10,7 @@ import { RiAdminLine } from "react-icons/ri";
 function NavBar() {
 
   const [profileSelectedKey, setProfileSelectedKey] = useState("");
+  const [selectedAdminKey, setSelectedAdminKey] = useState("");
   const [user, setUser] = useState(null);
 
   const navigate = useNavigate();
@@ -23,6 +24,7 @@ function NavBar() {
     });
     localStorage.removeItem("selectedKey");
     localStorage.removeItem("selectedStudentKey");
+    localStorage.removeItem("selectedAdminKey");
   };
 
   async function getUser() {
@@ -49,12 +51,14 @@ function NavBar() {
       setProfileSelectedKey(localStorage.getItem("selectedKey"));
     } else {
       setProfileSelectedKey("/student/profile/profileInformation");
+      localStorage.setItem("selectedKey", "/student/profile/profileInformation");
     }
 
-    if (localStorage.getItem("selectedStudentKey")) {
-      setCurrent(localStorage.getItem("selectedStudentKey"));
+    if (localStorage.getItem("selectedAdminKey")) {
+      setSelectedAdminKey(localStorage.getItem("selectedStudentKey"));
     } else {
-      setCurrent("/student");
+      setSelectedAdminKey("/student/admin/pendingPosts");
+      localStorage.setItem("selectedAdminKey", "/student/admin/pendingPosts");
     }
 
     const getAvatar = async () => {
