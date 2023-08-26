@@ -36,7 +36,7 @@ function PendingReports() {
 
   const getUser = async () => {
     try {
-        const { data: { user } } = await supabase.auth.getUser();
+      const { data: { user } } = await supabase.auth.getUser();
       if (user) {
         setUserID(user.id);
       }
@@ -322,12 +322,12 @@ function PendingReports() {
 
           return {
             key: index,
-            report_id: report.reportID? report.reportID : "N/A",
-            report_reason: report.reportReason? report.reportReason : "N/A",
-            description: report.reportDescription? report.reportDescription : "N/A",
-            reported_by: studentName? studentName : "N/A",
-            post_owner: postOwner? postOwner : "N/A",
-            post_name: propertyName? propertyName : "N/A",
+            report_id: report.reportID ? report.reportID : "N/A",
+            report_reason: report.reportReason ? report.reportReason : "N/A",
+            description: report.reportDescription ? report.reportDescription : "N/A",
+            reported_by: studentName ? studentName : "N/A",
+            post_owner: postOwner ? postOwner : "N/A",
+            post_name: propertyName ? propertyName : "N/A",
             view: (
               <Button
                 type="text"
@@ -364,7 +364,7 @@ function PendingReports() {
       title: "Report Reason",
       dataIndex: "report_reason",
       key: "report_reason",
-      filters : [
+      filters: [
         {
           text: 'Incorrect or inaccurate information',
           value: 'Incorrect or inaccurate information',
