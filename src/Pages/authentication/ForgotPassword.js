@@ -72,7 +72,7 @@ function ForgotPasswordCard() {
       >
         <Form
           style={{
-            maxWidth: 800,
+            maxWidth: "25vw",
             marginBottom: "10px",
           }}
         >
@@ -83,7 +83,10 @@ function ForgotPasswordCard() {
           </p>
 
           <Form.Item
-            label="Email"
+          style={{
+            textAlign: "center",
+            width: "100%",
+          }}
             name="email"
             rules={[
               {
@@ -125,7 +128,7 @@ function ForgotPasswordCard() {
                   backgroundColor: "#0062D1",
                   borderColor: "#0062D1",
                   marginTop: "5px",
-                  width: "20vw",
+                  width: "25vw",
                   fontSize: "1.2rem",
                   height: "auto",
                 }}

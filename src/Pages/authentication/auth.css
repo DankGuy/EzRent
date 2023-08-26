@@ -21,6 +21,20 @@
   max-width: 20vw;
 }
 
+.updatepw-container .ant-input-affix-wrapper {
+  width: 25vw;
+}
+
+.updatepw-container input.ant-input {
+  width: 25vw;
+  font-size: 1.3em;
+}
+
+.updatepw-container .ant-form-item {
+  max-width: 25vw;
+}
+
+
 .radioItem .ant-radio-wrapper > span {
   font-size: 1.3em;
 }
@@ -32,13 +46,15 @@
 
 .login-container a,
 .signup-container a,
-.forgotpw-container a {
+.forgotpw-container a,
+.updatepw-container a {
   font-size: 1.1em;
 }
 
 .login-container .ant-btn,
 .signup-container .ant-btn,
-.forgotpw-container .ant-btn {
+.forgotpw-container .ant-btn,
+.updatepw-container .ant-btn {
   font-size: 1.3em;
   height: auto;
 }

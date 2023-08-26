@@ -4,8 +4,9 @@ import { supabase } from "../../supabase-client";
 import { InfoCircleOutlined, UserOutlined } from "@ant-design/icons";
 import { Input, Tooltip, Form, Button, Spin, message } from "antd";
 import { useState, useEffect } from "react";
+import "./auth.css";
 
-function ForgotPasswordCard() {
+function UpdatePassword() {
   const [isHovered, setIsHovered] = useState(false);
   const hoverStyle = {
     color: isHovered ? "#430f58" : "#6643b5",
@@ -85,7 +86,7 @@ function ForgotPasswordCard() {
 
   return (
     <div
-      className="forgotpw-container"
+      className="updatepw-container"
       style={{
         backgroundColor: "#FFFFFF",
         minHeight: "100vh",
@@ -100,10 +101,10 @@ function ForgotPasswordCard() {
       }}
     >
       <div
-        className="forgotpw-card"
+        className="updatepw-card"
         style={{
           height: "auto",
-          width: "50vw",
+          width: "35vw",
           marginTop: "50px",
           marginBottom: "50px",
           marginLeft: "0",
@@ -145,7 +146,6 @@ function ForgotPasswordCard() {
                 </Tooltip>
               }
               style={{
-                width: "25vw",
                 background: "white",
               }}
             />
@@ -179,9 +179,7 @@ function ForgotPasswordCard() {
             ]}
             hasFeedback
           >
-            <Input.Password onChange={handleChange} style={{
-              width: "25vw",
-            }}
+            <Input.Password onChange={handleChange}
               placeholder="Enter your new password"
             />
           </Form.Item>
@@ -195,7 +193,7 @@ function ForgotPasswordCard() {
                 backgroundColor: "#0062D1",
                 borderColor: "#0062D1",
                 marginTop: "5px",
-                width: "20vw",
+                width: "25vw",
                 fontSize: "1.2rem",
                 height: "auto",
               }}
@@ -228,4 +226,4 @@ function ForgotPasswordCard() {
   );
 }
 
-export default ForgotPasswordCard;
+export default UpdatePassword;
