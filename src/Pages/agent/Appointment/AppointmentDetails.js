@@ -112,7 +112,6 @@ function AppointmentDetails() {
                     title="Property Details"
                     labelStyle={{ fontWeight: "bold", width: "10%" }}
                     bordered>
-                    <Descriptions.Item label="Post ID" span={3}>{state.post.postID}</Descriptions.Item>
                     <Descriptions.Item label="Name" span={3}>{state.post.propertyName}</Descriptions.Item>
                     <Descriptions.Item label="Type" span={3}>{state.post.propertyType}</Descriptions.Item>
                     <Descriptions.Item label="Location" span={3}>{state.post.propertyAddress},
@@ -135,7 +134,6 @@ function AppointmentDetails() {
                     labelStyle={{ fontWeight: "bold", width: "40%" }}
                     contentStyle={{ display: "inline-block" }}
                     bordered>
-                    <Descriptions.Item label="Appointment ID" span={3}>{state.appointmentID}</Descriptions.Item>
                     <Descriptions.Item label="Date" span={3}>{convertDate(state.date)}</Descriptions.Item>
                     <Descriptions.Item label="Timeslot" span={3}>{state.timeslot}</Descriptions.Item>
                     <Descriptions.Item label="Status" span={3}>

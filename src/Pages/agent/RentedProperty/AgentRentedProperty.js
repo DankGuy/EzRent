@@ -176,7 +176,8 @@ function AgentRentedProperty() {
                 showTitle: false,
             },
             className: "postIDcolumn",
-            width: '15%',
+            width: '20%',
+            sorter: (a, b) => a.rentalAgreementID.localeCompare(b.rentalAgreementID),
         },
         {
             title: "Property Name",

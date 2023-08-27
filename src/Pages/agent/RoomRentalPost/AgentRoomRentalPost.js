@@ -1563,7 +1563,12 @@ function AgentRoomRentalPost() {
                 <Row>
                     <Col span={20}>
                         <Form.Item name="propertyDescription">
-                            <TextArea maxLength={1000} style={{ resize: 'none', height: '100px' }} allowClear={true} autoSize={true} placeholder='Enter other description here...' />
+                            <TextArea 
+                                maxLength={1000} 
+                                // style={{ resize: 'none', height: '100px' }} 
+                                allowClear={true} 
+                                autoSize={true} 
+                                placeholder='Enter other description here...' />
                         </Form.Item>
                     </Col>
                 </Row>

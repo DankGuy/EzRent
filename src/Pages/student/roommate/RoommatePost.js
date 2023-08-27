@@ -81,7 +81,7 @@ function RoommatePost() {
                         </span>
                         <br />
                         <span style={{ color: 'gray', fontStyle: 'italic' }}>
-                            Available Space: {value.availableSpace} - Max: {value.maxTenant} pax  
+                            Available Space: {value.availableSpace} - Max: {value.maxTenant} pax
                         </span>
                     </>
                 ),
@@ -325,7 +325,8 @@ function RoommatePost() {
                                                             here
                                                         </span>
                                                         .
-                                                    </span>                                        </Col>
+                                                    </span>
+                                                </Col>
                                             </Row>
                                         </>
                                     ) : (

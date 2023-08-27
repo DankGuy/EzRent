@@ -655,7 +655,7 @@ function RoomRentalPost() {
 
             </Row>
 
-            <div style={{ display: 'flex', flexDirection: 'column' }}>
+            <div style={{ display: 'flex', flexDirection: 'column', marginBottom: '20px' }}>
                 <Row>
                     <Col span={24} style={{ fontSize: '30px', marginLeft: '10px', fontWeight: '500' }}>Recommended Properties</Col>
                 </Row>

@@ -285,6 +285,13 @@ function ListingPostDetails() {
         }
     };
 
+    const openLinkInNewTab = (url, stateData, event) => {
+        console.log(stateData)
+        event.preventDefault();
+        const serializedState = JSON.stringify(stateData);
+        window.open(`${url}?state=${encodeURIComponent(serializedState)}`, '_blank');
+    };
+
     const linkStyle = {
         fontSize: '14px',
         color: 'black',
@@ -344,11 +351,25 @@ function ListingPostDetails() {
                                 <>
                                     <Descriptions.Item label="Rental Agreement ID">{listing.rentalAgreementID}</Descriptions.Item>
                                     <Descriptions.Item label="Property Name" span={2}>{listing.rental_agreement.postID.propertyName}</Descriptions.Item>
-                                    <Descriptions.Item label="Property Address">{listing.rental_agreement.postID.propertyAddress}</Descriptions.Item>
+                                    <Descriptions.Item label="Property Address" span={3}>{listing.rental_agreement.postID.propertyAddress}</Descriptions.Item>
                                 </>
                             )}
 
                         </Descriptions>
+                        {listing.rentalAgreementID !== null && listing.rental_agreement && (
+                            <>
+                                <span>
+                                    View the property details{' '}
+                                    <span
+                                        style={{ color: 'blue', cursor: 'pointer', textDecoration: 'underline' }}
+                                        onClick={(e) => openLinkInNewTab(`/student/roomRental/${listing.rental_agreement.postID.postID}`, listing.rental_agreement.postID.postID, e)}
+                                    >
+                                        here
+                                    </span>
+                                    .
+                                </span>
+                            </>
+                        )}
 
                         {listing.rentalAgreementID === null && (
                             <>
@@ -636,7 +657,7 @@ function ListingPostDetails() {
                             ...linkStyle,
                             borderLeft: `3px solid ${isLinkClicked[1] ? 'blue' : '#d0d0d0'}`,
                             color: `${isLinkClicked[1] ? 'blue' : 'black'}`,
-                        }}>                        
+                        }}>
                         <p onClick={handleClick(2)} style={{ marginBlockStart: '0px', marginBlockEnd: '0px' }}>
                             Rental Details
                         </p>
@@ -648,7 +669,7 @@ function ListingPostDetails() {
                             ...linkStyle,
                             borderLeft: `3px solid ${isLinkClicked[2] ? 'blue' : '#d0d0d0'}`,
                             color: `${isLinkClicked[2] ? 'blue' : 'black'}`,
-                        }}>                        
+                        }}>
                         <p onClick={handleClick(3)} style={{ marginBlockStart: '0px', marginBlockEnd: '0px' }}>
                             Roommate Preferences
                         </p>
@@ -660,7 +681,7 @@ function ListingPostDetails() {
                             ...linkStyle,
                             borderLeft: `3px solid ${isLinkClicked[3] ? 'blue' : '#d0d0d0'}`,
                             color: `${isLinkClicked[3] ? 'blue' : 'black'}`,
-                        }}>                        
+                        }}>
                         <p onClick={handleClick(4)} style={{ marginBlockStart: '0px', marginBlockEnd: '0px' }}>
                             My Lifestyle
                         </p>

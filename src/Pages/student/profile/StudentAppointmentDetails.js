@@ -2,7 +2,7 @@ import { useLocation } from "react-router-dom";
 import { useEffect, useState } from 'react';
 import { Button, Descriptions, Popconfirm, message } from "antd";
 import { convertDate, getCurrentDateTime } from "../../../Components/timeUtils";
-import {supabase} from "../../../supabase-client"
+import { supabase } from "../../../supabase-client"
 import { useNavigate } from "react-router-dom";
 import dayjs from 'dayjs';
 
@@ -47,13 +47,13 @@ function StudentAppointmentDetails() {
         }
         console.log(data2);
 
-       
+
 
         if (data2.length > 0) {
             console.log(data2)
             const newTimeslot = data2.timeslot;
             console.log(newTimeslot);
-    
+
             newTimeslot.push(state.timeslot);
 
             const { data: data3, error: error3 } = await supabase
@@ -67,7 +67,7 @@ function StudentAppointmentDetails() {
                 console.log(error3);
                 return;
             }
-        } else{
+        } else {
             const { data: data3, error: error3 } = await supabase
                 .from('available_timeslot')
                 .insert([{ date: state.date, agentID: state.agentID.agent_id, timeslot: [state.timeslot] }])
@@ -81,19 +81,19 @@ function StudentAppointmentDetails() {
 
 
         messageApi.loading('Cancelling appointment...', 1.5)
-                                .then(() => messageApi.success('Appointment cancelled successfully!', 1.5))
-                                .then(() => setTimeout(() => navigate('/student/profile/appointments'), 1500))
-                                .catch(() => messageApi.error('Error cancelling appointment!', 1.5));
-    }               
+            .then(() => messageApi.success('Appointment cancelled successfully!', 1.5))
+            .then(() => setTimeout(() => navigate('/student/profile/appointments'), 1500))
+            .catch(() => messageApi.error('Error cancelling appointment!', 1.5));
+    }
 
     const showButton = () => {
         if (state.status === "Valid") {
 
-           //Get today date
-           const today = dayjs();
-           const formattedDate = today.format('YYYY-MM-DD');
+            //Get today date
+            const today = dayjs();
+            const formattedDate = today.format('YYYY-MM-DD');
 
-           if (state.date > formattedDate) {
+            if (state.date > formattedDate) {
                 return (
                     <>
                         {contextHolder}
@@ -118,7 +118,6 @@ function StudentAppointmentDetails() {
                     title="Property Details"
                     labelStyle={{ fontWeight: "bold", width: "10%" }}
                     bordered>
-                    <Descriptions.Item label="Property ID" span={3}>{state.post.postID}</Descriptions.Item>
                     <Descriptions.Item label="Name" span={3}>{state.post.propertyName}</Descriptions.Item>
                     <Descriptions.Item label="Type" span={3}>{state.post.propertyType}</Descriptions.Item>
                     <Descriptions.Item label="Location" span={3}>{state.post.propertyAddress},
@@ -141,7 +140,6 @@ function StudentAppointmentDetails() {
                     labelStyle={{ fontWeight: "bold", width: "40%" }}
                     contentStyle={{ display: "inline-block" }}
                     bordered>
-                    <Descriptions.Item label="Appointment ID" span={3}>{state.appointmentID}</Descriptions.Item>
                     <Descriptions.Item label="Date" span={3}>{convertDate(state.date)}</Descriptions.Item>
                     <Descriptions.Item label="Time" span={3}>{state.timeslot}</Descriptions.Item>
                     <Descriptions.Item label="Status" span={3}>

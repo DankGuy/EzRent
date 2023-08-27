@@ -38,6 +38,10 @@ function RoommateRequest() {
         getRequestDetails();
         getCurrentRoommateDetails();
 
+        setSelectedPostIDs([]);
+        setSelectedRoomIDs([]);
+        
+
     }, [fetchTrigger]);
 
     const getHasRentalAgreement = async () => {
@@ -196,7 +200,7 @@ function RoommateRequest() {
             console.log("error", error3);
             return;
         }
-    } 
+    }
 
 
 
@@ -242,12 +246,32 @@ function RoommateRequest() {
             key: 'studentName',
             width: '15%',
             sorter: (a, b) => a.studentName.localeCompare(b.studentName),
+            ellipsis: {
+                showTitle: false,
+            },
+            render: (studentName) => (
+                <Tooltip placement="topLeft" title={studentName}>
+                    <div style={{ width: '100%', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
+                        {studentName}
+                    </div>
+                </Tooltip>
+            ),
         },
         {
             title: 'Student Email',
             dataIndex: 'studentEmail',
             key: 'studentEmail',
             width: '25%',
+            ellipsis: {
+                showTitle: false,
+            },
+            render: (studentEmail) => (
+                <Tooltip placement="topLeft" title={studentEmail}>
+                    <div style={{ width: '100%', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
+                        {studentEmail}
+                    </div>
+                </Tooltip>
+            ),
         },
         {
             title: 'Student Phone',
@@ -302,12 +326,32 @@ function RoommateRequest() {
             key: 'studentName',
             width: '15%',
             sorter: (a, b) => a.studentName.localeCompare(b.studentName),
+            ellipsis: {
+                showTitle: false,
+            },
+            render: (studentName) => (
+                <Tooltip placement="topLeft" title={studentName}>
+                    <div style={{ width: '100%', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
+                        {studentName}
+                    </div>
+                </Tooltip>
+            ),
         },
         {
             title: 'Student Email',
             dataIndex: 'studentEmail',
             key: 'studentEmail',
             width: '20%',
+            ellipsis: {
+                showTitle: false,
+            },
+            render: (studentEmail) => (
+                <Tooltip placement="topLeft" title={studentEmail}>
+                    <div style={{ width: '100%', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
+                        {studentEmail}
+                    </div>
+                </Tooltip>
+            ),
         },
         {
             title: 'Student Phone',
@@ -412,6 +456,14 @@ function RoommateRequest() {
 
             const propertyPostID = data.rental_agreement.postID;
 
+            const roomTypeCounts = selectedRoomIDs.reduce((acc, curr) => {
+                acc[curr] = (acc[curr] || 0) + 1;
+                return acc;
+            }, {});
+
+            console.log(roomTypeCounts);
+
+
             const { data: data2, error: error2 } = await supabase
                 .from('property_room')
                 .select('*')
@@ -425,61 +477,69 @@ function RoommateRequest() {
 
             console.log(data2);
 
-
-            const roomTypeCounts = selectedRoomIDs.reduce((acc, curr) => {
-                acc[curr] = (acc[curr] || 0) + 1;
-                return acc;
-            }, {});
-
-            console.log(roomTypeCounts);
-
             const idArray = [];
 
-            data2.forEach((element) => {
-                const roomType = element.roomType;
+            async function processRoomTypes() {
+                for (const roomID of Object.keys(roomTypeCounts)) {
+                    console.log(roomID);
+                    console.log(roomTypeCounts[roomID]);
 
-                const maxTenant = element.maxTenant;
+                    const { data: data3, error: error3 } = await supabase
+                        .from('property_room')
+                        .select('*')
+                        .eq('roomID', roomID)
+                        .single();
 
-                const selectedTenant = roomTypeCounts[element.roomID];
-
-                const availableSpace = element.availableSpace;
-
-                console.log(roomType);
-
-                console.log(maxTenant);
-
-                console.log(selectedTenant);
-
-                console.log(availableSpace);
-
-                if (availableSpace === 0) {
-                    message.error("The maximum tenant allowed has been reached");
-                    return;
-                } else {
-                    if (availableSpace < selectedTenant) {
-                        message.error("The selected tenant(s) will exceed the maximum tenant allowed");
-                        return;
+                    if (error3) {
+                        console.log(error3);
+                        continue; // Continue to the next iteration if there's an error.
                     }
+
+                    console.log(data3);
+
+                    const availableSpace = data3.availableSpace;
+
+                    console.log(availableSpace);
+
+                    if (availableSpace === 0) {
+                        message.error(`The maximum tenant for ${data3.roomType} has been reached`);
+                        continue; // Continue to the next iteration.
+                    } else {
+                        if (availableSpace < roomTypeCounts[roomID]) {
+                            message.error(`The selected tenant for ${data3.roomType} is more than the available space`);
+                            continue; // Continue to the next iteration.
+                        }
+                    }
+
+                    // Get the postID that has the same room type
+                    const sameRoomTypePostID = selectedPostIDs.filter((postID) => {
+                        return selectedRoomIDs[selectedPostIDs.indexOf(postID)] === roomID;
+                    });
+
+                    console.log(sameRoomTypePostID);
+
+                    idArray.push(sameRoomTypePostID);
                 }
 
-                //Get the postID that has same room type
-                const sameRoomTypePostID = selectedPostIDs.filter((postID) => {
-                    return selectedRoomIDs[selectedPostIDs.indexOf(postID)] === element.roomID;
-                });
+                console.log(idArray);
 
-                console.log(sameRoomTypePostID);
+                if (idArray.length === 0) {
+                    return;
+                }
 
-                idArray.push(sameRoomTypePostID);
-            });
-
-            if (idArray.flat().length !== 0) {
                 await approvePost(idArray.flat());
+                setFetchTrigger((prevTrigger) => prevTrigger + 1);
+
             }
+
+            processRoomTypes();
+
         } else {
             await approvePost(selectedPostIDs);
+            setFetchTrigger((prevTrigger) => prevTrigger + 1);
+
         }
         // add fetch trigger to rerender the table
-        setFetchTrigger((prevTrigger) => prevTrigger + 1);
     };
 
     const handleRejectClick = async () => {
