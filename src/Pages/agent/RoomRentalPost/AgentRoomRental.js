@@ -111,7 +111,8 @@ function AgentRoomRental() {
         const { data, error } = await supabase
             .from('property_post')
             .select('*')
-            .contains('propertyStatus', { stage: 'drafted' });
+            .contains('propertyStatus', { stage: 'drafted' })
+            .order('lastModifiedDate', { ascending: false });
 
         if (error) {
             console.log(error);
@@ -125,7 +126,8 @@ function AgentRoomRental() {
             .from('property_post')
             .select('*')
             .not('propertyStatus', 'cs', '{ "stage": "drafted" }')
-            .not('propertyStatus', 'cs', '{ "stage": "rented" }');
+            .not('propertyStatus', 'cs', '{ "stage": "rented" }')
+            .order('lastModifiedDate', { ascending: false });
 
         if (error2) {
             console.log(error2);
@@ -193,15 +195,15 @@ function AgentRoomRental() {
     }
 
     const handlePostSearch = async (e) => {
-        const postID = e.target.value;
+        const input = e.target.value;
 
         let query = supabase.from('property_post')
             .select('*')
             .not('propertyStatus', 'cs', '{ "stage": "drafted" }')
             .not('propertyStatus', 'cs', '{ "stage": "rented" }');
 
-        if (postID !== '') {
-            query = query.eq('postID', postID);
+        if (input !== '') {
+            query = query.or(`propertyName.ilike."%${input}%"`)
         }
 
         try {
@@ -214,6 +216,8 @@ function AgentRoomRental() {
 
                 return;
             }
+
+            console.log(data);
 
             setPosts(data);
             setIsFirstMount(true);
@@ -300,7 +304,7 @@ function AgentRoomRental() {
                 <Col span={5} offset={1} style={{ display: 'flex', alignItems: 'end' }}>
                     <Form>
                         <Form.Item name="search" label="Search">
-                            <Input placeholder="Enter post ID" bordered={false}
+                            <Input placeholder="Enter property name" bordered={false}
                                 style={{
                                     borderBottom: '1px solid #d9d9d9',
                                     borderRadius: '0px',

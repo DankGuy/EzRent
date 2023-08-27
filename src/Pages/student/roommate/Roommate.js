@@ -26,7 +26,7 @@ function Roommate() {
         setLoading(true);
         const userID = (await supabase.auth.getUser()).data.user.id;
 
-        const { data, error } = await supabase
+        let { data, error } = await supabase
             .from('roommate_post')
             .select('*, student(*), rental_agreement(*, postID(*))')
             .order('postDate', { ascending: false })
@@ -37,9 +37,43 @@ function Roommate() {
             return;
         }
 
-        return data;
+        for (const element of data) {
+            if (element.rental_agreement !== null) {
+                const propertyPostID = element.rental_agreement.postID.postID;
 
-       
+                const { data: allRooms, error } = await supabase
+                    .from('property_room')
+                    .select('*')
+                    .eq('propertyPostID', propertyPostID);
+
+                if (error) {
+                    console.log(error);
+                    continue; // Skip this iteration and move to the next one
+                }
+
+                console.log(allRooms);
+
+                let isAvailable = false;
+                for (let i = 0; i < allRooms.length; i++) {
+                    if (allRooms[i].availableSpace > 0) {
+                        isAvailable = true;
+                        break;
+                    }
+                }
+
+                console.log("isAvailable: " + isAvailable);
+
+                if (!isAvailable) {
+                    // You cannot remove elements directly from the 'data' array within a for...of loop
+                    // Instead, create a new array with the elements you want to keep
+                    // and assign it back to 'data'
+                    data = data.filter(item => item !== element);
+                }
+            }
+        }
+
+
+        return data;
     }
 
 
@@ -73,6 +107,40 @@ function Roommate() {
             .neq('studentID', userID);
 
 
+        for (const element of data) {
+            if (element.rental_agreement !== null) {
+                const propertyPostID = element.rental_agreement.postID.postID;
+
+                const { data: allRooms, error } = await supabase
+                    .from('property_room')
+                    .select('*')
+                    .eq('propertyPostID', propertyPostID);
+
+                if (error) {
+                    console.log(error);
+                    continue; // Skip this iteration and move to the next one
+                }
+
+                console.log(allRooms);
+
+                let isAvailable = false;
+                for (let i = 0; i < allRooms.length; i++) {
+                    if (allRooms[i].availableSpace > 0) {
+                        isAvailable = true;
+                        break;
+                    }
+                }
+
+                console.log("isAvailable: " + isAvailable);
+
+                if (!isAvailable) {
+                    // You cannot remove elements directly from the 'data' array within a for...of loop
+                    // Instead, create a new array with the elements you want to keep
+                    // and assign it back to 'data'
+                    data = data.filter(item => item !== element);
+                }
+            }
+        }
 
 
         if (error) {
@@ -214,7 +282,7 @@ function Roommate() {
 
 
         <FloatButton.Group
-            trigger="click"
+            trigger="hover"
             className="floatButton"
             // type="primary"
             icon={<BiMenu style={{ color: 'white' }} />}

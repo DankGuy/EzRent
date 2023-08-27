@@ -328,17 +328,6 @@ function RoomRental() {
                                         {post.propertyFurnishType}
                                         <span style={{ marginLeft: '20px', marginRight: '10px' }}>&bull;</span>
                                         Built-up size: {post.propertySquareFeet} sq.ft.
-
-                                        {post.propertyCategory === 'Room' ?
-                                            <>
-                                                <span style={{ marginLeft: '20px', marginRight: '10px' }}>&bull;</span>
-                                                {post.propertyRoomDetails[1].roomType}
-                                            </> :
-                                            <>
-                                                <span style={{ marginLeft: '20px', marginRight: '10px' }}>&bull;</span>
-                                                {post.propertyRoomNumber} rooms available
-                                            </>
-                                        }
                                     </Col>
                                 </Row>
                             </div>

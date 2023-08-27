@@ -39,11 +39,13 @@ function AgentRoomRentalPost() {
 
 
     const [roomFileList, setRoomFileList] = useState({});
+    const [roomFileListProgress, setRoomFileListProgress] = useState({});
     const handleRoomChange = (index, { fileList: newFileList }) => {
         setRoomFileList(prev => ({ ...prev, [index]: newFileList }));
 
     };
 
+    const [roomID, setRoomID] = useState([]);
 
     const [isRoomTypeDisabled, setIsRoomTypeDisabled] = useState([]);
 
@@ -84,67 +86,88 @@ function AgentRoomRentalPost() {
             form.setFieldsValue({ propertyImage: fileList })
         }
 
+        console.log(post.postID)
 
-        const setRoomDetails = () => {
-            const roomDetails = post.propertyRoomDetails;
+        const setRoomDetails = async () => {
+            const { data: roomDetails, error } = await supabase
+                .from('property_room')
+                .select('*')
+                .eq('propertyPostID', post.postID)
+                .order('roomID', { ascending: true });
 
-            //iterate through the roomNum and set initial value for roomSquareFeet, roomType and roomFurnish
-            Array.from({ length: roomNum }, (_, i) => i + 1).forEach((index) => {
-                form.setFieldsValue({ [`roomSquareFeet${index}`]: roomDetails[index].roomSquareFeet })
-                form.setFieldsValue({ [`roomType${index}`]: roomDetails[index].roomType })
-                form.setFieldsValue({ [`maxTenant${index}`]: roomDetails[index].maxTenant })
+            if (error) {
+                console.log(error)
+            } else {
+                console.log(roomDetails)
+            }
 
-                const roomFurnish = roomDetails[index].roomFurnish;
+            //set the room details
+            roomDetails.forEach((roomDetail, index) => {
+
+                setRoomID(prev => {
+                    if (!prev.includes(roomDetail.roomID)) {
+                        return [...prev, roomDetail.roomID];
+                    }
+                    return prev; // If it's a duplicate, just return the current array
+                });
+
+                form.setFieldsValue({ [`roomSquareFeet${index + 1}`]: roomDetail.roomSquareFeet })
+                form.setFieldsValue({ [`roomType${index + 1}`]: roomDetail.roomType })
+                form.setFieldsValue({ [`maxTenant${index + 1}`]: roomDetail.maxTenant })
+
+                const roomFurnish = roomDetail.roomFurnish;
 
                 const roomFurnishArray = [];
 
                 for (const [key, value] of Object.entries(roomFurnish)) {
                     roomFurnishArray.push(key);
-                    form.setFieldsValue({ [`roomFurnish${index}_${key}`]: value })
+                    form.setFieldsValue({ [`roomFurnish${index + 1}_${key}`]: value })
                 }
 
-                form.setFieldsValue({ [`roomFurnish${index}`]: roomFurnishArray })
+                form.setFieldsValue({ [`roomFurnish${index + 1}`]: roomFurnishArray })
+            })
 
-            }
-            )
+            //set the isRoomTypeDisabled
+            const isRoomTypeDisabled = [];
+
+            roomDetails.forEach((roomDetail, index) => {
+                isRoomTypeDisabled[index+1] = true;
+            })
+
+            setIsRoomTypeDisabled(isRoomTypeDisabled);
+
 
             //set the checkedItems
             const checkedItems = {};
 
-            Array.from({ length: roomNum }, (_, i) => i + 1).forEach((index) => {
-                const roomFurnishArray = form.getFieldValue(`roomFurnish${index}`);
+            //iterate through the roomDetails and set the checkedItems
+            roomDetails.forEach((roomDetail, index) => {
+                const roomFurnishArray = form.getFieldValue(`roomFurnish${index + 1}`);
 
                 const checkedItem = roomFurnishArray.map((item) => {
                     return item
                 })
 
-                checkedItems[index] = checkedItem;
-            }
-            )
+                checkedItems[index + 1] = checkedItem;
+            })
 
             setCheckedItems(checkedItems);
 
-            Array.from({ length: post.propertyRoomNumber }, (_, i) => i + 1).forEach((index) => {
-                console.log(index)
-                setIsRoomTypeDisabled(prev => [...prev, true])
 
-            }
-            )
+            //-------------------------------------------------------------------------------------------
+            //set the room images
+            const roomFileList = {};
 
-        }
+            roomDetails.forEach(async (roomDetail, index) => {
 
-        const fetchRoomImages = async () => {
-            //iterate through the roomdetails and get room type
-            Array.from({ length: roomNum }, (_, i) => i + 1).forEach(async (index) => {
-                const roomType = post.propertyRoomDetails[index].roomType;
+                setRoomFileListProgress(prev => ({ ...prev, [index + 1]: true }))
 
-                console.log(roomType);
-                console.log(post.postID);
+                const roomType = roomDetail.roomType;
 
                 const { data: images, error } = await supabase
                     .storage
                     .from('post')
-                    .list(`${post.postID}/${roomType}`);
+                    .list(`${post.postID}/${roomType}_${index + 1}`);
 
                 if (error) {
                     console.log(error)
@@ -154,32 +177,24 @@ function AgentRoomRentalPost() {
                         return {
                             uid: image.id,
                             name: image.name,
-                            status: 'done',
-                            url: `https://exsvuquqspmbrtyjdpyc.supabase.co/storage/v1/object/public/post/${post.postID}/${roomType}/${image.name}`,
+                            status: roomFileListProgress[index + 1] ? 'uploading' : 'done',
+                            url: `https://exsvuquqspmbrtyjdpyc.supabase.co/storage/v1/object/public/post/${post.postID}/${roomType}_${index + 1}/${image.name}`,
                         }
                     })
 
-                    console.log(urls)
+                    roomFileList[index + 1] = urls;
 
-                    setRoomFileList(prev => ({ ...prev, [index]: urls }))
-
+                    setRoomFileListProgress(prev => ({ ...prev, [index + 1]: false }))
                 }
+            })
 
-
-            }
-            )
-
-            //Iterate and set fields value
-            Array.from({ length: roomNum }, (_, i) => i + 1).forEach((index) => {
-                form.setFieldsValue({ [`roomImage${index}`]: roomFileList[index] })
-            }
-            )
-
-
+            setRoomFileList(roomFileList);
         }
+
+
+
         fetchPropertyImages();
         setRoomDetails();
-        fetchRoomImages();
 
         console.log(roomFileList)
 
@@ -457,7 +472,7 @@ function AgentRoomRentalPost() {
                                 multiple={true}
                                 beforeUpload={beforeUploadRoom(index)}
                                 customRequest={dummyRequest}
-                                // onRemove={handleRoomRemove.bind(this, index)}
+                            // onRemove={handleRoomRemove.bind(this, index)}
                             >
                                 {roomFileList[index]?.length >= 10 ? null : uploadButton}
                             </Upload>
@@ -816,6 +831,67 @@ function AgentRoomRentalPost() {
                 }
             }
 
+            //--------------------------------------------------------------------------------------
+            //Delete the room folder that is not in the roomID
+            //Get the current folder
+            const { data: folders, error: folderError } = await supabase.storage
+                .from('post')
+                .list(`${id}`);
+
+            if (folderError) {
+                console.log(folderError);
+            }
+
+            console.log(folders)
+
+            //Filter the folder that is not Property
+            const filteredFolders = folders.filter((folder) => folder.name !== 'Property');
+
+            console.log(filteredFolders)
+
+            //Get the new room 
+            const newRoomFileName = [];
+            Array.from({ length: roomNum }, (_, i) => i + 1).forEach((index) => {
+                const roomType = form.getFieldValue(`roomType${index}`);
+
+                newRoomFileName.push(`${roomType}_${index}`);
+            })
+
+            console.log(newRoomFileName)
+
+            //Get the missing folder from the filteredFolders
+            const missingFolders = filteredFolders.filter((folder) => !newRoomFileName.includes(folder.name));
+
+            console.log(missingFolders)
+
+            //Delete the missing folder
+            for (const folder of missingFolders) {
+                //Get all the files in the folder
+                const { data: files, error: fileError } = await supabase.storage
+                    .from('post')
+                    .list(`${id}/${folder.name}`);
+
+                if (fileError) {
+                    console.log(fileError);
+                }
+
+                //Delete all the files in the folder
+                for (const file of files) {
+                    const filename = file.name;
+
+                    const { data, error } = await supabase.storage
+                        .from('post')
+                        .remove([`${id}/${folder.name}/${filename}`]);
+
+                    if (error) {
+                        console.log(error);
+                        return;
+                    }
+                }
+            }
+
+
+            //Delete the room image that is not in the roomFileList
             //Iterate through the roomNum
             Array.from({ length: roomNum }, (_, i) => i + 1).forEach(async (index) => {
                 const roomType = form.getFieldValue(`roomType${index}`);
@@ -824,7 +900,7 @@ function AgentRoomRentalPost() {
                 const { data: images, error } = await supabase
                     .storage
                     .from('post')
-                    .list(`${id}/${roomType}`);
+                    .list(`${id}/${roomType}_${index}`);
 
                 const imageNames = images.map(image => image.name);
 
@@ -838,7 +914,7 @@ function AgentRoomRentalPost() {
                 for (const image of missingImages) {
                     const { data, error } = await supabase.storage
                         .from('post')
-                        .remove([`${id}/${roomType}/${image}`]);
+                        .remove([`${id}/${roomType}_${index}/${image}`]);
 
                     if (error) {
                         console.log(error);
@@ -853,7 +929,7 @@ function AgentRoomRentalPost() {
                 for (const image of newUploadImages) {
                     const { data, error } = await supabase.storage
                         .from('post')
-                        .upload(`${id}/${roomType}/${image.name}`, image.originFileObj, {
+                        .upload(`${id}/${roomType}_${index}/${image.name}`, image.originFileObj, {
                             cacheControl: '3600',
                             upsert: false,
                         });
@@ -902,32 +978,6 @@ function AgentRoomRentalPost() {
 
         const roomDetails = {};
 
-        //iterate and push the value into the array
-        Array.from({ length: roomNum }, (_, i) => i + 1).forEach((index) => {
-
-            const roomFurnishArray = e[`roomFurnish${index}`];
-            const roomType = e[`roomType${index}`];
-            const roomSquareFeet = e[`roomSquareFeet${index}`];
-            const maxTenant = e[`maxTenant${index}`];
-
-            const roomFurnishQuantites = {};
-
-            roomFurnishArray.forEach((furnish) => {
-                const furnishQuantity = e[`roomFurnish${index}_${furnish}`];
-                roomFurnishQuantites[furnish] = furnishQuantity;
-            });
-
-            roomDetails[index] = {
-                roomType: roomType,
-                roomSquareFeet: roomSquareFeet,
-                roomFurnish: roomFurnishQuantites,
-                maxTenant: maxTenant,
-            }
-
-        }
-        )
-
-
         const { data: postData, error: postError } = await supabase
             .from('property_post')
             .update(
@@ -948,7 +998,6 @@ function AgentRoomRentalPost() {
                     propertyDescription: e["propertyDescription"],
                     lastModifiedDate: dateTime,
                     propertyRoomNumber: e["propertyRoomNumber"],
-                    propertyRoomDetails: roomDetails,
                     propertyStatus: (
                         post.propertyStatus.stage === 'drafted' ?
                             {
@@ -971,6 +1020,55 @@ function AgentRoomRentalPost() {
             });
         }
         else {
+
+            console.log(roomID);
+
+            //Delete all the room details
+            const { data: deleteData, error: deleteError } = await supabase
+                .from('property_room')
+                .delete()
+                .in('roomID', roomID);
+
+            if (deleteError) {
+                console.log(deleteError)
+            }
+
+
+
+            Array.from({ length: roomNum }, (_, i) => i + 1).forEach(async (index) => {
+
+                const roomType = form.getFieldValue(`roomType${index}`);
+                const roomSquareFeet = form.getFieldValue(`roomSquareFeet${index}`);
+                const maxTenant = form.getFieldValue(`maxTenant${index}`);
+
+                const roomFurnishArray = e[`roomFurnish${index}`];
+
+
+                const roomFurnishQuantites = {};
+
+                roomFurnishArray.forEach((furnish) => {
+                    const furnishQuantity = e[`roomFurnish${index}_${furnish}`];
+                    roomFurnishQuantites[furnish] = furnishQuantity;
+                });
+
+
+                const { data, error } = await supabase
+                    .from('property_room')
+                    .insert(
+                        {
+                            roomID: post.postID + '_' + index,
+                            roomType: roomType,
+                            roomSquareFeet: roomSquareFeet,
+                            maxTenant: maxTenant,
+                            availableSpace: maxTenant,
+                            roomFurnish: roomFurnishQuantites,
+                            propertyPostID: post.postID,
+                        });
+
+                if (error) {
+                    console.log(error)
+                }
+            })
 
 
             uploadImage(e, post.postID);
@@ -1027,6 +1125,10 @@ function AgentRoomRentalPost() {
         if (isView) {
             return (
                 <div style={{ display: 'flex', justifyContent: 'center', padding: '10px' }}>
+                    <Button className='viewButton' style={{ marginRight: '20px', width: '100px' }} type="primary" onClick={handleButtonCancel} >
+                        Cancel
+                    </Button>
+
                     <Link to={`/agent/roomRental/editPost/${post.postID}`} state={{ post, isView: false }}>
                         <Button className='viewButton' style={{ marginRight: '20px', width: '100px' }} type="primary" >
                             Edit

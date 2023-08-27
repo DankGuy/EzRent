@@ -30,9 +30,10 @@ function RoomRentalPost() {
     const queryParams = new URLSearchParams(location.search);
     const stateParam = queryParams.get('state');
     const postID = stateParam ? JSON.parse(decodeURIComponent(stateParam)) : null;
-    console.log(postID);
+    // console.log(postID);
 
     const [post, setPost] = useState({});
+    const [rooms, setRooms] = useState({});
     const [propertyImages, setPropertyImages] = useState([]);
     const [roomImages, setRoomImages] = useState({});
 
@@ -76,9 +77,27 @@ function RoomRentalPost() {
                 console.log(error)
             }
 
-            console.log(post)
+            // console.log(post)
 
             setPost(post);
+
+
+            // console.log(post.postID);
+
+            //get the room details
+            const { data: roomDetails, error: roomDetailsError } = await supabase
+                .from("property_room")
+                .select('*')
+                .eq("propertyPostID", post.postID)
+                .order('roomType', { ascending: true });
+
+            if (roomDetailsError) {
+                console.log(roomDetailsError)
+            }
+
+            // console.log(roomDetails);
+
+            setRooms(roomDetails);
         }
 
 
@@ -89,6 +108,9 @@ function RoomRentalPost() {
     useEffect(() => {
 
         if (Object.keys(post).length === 0) {
+            return;
+        }
+        if (rooms.length === 0) {
             return;
         }
         const getImages = async () => {
@@ -104,32 +126,62 @@ function RoomRentalPost() {
                 setPropertyImages(propertyData);
             }
 
-            // Create an array of room numbers
-            const roomNumbers = Array.from({ length: post.propertyRoomNumber }, (_, i) => i + 1);
+            if (propertyError) {
+                console.log(propertyError);
+            }
 
-            // Map over the room numbers and retrieve room images for each
-            await Promise.all(
-                roomNumbers.map(async (roomNumber) => {
+            Object.entries(rooms).forEach(async ([key, room]) => {
 
-                    const roomType = post.propertyRoomDetails[roomNumber].roomType;
+                const roomType = room.roomType;
+                const roomIndex = room.roomID.split('_')[1];
 
-                    const { data: roomData, error: roomError } = await supabase.storage
-                        .from("post")
-                        .list(`${post.postID}/${roomType}`);
+                console.log(roomType, roomIndex);
 
-                    if (roomData) {
-                        setRoomImages((prevState) => {
-                            const updatedState = { ...prevState };
-                            updatedState[roomType] = roomData;
-                            return updatedState;
-                        });
-                    }
 
-                    if (roomError) {
-                        console.log(roomError);
-                    }
-                })
-            );
+                const { data: roomData, error: roomError } = await supabase.storage
+                    .from("post")
+                    .list(`${post.postID}/${roomType}_${roomIndex}`);
+
+                if (roomData) {
+                    setRoomImages((prevState) => {
+                        const updatedState = { ...prevState };
+                        updatedState[room.roomType] = roomData;
+                        return updatedState;
+                    });
+                }
+
+                if (roomError) {
+                    console.log(roomError);
+                }
+            });
+            
+
+            // // Create an array of room numbers
+            // const roomNumbers = Array.from({ length: post.propertyRoomNumber }, (_, i) => i + 1);
+
+            // // Map over the room numbers and retrieve room images for each
+            // await Promise.all(
+            //     roomNumbers.map(async (roomNumber) => {
+
+            //         const roomType = rooms[roomNumber - 1].roomType;
+
+            //         const { data: roomData, error: roomError } = await supabase.storage
+            //             .from("post")
+            //             .list(`${post.postID}/${roomType}`);
+
+            //         if (roomData) {
+            //             setRoomImages((prevState) => {
+            //                 const updatedState = { ...prevState };
+            //                 updatedState[roomType] = roomData;
+            //                 return updatedState;
+            //             });
+            //         }
+
+            //         if (roomError) {
+            //             console.log(roomError);
+            //         }
+            //     })
+            // );
 
             setLoadingImages(false);
 
@@ -162,7 +214,7 @@ function RoomRentalPost() {
 
 
         getImages();
-    }, [post]);
+    }, [post, rooms]);
 
 
     // useEffect(() => {
@@ -303,7 +355,7 @@ function RoomRentalPost() {
 
     const getRoomFurnish = (currentNum) => {
 
-        const roomFurnish = post.propertyRoomDetails[currentNum].roomFurnish;
+        const roomFurnish = rooms[currentNum - 1].roomFurnish;
 
         const furnishLabels = Object.keys(roomFurnish);
         const renderedRoomFurnish = furnishLabels.map((furnish, index) => {
@@ -368,7 +420,7 @@ function RoomRentalPost() {
         })
     }
 
-    const displayRoomImages = (roomType) => {
+    const displayRoomImages = (roomType, currentNum) => {
         const images = roomImages[roomType];
 
 
@@ -390,7 +442,7 @@ function RoomRentalPost() {
 
         if (images && images.length > 0) {
             return images.map((image) => {
-                const publicURL = `https://exsvuquqspmbrtyjdpyc.supabase.co/storage/v1/object/public/post/${post.postID}/${roomType}/${image.name}`;
+                const publicURL = `https://exsvuquqspmbrtyjdpyc.supabase.co/storage/v1/object/public/post/${post.postID}/${roomType}_${currentNum}/${image.name}`;
 
                 return (
                     <Image width={"auto"} height={100} key={image.id} src={publicURL} alt={image.name} />
@@ -415,9 +467,9 @@ function RoomRentalPost() {
 
     const roomDetails = (currentNum) => {
 
-        const roomType = post.propertyRoomDetails[currentNum].roomType;
-        const roomSqrFeet = post.propertyRoomDetails[currentNum].roomSquareFeet;
-        const maxTenant = post.propertyRoomDetails[currentNum].maxTenant;
+        const roomType = rooms[currentNum - 1].roomType;
+        const roomSqrFeet = rooms[currentNum - 1].roomSquareFeet;
+        const maxTenant = rooms[currentNum - 1].maxTenant;
 
         return (
             <Fragment key={currentNum}>
@@ -435,7 +487,7 @@ function RoomRentalPost() {
                 >
                     <Image.PreviewGroup>
                         <Carousel responsive={responsive}>
-                            {displayRoomImages(roomType)}
+                            {displayRoomImages(roomType, currentNum)}
                         </Carousel>
                     </Image.PreviewGroup>
                 </div>
@@ -511,9 +563,18 @@ function RoomRentalPost() {
                             <Col span={24} className='postSectionTitle'>Room Details: </Col>
                         </Row>
 
-                        {Array.from({ length: post.propertyRoomNumber }, (_, i) => i + 1).map((roomNumber) => {
-                            return roomDetails(roomNumber);
-                        })}
+                        {rooms.length > 0 ?
+                            rooms.map((room, index) => {
+                                return roomDetails(index + 1);
+                            }
+                            )
+                            :
+                            <Row>
+                                <Col span={24} style={{ fontSize: '18px', margin: '5px 20px 5px', paddingRight: '30px' }}>
+                                    No other room details...
+                                </Col>
+                            </Row>
+                        }
                     </div>
 
 

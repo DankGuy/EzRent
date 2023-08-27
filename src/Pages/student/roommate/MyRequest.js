@@ -24,7 +24,7 @@ function MyRequest() {
 
         const { data, error } = await supabase
             .from('roommate_request')
-            .select('*, roommate_post(*, student(*))')
+            .select('*, roommate_post(*, student(*)), roomID(*)')
             .eq('studentID', userID)
             .order('requestedDateTime', { ascending: false });
 
@@ -47,7 +47,8 @@ function MyRequest() {
                     postOwnerEmail: element.roommate_post.student.email,
                     requestedDate: element.requestedDateTime,
                     status: element.requestStatus,
-                    roomType: element.roomType? element.roomType : 'N/A',
+                    roomIndex: element.roomID? element.roomID.roomID.split('_')[1] : 'N/A',
+                    roomType: element.roomID? element.roomID.roomType : 'N/A',
                 });
             } else {
                 historyData.push({
@@ -57,7 +58,8 @@ function MyRequest() {
                     postOwnerEmail: element.roommate_post.student.email,
                     requestedDate: element.requestedDateTime,
                     status: element.requestStatus,
-                    roomType: element.roomType? element.roomType : 'N/A',
+                    roomIndex: element.roomID? element.roomID.roomID.split('_')[1] : 'N/A',
+                    roomType: element.roomID? element.roomID.roomType : 'N/A',
                 });
             }
         });
@@ -86,6 +88,13 @@ function MyRequest() {
             dataIndex: 'postOwnerEmail',
             key: 'postOwnerEmail',
             width: '30%',
+        }
+        ,
+        {
+            title: 'Room Index',
+            dataIndex: 'roomIndex',
+            key: 'roomIndex',
+            width: '10%',
         }
         ,
         {

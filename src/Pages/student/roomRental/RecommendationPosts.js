@@ -54,7 +54,7 @@ function RecommendationPosts({ postID }) {
             }
 
             if (data) {
-                console.log(data);
+                // console.log(data);
                 firstImageObject[posts[i].postID] = data[0];
             }
         }
@@ -109,7 +109,7 @@ function RecommendationPosts({ postID }) {
 
     const renderPosts = () => {
 
-        console.log(recommendedPosts);
+        // console.log(recommendedPosts);
 
         return recommendedPosts.map((post, index) => {
 

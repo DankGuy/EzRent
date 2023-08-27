@@ -549,7 +549,7 @@ function AgentCreatePost() {
             roomImage[index].fileList.forEach(async (image) => {
                 const { data, error } = await supabase.storage
                     .from('post')
-                    .upload(`${id}/${roomType}/${image.name}`, image.originFileObj, {
+                    .upload(`${id}/${roomType}_${index}/${image.name}`, image.originFileObj, {
                         cacheControl: '3600',
                         upsert: false
                     })
@@ -594,37 +594,6 @@ function AgentCreatePost() {
 
         const userID = (await supabase.auth.getUser()).data.user.id;
 
-        const roomDetails = {};
-
-        //iterate and push the value into the array
-        Array.from({ length: roomNum }, (_, i) => i + 1).forEach((index) => {
-
-            const roomFurnishArray = e[`roomFurnish${index}`];
-            const roomType = e[`roomType${index}`];
-            const roomSquareFeet = e[`roomSquareFeet${index}`];
-            const maxTenant = e[`maxTenant${index}`];
-
-            const roomFurnishQuantites = {};
-
-            console.log(roomFurnishArray)
-
-            roomFurnishArray.forEach((furnish) => {
-                const furnishQuantity = e[`roomFurnish${index}_${furnish}`];
-                roomFurnishQuantites[furnish] = furnishQuantity;
-            });
-
-            roomDetails[index] = {
-                roomType: roomType,
-                roomSquareFeet: roomSquareFeet,
-                roomFurnish: roomFurnishQuantites,
-                maxTenant: maxTenant,
-            }
-
-        }
-        )
-
-        console.log(roomDetails)
-
         const { data: postData, error: postError } = await supabase
             .from('property_post')
             .insert([
@@ -647,7 +616,6 @@ function AgentCreatePost() {
                     propertyDescription: e["propertyDescription"],
                     lastModifiedDate: dateTime,
                     propertyRoomNumber: isRoom ? 1 : e["propertyRoomNumber"],
-                    propertyRoomDetails: roomDetails,
                     propertyStatus: (
                         buttonClicked === 'SaveDraft' ?
                             {
@@ -663,6 +631,51 @@ function AgentCreatePost() {
                 },
             ])
             .select('postID');
+
+            console.log(postData[0].postID)
+
+
+        Array.from({ length: roomNum }, (_, i) => i + 1).forEach(async (index) => {
+            const roomType = e[`roomType${index}`];
+            const roomSquareFeet = e[`roomSquareFeet${index}`];
+            const maxTenant = e[`maxTenant${index}`];
+
+            const roomFurnishArray = e[`roomFurnish${index}`];
+
+
+            const roomFurnishQuantites = {};
+
+            roomFurnishArray.forEach((furnish) => {
+                const furnishQuantity = e[`roomFurnish${index}_${furnish}`];
+                roomFurnishQuantites[furnish] = furnishQuantity;
+            });
+
+            const { data: roomData, error: roomError } = await supabase
+                .from('property_room')
+                .insert([
+                    {
+                        roomID: `${postData[0].postID}_${index}`,
+                        propertyPostID: postData[0].postID,
+                        roomType: roomType,
+                        roomSquareFeet: roomSquareFeet,
+                        roomFurnish: roomFurnishQuantites,
+                        maxTenant: maxTenant,
+                        availableSpace: maxTenant,
+                    }
+                ])
+                .select('roomID');
+
+            if (roomError) {
+                console.log(roomError)
+            } else {
+                console.log(roomData)
+            }
+
+        }
+        )
+
+
+
 
 
 
@@ -1048,7 +1061,6 @@ function AgentCreatePost() {
                         style={{ marginRight: '20px' }}
                         className="viewButton"
                         type="primary"
-                        htmlType='submit'
                         disabled={isButtonDisabled}>
                         Save Draft
                     </Button>
@@ -1070,7 +1082,6 @@ function AgentCreatePost() {
                         }}
                         className="viewButton"
                         type="primary"
-                        htmlType='submit'
                         disabled={isButtonDisabled}>
                         Submit
                     </Button>

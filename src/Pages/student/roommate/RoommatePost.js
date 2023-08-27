@@ -48,22 +48,45 @@ function RoommatePost() {
             if (!data.rental_agreement) {
                 return;
             }
-            const roomDetails = data?.rental_agreement?.postID.propertyRoomDetails;
 
-            console.log(roomDetails);
-            console.log(Object.keys(roomDetails).length);
-            console.log(roomDetails[1].roomType);
-            // console.log(typeof roomDetails)
-            // const uniqueRoomTypes = [];
+            const propertyPostID = data?.rental_agreement.postID.postID;
 
-            const uniqueRoomTypes = Object.values(roomDetails).reduce((acc, value) => {
-                if (!acc.includes(value.roomType)) {
-                    acc.push(value.roomType);
-                }
+            console.log(propertyPostID);
+
+            const { data: propertyRoomDetails, error: propertyRoomDetailsError } = await supabase
+                .from('property_room')
+                .select('*')
+                .eq('propertyPostID', propertyPostID);
+
+            if (propertyRoomDetailsError) {
+                console.log(propertyRoomDetailsError);
+                return;
+            }
+
+            console.log(propertyRoomDetails);
+
+            const uniqueRoomTypes = propertyRoomDetails.reduce((acc, value) => {
+                acc.push(value);
                 return acc;
             }, []);
 
-            setRoomTypeOptions(uniqueRoomTypes.map(roomType => ({ label: roomType, value: roomType })));
+            console.log(uniqueRoomTypes);
+
+            setRoomTypeOptions(uniqueRoomTypes.map((value) => ({
+                value: value.roomID,
+                label: (
+                    <>
+                        <span style={{ fontWeight: '500' }}>
+                            Room {value.roomID.split('_')[1]} - {value.roomType}
+                        </span>
+                        <br />
+                        <span style={{ color: 'gray', fontStyle: 'italic' }}>
+                            Available Space: {value.availableSpace} - Max: {value.maxTenant} pax  
+                        </span>
+                    </>
+                ),
+                disabled: value.availableSpace === 0,
+            })));
 
             console.log(roomTypeOptions);
         }
@@ -80,22 +103,22 @@ function RoommatePost() {
             // to speed up the process, browser will use cached data instead of fetching from the server
             const timestamp = new Date().getTime(); // Generate a timestamp to serve as the cache-busting query parameter
             const { data, error } = supabase.storage
-              .from("avatar")
-              .getPublicUrl(`avatar-${listing.studentID}`, {
-                select: "metadata",
-                fileFilter: (metadata) => {
-                  const fileType = metadata.content_type.split("/")[1];
-                  return fileType === "jpg" || fileType === "png";
-                },
-              });
-        
-              if (error){
+                .from("avatar")
+                .getPublicUrl(`avatar-${listing.studentID}`, {
+                    select: "metadata",
+                    fileFilter: (metadata) => {
+                        const fileType = metadata.content_type.split("/")[1];
+                        return fileType === "jpg" || fileType === "png";
+                    },
+                });
+
+            if (error) {
                 console.log(error);
-              }
+            }
             const avatarUrlWithCacheBuster = `${data.publicUrl}?timestamp=${timestamp}`; // Append the cache-busting query parameter
-        
+
             return avatarUrlWithCacheBuster;
-          };
+        };
 
         getAvatar().then((data) => {
             setAvatar(data);
@@ -148,6 +171,7 @@ function RoommatePost() {
             .select('*')
             .eq('studentID', userID)
             .eq('postID', postID)
+            .neq('requestStatus', 'Rejected');
 
         if (existingRequestError) {
             console.log(existingRequestError);
@@ -173,7 +197,7 @@ function RoommatePost() {
                     requestStatus: 'Pending',
                     requestedDateTime: currentDate,
                     message: values.message,
-                    roomType: values.roomType,
+                    roomID: values.roomType,
                 },
             ]);
 

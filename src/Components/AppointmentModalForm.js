@@ -9,7 +9,7 @@ import { message } from 'antd';
 
 function AppointmentModalForm({ post }) {
 
-    console.log(post);
+    // console.log(post);
 
     const { Option } = Select;
 

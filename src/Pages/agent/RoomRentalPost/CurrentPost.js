@@ -60,7 +60,7 @@ function CurrentPost({ post, deletePost, uploadPost, contextHolder }) {
             <Row className="popOutBox">
                 <Col span={24} style={popOverStyle}>
                     <Link to={`/agent/roomRental/viewPost/${post.postID}`} state={{ post, isView: true }} style={{ color: 'black', display: 'flex', alignItems: 'center' }}>
-                        <span style={{ flexGrow: 1 }}>View</span>
+                        <span style={{ flexGrow: 1, marginRight: '50px' }}>View</span>
                         <GrView size={18} />
                     </Link>
                 </Col>
@@ -207,9 +207,6 @@ function CurrentPost({ post, deletePost, uploadPost, contextHolder }) {
                         <Popover
                             placement="leftTop"
                             arrow={false}
-                            style={{
-                                border: '1px solid blue',
-                            }}
                             content={content}
                             onOpenChange={() => setIsOpen(!isOpen)}
                             open={isOpen}

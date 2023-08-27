@@ -5,6 +5,7 @@ import { getCurrentDateTime } from "../../../Components/timeUtils";
 import { useEffect } from "react";
 import { MdOutlineCancel } from "react-icons/md";
 import { RiInformationFill } from "react-icons/ri";
+import moment from "moment";
 
 
 function CreateRoommatePost({ value, onModalChange, onTrigger }) {
@@ -19,6 +20,8 @@ function CreateRoommatePost({ value, onModalChange, onTrigger }) {
 
     const [selectedValues, setSelectedValues] = useState([]);
     const [inputValue, setInputValue] = useState('');
+
+    const [roomTypeOption, setRoomTypeOption] = useState([]);
 
 
     const [form] = Form.useForm();
@@ -40,17 +43,65 @@ function CreateRoommatePost({ value, onModalChange, onTrigger }) {
     const handleSearch = async (value) => {
         setIsLoading(true);
 
+        const userID = (await supabase.auth.getUser()).data.user.id;
+
         //Get post details from database
         const { data: post, error } = await supabase
             .from('rental_agreement')
-            .select('*, postID(*)')
+            .select('* , postID(*)')
             .eq('rentalAgreementID', value)
+            .eq('studentID', userID)
             .single();
 
         if (error) {
             message.error("Invalid rental agreement ID");
+            setIsLoading(false);
+            return;
         }
+        console.log("Post:", post);
         setRentedProperty(post);
+
+        const propertyPostID = post.postID.postID;
+
+        //Get room details from database
+        const { data: room, error2 } = await supabase
+            .from('property_room')
+            .select('*')
+            .eq('propertyPostID', propertyPostID)
+
+        if (error2) {
+            console.log(error2);
+            return;
+        }
+
+        console.log("Room:", room);
+
+        const uniqueRoomTypes = room.reduce((acc, value) => {
+            acc.push(value);
+            return acc;
+        }, []);
+
+        console.log("Unique room types:", uniqueRoomTypes);
+
+        setRoomTypeOption(uniqueRoomTypes.map((value) => ({
+            value: value.roomID,
+            label: (
+                <>
+                    <span style={{ fontWeight: '500' }}>
+                        Room {value.roomID.split('_')[1]} - {value.roomType}
+                    </span>
+                    <span style={{ color: 'gray', fontStyle: 'italic', marginLeft: '10px' }}>
+                        Max: {value.maxTenant} pax
+                    </span>
+                </>
+            ),
+        })));
+
+
+
+
+
+
         setIsLoading(false);
     }
 
@@ -102,16 +153,49 @@ function CreateRoommatePost({ value, onModalChange, onTrigger }) {
                 <div>
                     {hasRentedProperty && rentedProperty &&
 
+                        <>
+                            <Row>
+                                <Col span={12}>
+                                    <Card
+                                        style={{ width: '100%', marginBottom: "15px" }}
+                                        title="Property Details"
+                                        headStyle={{ backgroundColor: "#fafafa", borderBottom: "1px solid #e8e8e8" }}
+                                        bodyStyle={{ padding: "2px 0 2px 10px" }}
+                                    >
+                                        <Row>
+                                            <Col span={24}>
+                                                <span style={{ fontWeight: 'bold', color: 'gray' }}>Property Name: </span>
+                                                <span>{rentedProperty.postID.propertyName}</span>
+                                            </Col>
+                                        </Row>
+                                        <Row>
+                                            <Col span={24}>
+                                                <span style={{ fontWeight: 'bold', color: 'gray' }}>Property Address: </span>
+                                                <span>{rentedProperty.postID.propertyAddress}, {rentedProperty.postID.propertyPostcode}, {rentedProperty.postID.propertyCity}, {rentedProperty.postID.propertyState}</span>
+                                            </Col>
+                                        </Row>
+                                        {/* <p>Property Name: {rentedProperty.postID.propertyName}</p> */}
+                                        {/* <p>Property Address: {rentedProperty.postID.propertyAddress}, {rentedProperty.postID.propertyPostcode}, {rentedProperty.postID.propertyCity}, {rentedProperty.postID.propertyState}</p> */}
+                                    </Card>
+                                </Col>
+                                <Col span={11} offset={1}>
 
-                        <Card
-                            style={{ width: '50%', marginBottom: "15px" }}
-                            title="Property Details"
-                            headStyle={{ backgroundColor: "#fafafa", borderBottom: "1px solid #e8e8e8" }}
-                            bodyStyle={{ padding: "2px 0 2px 10px" }}
-                        >
-                            <p>Property Name: {rentedProperty.postID.propertyName}</p>
-                            <p>Property Address: {rentedProperty.postID.propertyAddress}, {rentedProperty.postID.propertyPostcode}, {rentedProperty.postID.propertyCity}, {rentedProperty.postID.propertyState}</p>
-                        </Card>
+                                    <Form.Item
+                                        name="roomType"
+                                        label="Choose the room that you will stay in"
+                                        rules={[
+                                            {
+                                                required: true,
+                                                message: 'Please select a room type',
+                                            },
+                                        ]}
+                                    >
+                                        <Select placeholder="Select" style={{ width: '100%' }}
+                                            options={roomTypeOption} />
+                                    </Form.Item>
+                                </Col>
+                            </Row>
+                        </>
                     }
                     {
                         hasRentedProperty && !rentedProperty &&
@@ -125,8 +209,8 @@ function CreateRoommatePost({ value, onModalChange, onTrigger }) {
                         <Row>
                             <Col span={12}>
 
-                                <Form.Item 
-                                    name="locationSelection" 
+                                <Form.Item
+                                    name="locationSelection"
                                     label={
                                         <>
                                             <span>Preferred Location(s)</span>
@@ -135,7 +219,7 @@ function CreateRoommatePost({ value, onModalChange, onTrigger }) {
                                                     <>
                                                         <p>You can input multiple preferred locations by pressing 'Enter' after typing each one.</p>
                                                     </>
-        
+
                                                 }
                                                 placement='right'
                                                 overlayStyle={{ maxWidth: '300px' }}
@@ -146,6 +230,12 @@ function CreateRoommatePost({ value, onModalChange, onTrigger }) {
                                             </Tooltip>
                                         </>
                                     }
+                                    rules={[
+                                        {
+                                            required: true,
+                                            message: 'Please input your preferred location(s)',
+                                        },
+                                    ]}
                                     style={{ marginBottom: '0px' }}>
 
                                     <Input
@@ -175,7 +265,13 @@ function CreateRoommatePost({ value, onModalChange, onTrigger }) {
 
                             </Col>
                             <Col span={12}>
-                                <Form.Item name="propertySelection" label="Property Type">
+                                <Form.Item name="propertySelection" label="Property Type"
+                                    rules={[
+                                        {
+                                            required: true,
+                                            message: 'Please select a property type',
+                                        },
+                                    ]}>
                                     <Select placeholder="Select" style={{ width: '50%' }}
                                         options={[
                                             { value: 'Apartment', label: 'Apartment' },
@@ -192,7 +288,13 @@ function CreateRoommatePost({ value, onModalChange, onTrigger }) {
                         </Row>
                         <Row>
                             <Col span={12}>
-                                <Form.Item name="budgetInput" label="Budget (RM)">
+                                <Form.Item name="budgetInput" label="Budget (RM)"
+                                    rules={[
+                                        {
+                                            required: true,
+                                            message: 'Please input your budget',
+                                        },
+                                    ]}>
                                     <InputNumber placeholder="Budget" style={{ width: '50%' }} min={0} />
                                 </Form.Item>
 
@@ -208,10 +310,30 @@ function CreateRoommatePost({ value, onModalChange, onTrigger }) {
             formRef: useRef(),
             content: <div style={{ marginLeft: '5%' }}>
 
-                <Form.Item name="moveInDate" label="Move-in Date">
-                    <DatePicker placeholder="Select" />
+                <Form.Item name="moveInDate" label="Move-in Date"
+                    rules={[
+                        {
+                            required: true,
+                            message: 'Please select a move-in date',
+                        },
+                    ]}>
+                    <DatePicker 
+                        placeholder="Select"
+                        disabledDate={(current) => {
+                            return current && current < moment().endOf('day');
+
+                        } }
+                        format="DD-MM-YYYY"
+                        style={{ width: '21%' }}
+                        />
                 </Form.Item>
-                <Form.Item name="rentDuration" label="Rent Duration">
+                <Form.Item name="rentDuration" label="Rent Duration"
+                    rules={[
+                        {
+                            required: true,
+                            message: 'Please select a rent duration',
+                        },
+                    ]}>
                     <Select placeholder="Select" style={{ width: '21%' }}
                         options={[
                             { value: '3 months', label: '3 months' },
@@ -427,6 +549,32 @@ function CreateRoommatePost({ value, onModalChange, onTrigger }) {
                     },
                 ]);
 
+            //Update the available space
+            const { data: room, error2 } = await supabase
+                .from('property_room')
+                .select('*')
+                .eq('roomID', values.roomType)
+                .single();
+
+            if (error2) {
+                console.log(error2);
+                return;
+            }
+
+            const newAvailableSpace = room.availableSpace - 1;
+
+            const { data: room2, error3 } = await supabase
+                .from('property_room')
+                .update({ availableSpace: newAvailableSpace })
+                .eq('roomID', values.roomType);
+
+            if (error3) {
+                console.log(error3);
+                return;
+            }
+
+
+
             if (error) {
                 throw error;
             }
@@ -458,6 +606,23 @@ function CreateRoommatePost({ value, onModalChange, onTrigger }) {
             message.error("You have already posted a roommate post for this rental agreement");
             return true;
         }
+
+        const { data: post1, error1 } = await supabase
+            .from('roommate_post')
+            .select('*')
+            .eq('rentalAgreementID', values.rentalAgreementID);
+
+        if (error1) {
+            console.log(error1);
+            return;
+        }
+
+        console.log("Post1:", post1);
+        if (post1.length > 0) {
+            message.error("This rental agreement has already been posted by another user");
+            return true;
+        }
+
 
         console.log("Selected values:", selectedValues);
         const { data: post2, error2 } = await supabase
@@ -497,8 +662,11 @@ function CreateRoommatePost({ value, onModalChange, onTrigger }) {
         console.log("Form finished");
         const currentForm = stepsData[currentStep].formRef.current;
 
+        console.log("Current form:", currentForm);
+
         try {
             const values = await currentForm.validateFields();
+            console.log("Values:", values);
             setFormData((prev) => ({ ...prev, ...values }));
 
             // validate to ensure that the user has not reposted the same post
@@ -522,14 +690,37 @@ function CreateRoommatePost({ value, onModalChange, onTrigger }) {
         }
     };
 
+    const stepFieldNames = [
+        ['rentedProperty', 'rentalAgreementID', 'roomType', 'propertySelection', 'budgetInput'], // Field names for step 1
+        ['moveInDate', 'rentDuration'], // Field names for step 2
+        ['preferredAge', 'preferredGender', 'studentType'], // Field names for step 3
+        ['cleanliness', 'smoking', 'getUp', 'goToBed', 'pets', 'foodPreference', 'guests', 'party'] // Field names for step 4
+    ];
+
+
 
     const handleNextStep = () => {
         const currentForm = stepsData[currentStep].formRef.current;
-        currentForm.validateFields().then((values) => {
-            setFormData((prev) => ({ ...prev, ...values }));
-            setCurrentStep((prev) => prev + 1);
-        });
+        const currentStepFieldNames = stepFieldNames[currentStep];
+
+        currentForm
+            .validateFields(currentStepFieldNames)
+            .then((values) => {
+                setFormData((prev) => ({ ...prev, ...values }));
+                // if (currentStep < stepsData.length - 1) {
+                setCurrentStep((prev) => prev + 1);
+                // }
+            })
+            .catch((errors) => {
+                // Validation failed, handle errors here
+                message.error("Please fill in all the required fields");
+            });
     };
+
+
+
+
+
 
     return <>
 
@@ -537,7 +728,14 @@ function CreateRoommatePost({ value, onModalChange, onTrigger }) {
             title="Create Roommate Post"
             open={value}
             footer={null}
-            onCancel={() => onModalChange(false)}
+            onCancel={() => {
+                handleCloseModal();
+                setCurrentStep(0);
+                setHasRentedProperty(false);
+                setRentedProperty(null);
+                setSelectedValues([]);
+                form.resetFields();
+            }}
             width={800}
             bodyStyle={{ height: 500, overflowX: 'hidden', overflowY: 'scroll', paddingRight: '10px', paddingTop: '10px' }}
         >

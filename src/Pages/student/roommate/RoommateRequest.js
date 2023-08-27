@@ -15,9 +15,10 @@ function RoommateRequest() {
 
     const [requestDetails, setRequestDetails] = useState([]);
     const [currentRoommateDetails, setCurrentRoommateDetails] = useState([]);
+    const [currentListingStatus, setCurrentListingStatus] = useState([]);
 
     const [selectedPostIDs, setSelectedPostIDs] = useState([]);
-    const [selectedRoomTypes, setSelectedRoomTypes] = useState([]);
+    const [selectedRoomIDs, setSelectedRoomIDs] = useState([]);
 
     const [fetchTrigger, setFetchTrigger] = useState(0);
 
@@ -42,7 +43,7 @@ function RoommateRequest() {
     const getHasRentalAgreement = async () => {
         const { data, error } = await supabase
             .from('roommate_post')
-            .select('rentalAgreementID')
+            .select('rentalAgreementID(*)')
             .eq('postID', listingID);
 
         if (error) {
@@ -54,6 +55,38 @@ function RoommateRequest() {
 
         if (data[0].rentalAgreementID !== null) {
             setHasRentalAgreement(true);
+
+            //Get the current listing status
+            console.log(data[0].rentalAgreementID.postID);
+
+            const { data: data2, error: error2 } = await supabase
+                .from('property_room')
+                .select('*')
+                .eq('propertyPostID', data[0].rentalAgreementID.postID)
+                .order('roomID', { ascending: true });
+
+            if (error2) {
+                console.log(error2);
+                return;
+            }
+
+            console.log(data2);
+
+            const currentListingStatusData = [];
+
+            data2.forEach((element) => {
+                currentListingStatusData.push({
+                    key: element.roomID,
+                    roomIndex: element.roomID.split("_")[1],
+                    roomType: element.roomType,
+                    maxTenant: element.maxTenant,
+                    availableSpace: element.availableSpace,
+                });
+            });
+
+            setCurrentListingStatus(currentListingStatusData);
+
+
         } else {
             setHasRentalAgreement(false);
         }
@@ -62,7 +95,7 @@ function RoommateRequest() {
     const getCurrentRoommateDetails = async () => {
         const { data, error } = await supabase
             .from('roommate_request')
-            .select('*, student(*), roommate_post(*)')
+            .select('*, student(*), roommate_post(*), roomID(*)')
             .eq('postID', listingID)
             .order('requestedDateTime', { ascending: false })
             .eq('requestStatus', 'Approved');
@@ -81,10 +114,11 @@ function RoommateRequest() {
                 studentName: element.student.name,
                 studentEmail: element.student.email,
                 studentPhone: element.student.phone,
-                roomType: element.roomType,
+                roomIndex: element.roomID.roomID.split("_")[1],
+                roomType: element.roomID.roomType,
                 action: <Popconfirm
                     title="Are you sure to remove this roommate?"
-                    onConfirm={() => handleRemove(element.requestID)}
+                    onConfirm={() => handleRemove(element.requestID, element.studentID)}
                     okText="Yes"
                     cancelText="No"
                 >
@@ -98,7 +132,7 @@ function RoommateRequest() {
         setCurrentRoommateDetails(tableData);
     }
 
-    const handleRemove = async (requestID) => {
+    const handleRemove = async (requestID, studentID) => {
         let { data, error } = await supabase
             .from("roommate_request")
             .update({ requestStatus: "Rejected" })
@@ -107,16 +141,70 @@ function RoommateRequest() {
             console.log("error", error);
             return;
         }
+
+        await updateAvailableSpace(requestID, "remove");
+
+        await removeOccupant(requestID, studentID);
+
         message.success("Roommate removed successfully");
         setFetchTrigger((prevTrigger) => prevTrigger + 1);
     }
+
+    const removeOccupant = async (requestID, studentID) => {
+        //Get roommate post ID from request ID
+        let { data, error } = await supabase
+            .from("roommate_request")
+            .select("postID")
+            .eq("requestID", requestID);
+
+        if (error) {
+            console.log("error", error);
+            return;
+        }
+
+        console.log(data);
+
+        //Get the rental agreement ID from the roommate post ID
+        let { data: data2, error: error2 } = await supabase
+            .from("roommate_post")
+            .select("*, rentalAgreementID(*)")
+            .eq("postID", data[0].postID);
+
+        if (error2) {
+            console.log("error", error2);
+            return;
+        }
+
+        console.log(data2);
+
+        const occupantID = data2[0].rentalAgreementID.occupantID;
+
+        console.log(occupantID);
+
+        //Remove the student ID from the occupant array
+        const newOccupantID = occupantID.filter((id) => id !== studentID);
+
+        console.log(newOccupantID);
+
+        //Update the occupant array
+        let { data: data3, error: error3 } = await supabase
+            .from("rental_agreement")
+            .update({ occupantID: newOccupantID })
+            .eq("rentalAgreementID", data2[0].rentalAgreementID.rentalAgreementID);
+
+        if (error3) {
+            console.log("error", error3);
+            return;
+        }
+    } 
+
 
 
 
     const getRequestDetails = async () => {
         const { data, error } = await supabase
             .from('roommate_request')
-            .select('*, student(*), roommate_post(*)')
+            .select('*, student(*), roommate_post(*), roomID(*)')
             .eq('postID', listingID)
             .order('requestedDateTime', { ascending: false })
             .eq('requestStatus', 'Pending');
@@ -137,7 +225,9 @@ function RoommateRequest() {
                 studentPhone: element.student.phone,
                 requestDate: getDateOnly(element.requestedDateTime),
                 message: element.message == null ? "-" : element.message,
-                roomType: element.roomType,
+                roomIndex: element.roomID.roomID.split("_")[1],
+                roomType: element.roomID.roomType,
+                roomID: element.roomID.roomID,
             });
         });
 
@@ -166,10 +256,18 @@ function RoommateRequest() {
             width: '15%',
         },
         {
+            title: 'Room Index',
+            dataIndex: 'roomIndex',
+            key: 'roomIndex',
+            width: '12%',
+            sorter: (a, b) => a.roomIndex - b.roomIndex,
+        }
+        ,
+        {
             title: 'Room Type',
             dataIndex: 'roomType',
             key: 'roomType',
-            width: '10%',
+            width: '15%',
         }
         ,
         {
@@ -218,6 +316,13 @@ function RoommateRequest() {
             width: '10%',
         },
         {
+            title: 'Room Index',
+            dataIndex: 'roomIndex',
+            key: 'roomIndex',
+            width: '10%',
+        }
+        ,
+        {
             title: 'Room Type',
             dataIndex: 'roomType',
             key: 'roomType',
@@ -232,6 +337,37 @@ function RoommateRequest() {
         }
     ];
 
+    const currentListingStatusColumn = [
+        {
+            title: 'Room Index',
+            dataIndex: 'roomIndex',
+            key: 'roomIndex',
+            width: '10%',
+        }
+        ,
+        {
+            title: 'Room Type',
+            dataIndex: 'roomType',
+            key: 'roomType',
+            width: '10%',
+        }
+        ,
+        {
+            title: 'Max Tenant',
+            dataIndex: 'maxTenant',
+            key: 'maxTenant',
+            width: '10%',
+        }
+        ,
+        {
+            title: 'Available Space',
+            dataIndex: 'availableSpace',
+            key: 'availableSpace',
+            width: '10%',
+        }
+    ];
+
+
 
 
     // rowSelection object indicates the need for row selection
@@ -239,7 +375,7 @@ function RoommateRequest() {
         onChange: (selectedRowKeys, selectedRows) => {
             console.log(`selectedRowKeys: ${selectedRowKeys}`, 'selectedRows: ', selectedRows);
             setSelectedPostIDs(selectedRows.map((row) => row.key));
-            setSelectedRoomTypes(selectedRows.map((row) => row.roomType));
+            setSelectedRoomIDs(selectedRows.map((row) => row.roomID));
         },
         getCheckboxProps: (record) => ({
             disabled: record.name === 'Disabled User',
@@ -256,10 +392,16 @@ function RoommateRequest() {
 
         //Get the maximum tenant allowed
         if (hasRentalAgreement) {
-            let { data, error } = await supabase
+
+            console.log(selectedRoomIDs);
+
+            const roommatePostID = listingID;
+
+            const { data, error } = await supabase
                 .from('roommate_post')
-                .select('*, rental_agreement(*, postID(*))')
-                .eq('postID', listingID);
+                .select('*, rental_agreement(*)')
+                .eq('postID', roommatePostID)
+                .single();
 
             if (error) {
                 console.log(error);
@@ -267,42 +409,54 @@ function RoommateRequest() {
             }
 
             console.log(data);
-            console.log(data[0].rental_agreement.occupantID.length);
 
-            console.log(data[0].rental_agreement.postID.propertyRoomDetails[1].maxTenant);
+            const propertyPostID = data.rental_agreement.postID;
 
-            //Do validation for each room type
-            const roomTypeCounts = selectedRoomTypes.reduce((acc, curr) => {
+            const { data: data2, error: error2 } = await supabase
+                .from('property_room')
+                .select('*')
+                .eq('propertyPostID', propertyPostID)
+                .order('roomID', { ascending: true });
+
+            if (error2) {
+                console.log(error2);
+                return;
+            }
+
+            console.log(data2);
+
+
+            const roomTypeCounts = selectedRoomIDs.reduce((acc, curr) => {
                 acc[curr] = (acc[curr] || 0) + 1;
                 return acc;
             }, {});
 
             console.log(roomTypeCounts);
-            // {Array.from({ length: post.propertyRoomNumber }, (_, i) => i + 1).map((roomNumber) => {
-
 
             const idArray = [];
-            Array.from({ length: data[0].rental_agreement.postID.propertyRoomNumber }, (_, i) => i + 1).map((roomNumber) => {
-                // console.log(data[0].rental_agreement.postID.propertyRoomDetails[roomNumber].roomType);
 
-                const roomType = data[0].rental_agreement.postID.propertyRoomDetails[roomNumber].roomType;
+            data2.forEach((element) => {
+                const roomType = element.roomType;
 
-                const maxTenant = data[0].rental_agreement.postID.propertyRoomDetails[roomNumber].maxTenant;
+                const maxTenant = element.maxTenant;
 
-                const selectedTenant = roomTypeCounts[roomType];
+                const selectedTenant = roomTypeCounts[element.roomID];
 
-                const currentOccupant = data[0].rental_agreement.occupantID.length;
+                const availableSpace = element.availableSpace;
 
                 console.log(roomType);
-                console.log(maxTenant);
-                console.log(selectedTenant);
-                console.log(currentOccupant);
 
-                if (currentOccupant >= maxTenant) {
+                console.log(maxTenant);
+
+                console.log(selectedTenant);
+
+                console.log(availableSpace);
+
+                if (availableSpace === 0) {
                     message.error("The maximum tenant allowed has been reached");
                     return;
                 } else {
-                    if (currentOccupant + selectedTenant > maxTenant) {
+                    if (availableSpace < selectedTenant) {
                         message.error("The selected tenant(s) will exceed the maximum tenant allowed");
                         return;
                     }
@@ -310,7 +464,7 @@ function RoommateRequest() {
 
                 //Get the postID that has same room type
                 const sameRoomTypePostID = selectedPostIDs.filter((postID) => {
-                    return selectedRoomTypes[selectedPostIDs.indexOf(postID)] === roomType;
+                    return selectedRoomIDs[selectedPostIDs.indexOf(postID)] === element.roomID;
                 });
 
                 console.log(sameRoomTypePostID);
@@ -351,14 +505,63 @@ function RoommateRequest() {
                 approveStatus = false;
             }
 
+            await updateAvailableSpace(postIDArr[i], "add");
         }
         if (approveStatus) {
             message.success("Post(s) approved successfully");
             setSelectedPostIDs([]);
 
             //add occupant details if the post is rented out
-            addOccupant(postIDArr);
+            await addOccupant(postIDArr);
         }
+    };
+
+    const updateAvailableSpace = async (postID, action) => {
+        //Get the roomID
+        let { data, error } = await supabase
+            .from("roommate_request")
+            .select("roomID")
+            .eq("requestID", postID);
+
+        if (error) {
+            console.log("error", error);
+            return;
+        }
+
+        console.log(data);
+
+        //Get the available space
+        let { data: data2, error: error2 } = await supabase
+            .from("property_room")
+            .select("availableSpace")
+            .eq("roomID", data[0].roomID);
+
+        if (error2) {
+            console.log("error", error2);
+            return;
+        }
+
+        console.log(data2);
+
+        let availableSpace = data2[0].availableSpace;
+
+        if (action === "add") {
+            availableSpace = availableSpace - 1;
+        } else {
+            availableSpace = availableSpace + 1;
+        }
+
+        //Update the available space
+        let { data: data3, error: error3 } = await supabase
+            .from("property_room")
+            .update({ availableSpace: availableSpace })
+            .eq("roomID", data[0].roomID);
+
+        if (error3) {
+            console.log("error", error3);
+            return;
+        }
+
     };
 
     const addOccupant = async (postIDArr) => {
@@ -408,6 +611,10 @@ function RoommateRequest() {
 
         let occupantID = data3[0].occupantID;
 
+        if (occupantID === null) {
+            occupantID = [];
+        }
+
         // Push the new occupant into the occupant array
         for (let i = 0; i < postIDArr.length; i++) {
             //Get the studentID
@@ -416,11 +623,11 @@ function RoommateRequest() {
                 .select("studentID")
                 .eq("requestID", postIDArr[i])
                 .single();
-                
+
             if (error4) {
                 console.log("error", error4);
                 return;
-            }   
+            }
 
             console.log(data4);
 
@@ -428,7 +635,7 @@ function RoommateRequest() {
             if (!occupantID.includes(data4.studentID)) {
                 occupantID.push(data4.studentID);
             }
-  
+
         }
 
 
@@ -512,7 +719,7 @@ function RoommateRequest() {
             children:
                 <Table
                     columns={
-                        hasRentalAgreement ? requestColumn : requestColumn.filter((column) => column.key !== 'roomType')
+                        hasRentalAgreement ? requestColumn : requestColumn.filter((column) => column.key !== 'roomIndex' && column.key !== 'roomType')
                     }
                     dataSource={requestDetails}
                     bordered={true}
@@ -521,6 +728,7 @@ function RoommateRequest() {
                         type: 'checkbox',
                         ...rowSelection,
                     }}
+                    scroll={{ x: 1400 }}
                 />
         },
     ];
@@ -538,7 +746,7 @@ function RoommateRequest() {
                     flexDirection: "column",
                     backgroundColor: "white",
                     margin: "2.5% 1% 10px 1%",
-                    height: "calc(100vh - 70px)",
+                    height: "auto",
                     padding: "0 2em",
                 }}
             >
@@ -559,6 +767,22 @@ function RoommateRequest() {
                         <h1>Listing Roomate</h1>
                     </Col>
                 </Row>
+
+                {hasRentalAgreement &&
+                    <div
+                        style={{
+                            marginTop: "2%",
+                            marginLeft: "1%",
+                        }} >
+                        <Table
+                            columns={currentListingStatusColumn}
+                            dataSource={currentListingStatus}
+                            bordered={true}
+                            pagination={false}
+                        />
+                    </div>
+                }
+
 
 
                 <div style={{
