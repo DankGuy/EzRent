@@ -29,6 +29,7 @@ function PendingPosts() {
   const searchInput = useRef(null);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [modalData, setModalData] = useState();
+  const [roomDetails, setRoomDetails] = useState([]);
   const [fetchTrigger, setFetchTrigger] = useState(0);
 
   const [propertyImages, setPropertyImages] = useState();
@@ -84,6 +85,22 @@ function PendingPosts() {
             agentRating = agent[0].rating;
           }
 
+          //get room details
+          let roomData = [];
+          let { data: room, error: roomError } = await supabase
+            .from("property_room")
+            .select("*")
+            .eq("propertyPostID", post.postID)
+            .order("roomID", { ascending: true });
+
+          if (roomError) {
+            console.log("error", roomError);
+          } else {
+            roomData = room;
+          }
+
+          console.log(roomData);
+
           return {
             key: index,
             post_ID: post.postID,
@@ -97,7 +114,10 @@ function PendingPosts() {
                 onClick={() => {
                   viewPost();
                   setModalData(post);
-                  getImages(post);
+                  setRoomDetails(roomData);
+                  
+                  getImages(post, roomData);
+                  
                 }}
               >
                 <EyeOutlined style={{ fontSize: "20px", color: "#1677FF" }} />
@@ -401,7 +421,7 @@ function PendingPosts() {
     padding: "4px 11px",
   };
 
-  const getImages = async (post) => {
+  const getImages = async (post, roomData) => {
     setLoadingImages(true);
 
     // Get all images from supabase storage with id = postID
@@ -413,34 +433,69 @@ function PendingPosts() {
       setPropertyImages(propertyData);
     }
 
-    // Create an array of room numbers
-    const roomNumbers = Array.from(
-      { length: post.propertyRoomNumber },
-      (_, i) => i + 1
-    );
+    if (propertyError) {
+      console.log(propertyError);
+    }
 
-    // Map over the room numbers and retrieve room images for each
-    await Promise.all(
-      roomNumbers.map(async (roomNumber) => {
-        const roomType = post.propertyRoomDetails[roomNumber].roomType;
+    console.log(roomData);
 
-        const { data: roomData, error: roomError } = await supabase.storage
-          .from("post")
-          .list(`${post.postID}/${roomType}`);
+    
 
-        if (roomData) {
-          setRoomImages((prevState) => {
-            const updatedState = { ...prevState };
-            updatedState[roomType] = roomData;
-            return updatedState;
-          });
-        }
+    Object.entries(roomData).forEach(async ([key, room]) => {
 
-        if (roomError) {
-          console.log(roomError);
-        }
-      })
-    );
+      const roomType = room.roomType;
+      const roomIndex = room.roomID.split('_')[1];
+
+      console.log(roomType, roomIndex);
+
+
+      const { data: roomData, error: roomError } = await supabase.storage
+        .from("post")
+        .list(`${post.postID}/${roomType}_${roomIndex}`);
+
+      if (roomData) {
+        setRoomImages((prevState) => {
+          const updatedState = { ...prevState };
+          updatedState[roomType] = roomData;
+          return updatedState;
+        });
+      }
+
+      if (roomError) {
+        console.log(roomError);
+      }
+    });
+
+
+
+    // // Create an array of room numbers
+    // const roomNumbers = Array.from(
+    //   { length: post.propertyRoomNumber },
+    //   (_, i) => i + 1
+    // );
+
+    // // Map over the room numbers and retrieve room images for each
+    // await Promise.all(
+    //   roomNumbers.map(async (roomNumber) => {
+    //     const roomType = post.propertyRoomDetails[roomNumber].roomType;
+
+    //     const { data: roomData, error: roomError } = await supabase.storage
+    //       .from("post")
+    //       .list(`${post.postID}/${roomType}`);
+
+    //     if (roomData) {
+    //       setRoomImages((prevState) => {
+    //         const updatedState = { ...prevState };
+    //         updatedState[roomType] = roomData;
+    //         return updatedState;
+    //       });
+    //     }
+
+    //     if (roomError) {
+    //       console.log(roomError);
+    //     }
+    //   })
+    // );
 
     setLoadingImages(false);
   };
@@ -469,7 +524,7 @@ function PendingPosts() {
     });
   };
 
-  const displayRoomImages = (roomType) => {
+  const displayRoomImages = (roomType, roomIndex) => {
     const images = roomImages[roomType];
 
     if (loadingImages) {
@@ -482,7 +537,7 @@ function PendingPosts() {
 
     if (images && images.length > 0) {
       return images.map((image) => {
-        const publicURL = `https://exsvuquqspmbrtyjdpyc.supabase.co/storage/v1/object/public/post/${modalData?.postID}/${roomType}/${image.name}`;
+        const publicURL = `https://exsvuquqspmbrtyjdpyc.supabase.co/storage/v1/object/public/post/${modalData?.postID}/${roomType}_${roomIndex}/${image.name}`;
 
         return (
           <Image
@@ -500,10 +555,10 @@ function PendingPosts() {
   };
 
   const roomDetailForm = (index) => {
-    const roomType = modalData?.propertyRoomDetails[index]?.roomType;
-    const roomSize = modalData?.propertyRoomDetails[index]?.roomSquareFeet;
-    const maxTenant = modalData?.propertyRoomDetails[index]?.maxTenant;
-    const roomFurnish = modalData?.propertyRoomDetails[index]?.roomFurnish;
+    const roomType = roomDetails[index - 1]?.roomType;
+    const roomSize = roomDetails[index - 1]?.roomSquareFeet;
+    const maxTenant = roomDetails[index - 1]?.maxTenant;
+    const roomFurnish = roomDetails[index - 1]?.roomFurnish;
 
     const roomFurnishLabelArray = [];
     const roomFurnishQuantityArray = [];
@@ -525,7 +580,7 @@ function PendingPosts() {
         >
           <Image.PreviewGroup>
             <Carousel responsive={responsive}>
-              {displayRoomImages(roomType)}
+              {displayRoomImages(roomType, index)}
             </Carousel>
           </Image.PreviewGroup>
         </div>
