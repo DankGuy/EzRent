@@ -9,6 +9,7 @@ function ActivityLog() {
     const [data, setData] = useState([]);
     const [searchText, setSearchText] = useState('');
     const [searchedColumn, setSearchedColumn] = useState('');
+    const [loading, setLoading] = useState(true);
     const searchInput = useRef(null);
 
 
@@ -175,6 +176,7 @@ function ActivityLog() {
                 };
             }));
             setData(newData);
+            setLoading(false);
         }
     };
 
@@ -259,7 +261,7 @@ function ActivityLog() {
 
     return (
         <div>
-            <Table columns={columns} dataSource={data} bordered />
+            <Table columns={columns} dataSource={data} bordered loading={loading} />
         </div>
     )
 }
