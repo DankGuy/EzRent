@@ -9,7 +9,7 @@ import { MdDelete } from 'react-icons/md';
 import { AiOutlineHome, AiFillEye, AiFillEdit } from "react-icons/ai";
 import { Link, useNavigate } from "react-router-dom";
 import { UserOutlined } from '@ant-design/icons';
-import { getDateOnly, getElapsedTime } from "../../../Components/timeUtils";
+import { getElapsedTime } from "../../../Components/timeUtils";
 
 
 const { Meta } = Card;

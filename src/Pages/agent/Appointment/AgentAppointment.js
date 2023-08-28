@@ -8,6 +8,7 @@ import { AiOutlineZoomIn } from 'react-icons/ai'
 import { Link } from "react-router-dom";
 import dayjs from "dayjs";
 import AdvancedTimeslotSelection from "./AdvancedTimeslotSelection";
+import { getDateOnly } from "../../../Components/timeUtils";
 
 
 function AgentAppointment() {
@@ -198,6 +199,7 @@ function AgentAppointment() {
         getData();
     }, []);
 
+    //Get the appointment data from the supabase
     async function getData() {
         const userID = (await supabase.auth.getUser()).data.user.id;
 
@@ -278,7 +280,7 @@ function AgentAppointment() {
                 compare: (a, b) => new Date(a.date) - new Date(b.date),
                 multiple: 3,
             },
-            render: (text, record) => dayjs(record.date).format('DD-MM-YYYY'),
+            render: (text, record) => getDateOnly(text),
             width: '10%',
         },
         {

@@ -5,6 +5,7 @@ import { useEffect } from "react";
 import { AiOutlineZoomIn } from 'react-icons/ai'
 import { Link } from "react-router-dom";
 import dayjs from 'dayjs';
+import { getDateOnly } from "../../../Components/timeUtils";
 
 function Appointments(){
 
@@ -94,7 +95,7 @@ function Appointments(){
                 compare: (a, b) => new Date(a.date) - new Date(b.date),
                 multiple: 3,
             },
-            render: (text, record) => dayjs(record.date).format('DD-MM-YYYY'),
+            render: (text, record) => getDateOnly(text),
             width: '10%',
         },
         {

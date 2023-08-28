@@ -2,7 +2,7 @@ import { Fragment } from "react";
 import { supabase } from "../../../supabase-client";
 import { useState, useEffect } from "react";
 import { Button, Table, Tooltip } from "antd";
-import { convertDate } from "../../../Components/timeUtils";
+import { getDateOnly } from "../../../Components/timeUtils";
 import { Input, Space } from "antd";
 import { SearchOutlined } from "@ant-design/icons";
 import Highlighter from "react-highlight-words";
@@ -248,7 +248,7 @@ function AgentRentedProperty() {
             key: "commencementDate",
             sorter: (a, b) => a.commencementDate.localeCompare(b.commencementDate),
             render: (commencementDate) => (
-                <p>{convertDate(commencementDate)}</p>
+                <p>{getDateOnly(commencementDate)}</p>
             ),
             width: '15%',
         },

@@ -19,19 +19,32 @@ function AppointmentModalForm({ post }) {
 
     const [availableDate, setAvailableDate] = useState([]);
     const [selectedDate, setSelectedDate] = useState('');
+    const [trigger, setTrigger] = useState(0);
 
     const [messageApi, contextHolder] = message.useMessage();
     const [form] = Form.useForm();
 
 
     useEffect(() => {
-        
-        if (!post.agent) {
+
+        if (post.agent === undefined) {
             return;
         }
 
+        console.log(post.agent.agent_id);
+
         getAvailableDate();
-    }, []);
+    }, [post.agent]);
+
+    useEffect(() => {
+
+        if (post.agent === undefined) {
+            return;
+        }
+
+        setAvailableDate([]);
+        getAvailableDate();
+    }, [trigger]);
 
     //get available date from supabase
     const getAvailableDate = async () => {
@@ -40,6 +53,7 @@ function AppointmentModalForm({ post }) {
                 .from('available_timeslot')
                 .select('*')
                 .eq('agentID', post.agent.agent_id);
+
 
             if (error) {
                 console.log(error);
@@ -52,8 +66,11 @@ function AppointmentModalForm({ post }) {
                     times: date.timeslot // Assuming the time property is available in the `date` object
                 }));
 
-                const uniqueDates = [...new Set([...availableDate, ...newDates])];
-                setAvailableDate(uniqueDates);
+                // Update availableDate in the next render cycle
+                setAvailableDate((prevAvailableDate) => {
+                    const uniqueDates = [...new Set([...prevAvailableDate, ...newDates])];
+                    return uniqueDates;
+                });
 
             }
         } catch (error) {
@@ -63,14 +80,15 @@ function AppointmentModalForm({ post }) {
 
 
 
+
     // eslint-disable-next-line arrow-body-style
     const disabledDate = (current) => {
         return (
-          (current && current < dayjs().startOf('day')) ||
-          !availableDate.some((avDate) => avDate.date === current.format('YYYY-MM-DD'))
+            (current && current < dayjs().startOf('day')) ||
+            !availableDate.some((avDate) => avDate.date === current.format('YYYY-MM-DD'))
         );
-      };
-      
+    };
+
 
 
     const onChangeDate = (date, dateString) => {
@@ -199,12 +217,14 @@ function AppointmentModalForm({ post }) {
 
         //pop loading and success message
         messageApi.loading('Booking appointment...', 1.5)
-            .then(() => messageApi.success('Appointment booked successfully!', 1.5))
-            .then(() => { window.location.reload() });
+            .then(() => messageApi.success('Appointment booked successfully!', 1.5));
 
         //reset form and close modal
         form.resetFields();
         setIsModalOpen(false);
+
+        //set trigger to refresh the page
+        setTrigger((prev) => prev + 1);
 
     }
 

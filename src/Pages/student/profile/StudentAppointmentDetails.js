@@ -1,7 +1,7 @@
 import { useLocation } from "react-router-dom";
 import { useEffect, useState } from 'react';
 import { Button, Descriptions, Popconfirm, message } from "antd";
-import { convertDate, getCurrentDateTime } from "../../../Components/timeUtils";
+import { convertDate, getCurrentDateTime, getDateOnly } from "../../../Components/timeUtils";
 import { supabase } from "../../../supabase-client"
 import { useNavigate } from "react-router-dom";
 import dayjs from 'dayjs';
@@ -29,10 +29,7 @@ function StudentAppointmentDetails() {
         }
         // console.log(new Date(state.date).toLocaleDateString('en-GB'));
 
-        //Convert date from dd/mm/yyyy to format: YYYY-MM-DD
-        const date = getCurrentDateTime();
-        //Format: YYYY-MM-DD
-        const newDate = new Date(date).toLocaleDateString('en-GB');
+       
 
 
         const { data: data2, error: error2 } = await supabase
@@ -140,7 +137,7 @@ function StudentAppointmentDetails() {
                     labelStyle={{ fontWeight: "bold", width: "40%" }}
                     contentStyle={{ display: "inline-block" }}
                     bordered>
-                    <Descriptions.Item label="Date" span={3}>{convertDate(state.date)}</Descriptions.Item>
+                    <Descriptions.Item label="Date" span={3}>{getDateOnly(state.date)}</Descriptions.Item>
                     <Descriptions.Item label="Time" span={3}>{state.timeslot}</Descriptions.Item>
                     <Descriptions.Item label="Status" span={3}>
                         {state.status === "Valid" ? <span style={{ color: 'green' }}>{state.status}</span> : <span style={{ color: 'red' }}>{state.status}</span>}

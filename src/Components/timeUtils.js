@@ -41,6 +41,7 @@ export function getElapsedTime(lastModifiedDate) {
 }
 
 
+//Get the current date time in format: yyyy-mm-dd hh:mm:ss
 export function getCurrentDateTime() {
     const currentDate = new Date();
 
@@ -58,6 +59,7 @@ export function getCurrentDateTime() {
     return dateTime;
 }
 
+//Get date in format: dd-mm-yyyy from format: yyyy-mm-dd hh:mm:ss
 export function getDateOnly(inputDate) {
     const date = new Date(inputDate);
     const options = { day: '2-digit', month: '2-digit', year: 'numeric' };
@@ -67,7 +69,7 @@ export function getDateOnly(inputDate) {
 
 }
 
-
+//Convert from dd--mm-yyyy to yyyy-mm-dd
 export function convertDate(inputDate) {
     const parts = inputDate.split('-');
     const convertedDate = `${parts[2]}-${parts[1]}-${parts[0]}`;
@@ -96,12 +98,14 @@ export function formatDateTime(inputDateTime) {
     return `${formattedDate}, ${formattedTime}`;
 }
 
+//Get timestamp from date
 export function getTimeStamp(inputDateTime) {
     const date = new Date(inputDateTime);
     const timeStamp = date.getTime();
     return timeStamp;
 }
 
+//Get formatted time
 export function getFormattedTime(inputTime) {
     const dateObj = new Date(inputTime);
 
