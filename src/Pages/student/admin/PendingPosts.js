@@ -819,7 +819,6 @@ function PendingPosts() {
   return (
     <>
       <Tabs
-        type="card"
         items={[
           {
             label: "High-Rated Agent",
