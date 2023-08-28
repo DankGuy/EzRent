@@ -214,6 +214,10 @@ function ActivityLog() {
                     text: 'Deactivate Account',
                     value: 'deactivate_account'
                 },
+                {
+                    text: 'Activate Account',
+                    value: 'activate_account'
+                }
             ],
             onFilter: (value, record) => record.action.indexOf(value) === 0,
         },

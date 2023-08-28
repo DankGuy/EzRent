@@ -6,10 +6,7 @@ import { AudioOutlined } from '@ant-design/icons';
 import { useLocation } from "react-router-dom";
 import { supabase } from "../../supabase-client";
 import moment from 'moment';
-import { saveAs } from 'file-saver';
-import { PDFViewer, Document, Page, Text, View } from '@react-pdf/renderer';
 import html2pdf from 'html2pdf.js';
-import { BsWindowSidebar } from "react-icons/bs";
 
 
 function AgentRentalAgreement() {
@@ -300,7 +297,7 @@ function AgentRentalAgreement() {
         "UtilityDeposit": Number(postInfo.propertyPrice * 2.5),
         "SecurityDeposit": Number(postInfo.propertyPrice * 0.1),
       },
-      'status': "active",
+      'status': "pending",
       'expirationDate': fieldsValue['end-date-picker'].format('YYYY-MM-DD'),
     };
     setRentalAgreementInfo(values);

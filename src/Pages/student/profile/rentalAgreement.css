@@ -1,0 +1,12 @@
+:where(.rentalAgreementBadge).ant-badge.ant-badge-status .ant-badge-status-dot {
+  width: 10px; /* Adjust the width of the dot */
+  height: 10px; /* Adjust the height of the dot */
+  border-radius: 10px;
+}
+
+.ellipsis-description {
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  position: relative;
+}
