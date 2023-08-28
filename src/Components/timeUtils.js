@@ -1,4 +1,4 @@
-
+//Get the elapsed time from the last modified date
 export function getElapsedTime(lastModifiedDate) {
     const lastModifiedTime = new Date(lastModifiedDate);
     const currentTime = new Date();
@@ -69,14 +69,6 @@ export function getDateOnly(inputDate) {
 
 }
 
-//Convert from dd--mm-yyyy to yyyy-mm-dd
-export function convertDate(inputDate) {
-    const parts = inputDate.split('-');
-    const convertedDate = `${parts[2]}-${parts[1]}-${parts[0]}`;
-
-    return convertedDate;
-}
-
 export function formatDateTime(inputDateTime) {
     if (!inputDateTime) return '';
     // Function to convert date to "Jul 17, 2023" format
@@ -98,27 +90,3 @@ export function formatDateTime(inputDateTime) {
     return `${formattedDate}, ${formattedTime}`;
 }
 
-//Get timestamp from date
-export function getTimeStamp(inputDateTime) {
-    const date = new Date(inputDateTime);
-    const timeStamp = date.getTime();
-    return timeStamp;
-}
-
-//Get formatted time
-export function getFormattedTime(inputTime) {
-    const dateObj = new Date(inputTime);
-
-    const formattedDate = dateObj.toLocaleString("en-US", {
-        weekday: 'short',
-        month: 'short',
-        day: 'numeric',
-        year: 'numeric',
-        hour: 'numeric',
-        minute: 'numeric',
-        second: 'numeric',
-        timeZoneName: 'short',
-    });
-
-    return formattedDate;
-}
