@@ -14,6 +14,9 @@ import {
   Rate,
   Avatar,
   message,
+  Form,
+  Input,
+  Select,
 } from "antd";
 import {
   DollarOutlined,
@@ -27,19 +30,92 @@ import "./rentalAgreement.css";
 import EzRentIcon from "../../../images/icon.png";
 import TarumtLogo from "../../../images/tarumt.png";
 import html2pdf from "html2pdf.js";
+import CardPayment from "../../../images/cardPayment.png";
+import FPXPayment from "../../../images/fpxLogo.png";
 
 function RentalAgreement() {
   const [listings, setListings] = useState([]);
   const [loading, setLoading] = useState(false);
   const [isPaymentModalVisible, setIsPaymentModalVisible] = useState(false);
   const [isRatingModalVisible, setIsRatingModalVisible] = useState(false);
+  const [selectedPaymentMethod, setSelectedPaymentMethod] = useState(null);
+  const [selectedCardBorder, setSelectedCardBorder] = useState(null);
+  const [selectedFpxBorder, setSelectedFpxBorder] = useState(null);
+  const [cardFormVisible, setCardFormVisible] = useState("none");
+  const [fpxFormVisible, setFpxFormVisible] = useState("none");
   const [ratingValue, setRatingValue] = useState(0);
   const [agentAvatar, setAgentAvatar] = useState(null);
   const [ratingAgreementInfo, setRatingAgreementInfo] = useState(null);
+  const [paymentAmount, setPaymentAmount] = useState(0);
 
   const { Meta } = Card;
   const { Text } = Typography;
+  const [form] = Form.useForm();
   const ratingDesc = ["terrible", "bad", "normal", "good", "wonderful"];
+
+  const formItemLayout = {
+    labelCol: {
+      span: 24,
+    },
+    wrapperCol: {
+      span: 24,
+    },
+  };
+
+  const paymentBtn = () => {
+    return (
+      <div
+        style={{
+          display: "flex",
+          flexDirection: "row",
+          justifyContent: "flex-end",
+          width: "100%",
+          marginTop: "20px",
+          marginRight: "50px",
+        }}
+      >
+        <Button
+          style={{
+            fontSize: "1rem",
+            height: "auto",
+            marginRight: "10px",
+          }}
+          onClick={handlePaymentCancel}
+        >
+          Cancel
+        </Button>
+        <Button
+          type="primary"
+          style={{ fontSize: "1rem", height: "auto" }}
+          htmlType="submit"
+        >
+          Proceed
+        </Button>
+      </div>
+    );
+  };
+
+  // const checkListingStatus = (listing) => {
+  //   const currentDate = new Date();
+  //   const commencementDate = new Date(listing.commencementDate);
+  //   const expirationDate = new Date(listing.expirationDate);
+
+  //   const currentDayOfMonth = currentDate.getDate();
+
+  //   if (
+  //     currentDate < commencementDate ||
+  //     (listing.status === "active" && currentDayOfMonth >= 20)
+  //   ) {
+  //     return "pending";
+  //   } else if (
+  //     currentDate >= commencementDate &&
+  //     currentDate <= expirationDate
+  //   ) {
+  //     return "active";
+  //   } else {
+  //     return "inactive";
+  //   }
+  // };
 
   const getAvatar = async (id) => {
     const userID = id;
@@ -306,12 +382,12 @@ function RentalAgreement() {
     );
   }
 
-  const handlePaymentOk = () => {
-    console.log("Payment Successful");
-    setIsPaymentModalVisible(false);
-  };
+  const handlePaymentOk = (value) => {};
+
   const handlePaymentCancel = () => {
-    console.log("Payment Cancelled");
+    setSelectedCardBorder(null);
+    setSelectedFpxBorder(null);
+    setSelectedPaymentMethod(null);
     setIsPaymentModalVisible(false);
   };
 
@@ -376,6 +452,27 @@ function RentalAgreement() {
   useEffect(() => {
     fetchListings();
   }, []);
+
+  useEffect(() => {
+    if (selectedPaymentMethod === "card") {
+      setCardFormVisible("block");
+      setFpxFormVisible("none");
+      setSelectedCardBorder("2px solid #1890FF");
+      setSelectedFpxBorder(null);
+    }
+    if (selectedPaymentMethod === "fpx") {
+      setCardFormVisible("none");
+      setFpxFormVisible("block");
+      setSelectedCardBorder(null);
+      setSelectedFpxBorder("2px solid #1890FF");
+    }
+    if (selectedPaymentMethod === null) {
+      setCardFormVisible("none");
+      setFpxFormVisible("none");
+      setSelectedCardBorder(null);
+      setSelectedFpxBorder(null);
+    }
+  }, [selectedPaymentMethod]);
 
   return (
     <>
@@ -449,7 +546,10 @@ function RentalAgreement() {
                     actions={[
                       <Button
                         type="link"
-                        onClick={() => setIsPaymentModalVisible(true)}
+                        onClick={() => {
+                          setIsPaymentModalVisible(true);
+                          setPaymentAmount(listing.rentalPrice);
+                        }}
                         style={{
                           color: "#1890FF",
                           width: "100%",
@@ -565,6 +665,7 @@ function RentalAgreement() {
                 <Modal
                   title="Rental Agreement Details"
                   open={listing.isModalVisible}
+                  centered
                   onOk={() => {
                     //download pdf
                     const modalContent =
@@ -616,21 +717,299 @@ function RentalAgreement() {
                 <Modal
                   title="Rental Payment"
                   open={isPaymentModalVisible}
-                  onOk={handlePaymentOk}
+                  centered
                   onCancel={handlePaymentCancel}
                   okText="Pay"
                   cancelText="Cancel"
-                  width="80vw"
+                  width="60vw"
                   style={{ height: "auto" }}
                   maskStyle={{ opacity: 0.45 }}
+                  footer={null}
                 >
-                  <></>
+                  <div
+                    style={{
+                      display: "flex",
+                      flexDirection: "column",
+                      justifyContent: "center",
+                      alignItems: "center",
+                    }}
+                  >
+                    <Text style={{ fontSize: "1.2rem" }}>
+                      <b>Choose Payment Method</b>
+                    </Text>
+                    <div
+                      style={{
+                        display: "flex",
+                        flexDirection: "row",
+                        gap: "40px",
+                        margin: "20px",
+                      }}
+                    >
+                      <Card
+                        cover={
+                          <div
+                            style={{
+                              height: "100px",
+                              display: "flex",
+                              justifyContent: "center",
+                              alignItems: "center",
+                              paddingTop: "20px",
+                            }}
+                          >
+                            <img
+                              src={CardPayment}
+                              alt="Card Payment"
+                              height="150px"
+                            />
+                          </div>
+                        }
+                        style={{
+                          width: "350px",
+                          height: "auto",
+                          border: selectedCardBorder,
+                        }}
+                        bodyStyle={{ textAlign: "center" }}
+                        bordered
+                        hoverable
+                        onClick={() => setSelectedPaymentMethod("card")}
+                      >
+                        <Meta description="Credit/Debit Card" />
+                      </Card>
+                      <Card
+                        cover={
+                          <div
+                            style={{
+                              height: "100px",
+                              display: "flex",
+                              justifyContent: "center",
+                              alignItems: "center",
+                              paddingTop: "20px",
+                            }}
+                          >
+                            <img
+                              src={FPXPayment}
+                              alt="Online Banking Payment"
+                              height="80px"
+                            />
+                          </div>
+                        }
+                        style={{
+                          width: "350px",
+                          height: "auto",
+                          border: selectedFpxBorder,
+                        }}
+                        bodyStyle={{ textAlign: "center" }}
+                        bordered
+                        hoverable
+                        onClick={() => setSelectedPaymentMethod("fpx")}
+                      >
+                        <Meta description="Online Banking" />
+                      </Card>
+                    </div>
+                    <Descriptions>
+                      <DescriptionsItem
+                        label={
+                          <span style={{ fontSize: "1rem" }}>Total Amount</span>
+                        }
+                        span={3}
+                      >
+                        <span style={{ fontSize: "1rem" }}>
+                          RM{paymentAmount.toFixed(2)}
+                        </span>
+                      </DescriptionsItem>
+                    </Descriptions>
+
+                    <div className="paymentDetails">
+                      <Form
+                        className="card-form"
+                        form={form}
+                        style={{ width: "35vw" }}
+                        layout="vertical"
+                        onFinish={handlePaymentOk}
+                        {...formItemLayout}
+                      >
+                        <Card
+                          style={{ width: "100%", display: cardFormVisible }}
+                          bordered
+                          extra={
+                            <div>
+                              <img src={CardPayment} alt="Card" width="100px" />
+                            </div>
+                          }
+                        >
+                          <Form.Item
+                            label="Card Number"
+                            name="cardNo"
+                            rules={[
+                              {
+                                pattern: new RegExp(
+                                  "^[0-9]{4}-[0-9]{4}-[0-9]{4}-[0-9]{4}$"
+                                ),
+                                message: "Invalid card number",
+                              },
+                              {
+                                required: true,
+                                message: "Please enter your card number",
+                              },
+                            ]}
+                          >
+                            <Input placeholder="xxxx-xxxx-xxxx-xxxx" />
+                          </Form.Item>
+                          <Form.Item
+                            label="Expiry Date"
+                            name="expiryDate"
+                            style={{
+                              display: "inline-block",
+                              width: "calc(50% - 4px)",
+                              marginRight: "8px",
+                            }}
+                            rules={[
+                              {
+                                pattern: new RegExp("^[1-12]{1,2}/[0-9]{2}$"),
+                                message: "Invalid expiry date",
+                              },
+                              {
+                                required: true,
+                                message: "Please enter your card expiry date",
+                              },
+                            ]}
+                          >
+                            <Input placeholder="MM/YY" />
+                          </Form.Item>
+                          <Form.Item
+                            label="CVV"
+                            name="cvv"
+                            style={{
+                              display: "inline-block",
+                              width: "calc(50% - 4px)",
+                            }}
+                            rules={[
+                              {
+                                pattern: new RegExp("^[0-9]{3}$"),
+                                message: "Invalid CVV",
+                              },
+                              {
+                                required: true,
+                                message: "Please enter your CVV",
+                              },
+                            ]}
+                          >
+                            <Input placeholder="CVV/CVV2" />
+                          </Form.Item>
+                          <Form.Item>{paymentBtn()}</Form.Item>
+                        </Card>
+                      </Form>
+                      <Form
+                        className="fpx-form"
+                        form={form}
+                        style={{ width: "35vw" }}
+                        layout="vertical"
+                        onFinish={handlePaymentOk}
+                        {...formItemLayout}
+                      >
+                        <Card
+                          style={{ width: "35vw", display: fpxFormVisible }}
+                          bordered
+                          cover={
+                            <div
+                              style={{
+                                display: "flex",
+                                justifyContent: "center",
+                                alignItems: "center",
+                                paddingTop: "20px",
+                              }}
+                            >
+                              <img
+                                src={FPXPayment}
+                                alt="Online Banking Payment"
+                                height="30px"
+                              />
+                            </div>
+                          }
+                        >
+                          <Form.Item
+                            rules={[
+                              {
+                                required: true,
+                                message: "Please select a bank",
+                              },
+                            ]}
+                            name="bank"
+                          >
+                            <Select
+                              placeholder="Select Bank"
+                              options={[
+                                {
+                                  label: "Maybank2U",
+                                  value: "Maybank2U",
+                                },
+                                {
+                                  label: "CIMB Clicks",
+                                  value: "CIMB Clicks",
+                                },
+                                {
+                                  label: "Public Bank",
+                                  value: "Public Bank",
+                                },
+                                {
+                                  label: "RHB Now",
+                                  value: "RHB Now",
+                                },
+                                {
+                                  label: "Hong Leong Connect",
+                                  value: "Hong Leong Connect",
+                                },
+                                {
+                                  label: "AmOnline",
+                                  value: "AmOnline",
+                                },
+                                {
+                                  label: "Bank Islam",
+                                  value: "Bank Islam",
+                                },
+                                {
+                                  label: "UOB",
+                                  value: "UOB",
+                                },
+                                {
+                                  label: "Bank Rakyat",
+                                  value: "Bank Rakyat",
+                                },
+                                {
+                                  label: "Affin Bank",
+                                  value: "Affin Bank",
+                                },
+                                {
+                                  label: "Bank Muamalat",
+                                  value: "Bank Muamalat",
+                                },
+                                {
+                                  label: "OCBC Bank",
+                                  value: "OCBC Bank",
+                                },
+                                {
+                                  label: "Standard Chartered",
+                                  value: "Standard Chartered",
+                                },
+                                {
+                                  label: "HSBC Bank",
+                                  value: "HSBC Bank",
+                                },
+                              ]}
+                            />
+                          </Form.Item>
+                          <Form.Item>{paymentBtn()}</Form.Item>
+                        </Card>
+                      </Form>
+                    </div>
+                  </div>
                 </Modal>
 
                 {/* Modal for displaying rating details */}
                 <Modal
                   title="Rate Agent"
                   open={isRatingModalVisible}
+                  centered
                   onOk={() =>
                     handleRatingOk(
                       ratingValue,
