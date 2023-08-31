@@ -17,6 +17,7 @@ import {
   Form,
   Input,
   Select,
+  Result,
 } from "antd";
 import {
   DollarOutlined,
@@ -45,12 +46,15 @@ function RentalAgreement() {
   const [fpxFormVisible, setFpxFormVisible] = useState("none");
   const [ratingValue, setRatingValue] = useState(0);
   const [agentAvatar, setAgentAvatar] = useState(null);
+  const [paymentInfo, setPaymentInfo] = useState(null);
+  const [resultVisible, setResultVisible] = useState("none");
+  const [paymentDetailVisible, setPaymentDetailVisible] = useState("flex");
   const [ratingAgreementInfo, setRatingAgreementInfo] = useState(null);
-  const [paymentAmount, setPaymentAmount] = useState(0);
+  const [fetchTrigger, setFetchTrigger] = useState(0);
 
   const { Meta } = Card;
   const { Text } = Typography;
-  const [form] = Form.useForm();
+  const [fpxform, cardform] = Form.useForm();
   const ratingDesc = ["terrible", "bad", "normal", "good", "wonderful"];
 
   const formItemLayout = {
@@ -382,13 +386,55 @@ function RentalAgreement() {
     );
   }
 
-  const handlePaymentOk = (value) => {};
+  const handlePaymentOk = async (value) => {
+    let { data: card, error } = await supabase.from("payment").insert([
+      {
+        payment_amount: paymentInfo.paymentAmount,
+        payment_date: new Date(),
+        payment_method: selectedPaymentMethod,
+        rental_agreement_id: paymentInfo.rentalAgreementID,
+        paid_by: paymentInfo.studentID,
+        paid_to: paymentInfo.agentID,
+      },
+    ]);
+
+    if (error) {
+      console.log(error);
+      return;
+    }
+
+    if (selectedPaymentMethod === "fpx") {
+      message.info("Redirecting to FPX payment gateway...");
+    }
+    else {
+      message.info("Paying with card...")
+    }
+
+    setTimeout(async () => {
+      setPaymentDetailVisible("none");
+      setResultVisible("block");
+
+      let { data: rentalAgreement, error: rentalAgreementError } = await supabase
+      .from("rental_agreement")
+      .update({ status: "active" })
+      .eq("rentalAgreementID", paymentInfo.rentalAgreementID);
+
+    if (rentalAgreementError) {
+      console.log(rentalAgreementError);
+      return;
+    }
+    }, 3000);
+
+  };
 
   const handlePaymentCancel = () => {
     setSelectedCardBorder(null);
     setSelectedFpxBorder(null);
     setSelectedPaymentMethod(null);
     setIsPaymentModalVisible(false);
+    setPaymentDetailVisible("flex");
+    setResultVisible("none");
+    setFetchTrigger(fetchTrigger + 1);
   };
 
   const handleRatingOk = async (
@@ -451,7 +497,7 @@ function RentalAgreement() {
 
   useEffect(() => {
     fetchListings();
-  }, []);
+  }, [fetchTrigger]);
 
   useEffect(() => {
     if (selectedPaymentMethod === "card") {
@@ -548,7 +594,12 @@ function RentalAgreement() {
                         type="link"
                         onClick={() => {
                           setIsPaymentModalVisible(true);
-                          setPaymentAmount(listing.rentalPrice);
+                          setPaymentInfo({
+                            studentID: listing.studentID,
+                            agentID: listing.agentID.agent_id,
+                            rentalAgreementID: listing.rentalAgreementID,
+                            paymentAmount: listing.rentalPrice,
+                          });
                         }}
                         style={{
                           color: "#1890FF",
@@ -728,7 +779,7 @@ function RentalAgreement() {
                 >
                   <div
                     style={{
-                      display: "flex",
+                      display: paymentDetailVisible,
                       flexDirection: "column",
                       justifyContent: "center",
                       alignItems: "center",
@@ -814,15 +865,16 @@ function RentalAgreement() {
                         span={3}
                       >
                         <span style={{ fontSize: "1rem" }}>
-                          RM{paymentAmount.toFixed(2)}
+                          RM{paymentInfo?.paymentAmount.toFixed(2)}
                         </span>
                       </DescriptionsItem>
                     </Descriptions>
 
                     <div className="paymentDetails">
                       <Form
+                        name="card-form"
                         className="card-form"
-                        form={form}
+                        form={cardform}
                         style={{ width: "35vw" }}
                         layout="vertical"
                         onFinish={handlePaymentOk}
@@ -901,7 +953,7 @@ function RentalAgreement() {
                       </Form>
                       <Form
                         className="fpx-form"
-                        form={form}
+                        form={fpxform}
                         style={{ width: "35vw" }}
                         layout="vertical"
                         onFinish={handlePaymentOk}
@@ -1003,6 +1055,16 @@ function RentalAgreement() {
                       </Form>
                     </div>
                   </div>
+                  <Result
+                  style={{ display: resultVisible }}
+                    status="success"
+                    title="Successfully Paid!"
+                    extra={[
+                      <Button type="primary" onClick={handlePaymentCancel}>
+                        Return
+                      </Button>,
+                    ]}
+                  />
                 </Modal>
 
                 {/* Modal for displaying rating details */}
