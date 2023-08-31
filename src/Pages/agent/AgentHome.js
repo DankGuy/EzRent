@@ -389,7 +389,7 @@ function AgentHome() {
                             }}
                         >
                             <h3>Upcoming Appointments</h3>
-                            <BiTimer size={25} style={{ marginLeft: '10px' }} />
+                            <BiTimer size={25} style={{ marginLeft: '20px' }} />
                         </div>
                     </div>
 
