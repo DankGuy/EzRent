@@ -45,7 +45,7 @@ import { supabase } from "./supabase-client";
 import { useEffect } from "react";
 import MyRequest from "./Pages/student/roommate/MyRequest";
 import Loading from "./Pages/Result/Loading";
-import SuperadminHome from "./Pages/superadmin/SuperadminHome";
+import SuperadminHome from "./Pages/superadmin/superadminHome";
 
 function App() {
     const { userSession, auth } = useAuth();
@@ -187,7 +187,7 @@ function App() {
                         <Route path="/forgot-password" element={<Navigate to="/superadmin" />} />
                         <Route path="/update-password" element={<Navigate to="/superadmin" />} />
 
-                        <Route path="/agent/" element={<SuperadminHome />}>
+                        <Route path="/" element={<SuperadminHome />}>
                             <Route index element={<SuperadminHome />} />
                             <Route path="*" element={<NotFound />} />
                         </Route>
