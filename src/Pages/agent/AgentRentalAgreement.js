@@ -65,7 +65,7 @@ function AgentRentalAgreement() {
               <div className="terms" style={{ width: "90%", marginLeft: "30px" }}>
                 <h2 style={{ fontSize: "1rem" }}>Terms and Conditions</h2>
                 <ol>
-                  <li>Payment of rental shall be made on or before the 1st day of each month.</li>
+                  <li>Payment of rental shall be made on or before the 10th day of each month.</li>
                   <li>A security deposit has been collected. This deposit is intended to cover any damages beyond normal wear and tear. The deposit will be refunded within 7 days of the lease termination, less any deductions for damages or outstanding charges.</li>
                   <li>The tenant is responsible for maintaining the property in a clean and orderly condition. Regular cleaning, minor repairs, and yard maintenance are expected.</li>
                   <li>Any alterations or modifications to the property must receive written approval from the landlord. The tenant is responsible for promptly reporting any necessary repairs, and the landlord will address them in a timely manner.</li>

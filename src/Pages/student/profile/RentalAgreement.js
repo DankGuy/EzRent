@@ -99,27 +99,84 @@ function RentalAgreement() {
     );
   };
 
-  // const checkListingStatus = (listing) => {
-  //   const currentDate = new Date();
-  //   const commencementDate = new Date(listing.commencementDate);
-  //   const expirationDate = new Date(listing.expirationDate);
+  const checkListingStatus = async (listing) => {
+    const currentDate = new Date();
+    const commencementDate = new Date(listing.commencementDate);
+    const expirationDate = new Date(listing.expirationDate);
 
-  //   const currentDayOfMonth = currentDate.getDate();
+    const currentDayOfMonth = currentDate.getDate();
+    const currentMonth = currentDate.getMonth();
 
-  //   if (
-  //     currentDate < commencementDate ||
-  //     (listing.status === "active" && currentDayOfMonth >= 20)
-  //   ) {
-  //     return "pending";
-  //   } else if (
-  //     currentDate >= commencementDate &&
-  //     currentDate <= expirationDate
-  //   ) {
-  //     return "active";
-  //   } else {
-  //     return "inactive";
-  //   }
-  // };
+    let lastPaymentDate;
+    let lastPaymentMonth;
+
+    let { data: payment, error: paymentError } = await supabase
+      .from("payment")
+      .select("*")
+      .eq("rental_agreement_id", listing.rentalAgreementID)
+      .eq("paid_by", listing.studentID)
+      .eq("paid_to", listing.agentID.agent_id)
+      .order("payment_date", { ascending: false })
+      .limit(1);
+
+    if (paymentError) {
+      console.log(paymentError);
+      return;
+    }
+
+    if (payment.length > 0) {
+      lastPaymentDate = new Date(payment[0].payment_date);
+      lastPaymentMonth = lastPaymentDate.getMonth();
+    } else {
+      lastPaymentMonth = -1;
+    }
+
+    if (
+      // checks if the current date is within the commencement and expiration date and not paid yet
+      currentMonth >= commencementDate.getMonth() &&
+      currentMonth <= expirationDate.getMonth() &&
+      currentDayOfMonth <= expirationDate.getDate() &&
+      currentDayOfMonth <= 10 &&
+      listing.status === "active" &&
+      lastPaymentMonth !== currentMonth
+    ) {
+      return "pending";
+    } else if (
+      // checks if the rental is not paid within 10 days of each month
+      currentMonth >= commencementDate.getMonth() &&
+      currentMonth <= expirationDate.getMonth() &&
+      currentDayOfMonth <= expirationDate.getDate() &&
+      currentDayOfMonth > 10 &&
+      listing.status === "pending"
+    ) {
+      return "inactive";
+    } else if (
+      // checks if the date is before the commencement date
+      currentMonth <= commencementDate.getMonth() &&
+      currentDayOfMonth < commencementDate.getDate() &&
+      listing.status === "pending"
+    ) {
+      return "inactive";
+    } else if (
+      // checks if the date is after the expiration date
+      currentMonth >= expirationDate.getMonth() &&
+      currentDayOfMonth > expirationDate.getDate() &&
+      listing.status === "active"
+    ) {
+      return "inactive";
+    } else if (
+      // checks if the date is after the commencement date and before the expiration date
+      currentMonth >= commencementDate.getMonth() &&
+      currentMonth <= expirationDate.getMonth() &&
+      currentDayOfMonth >= commencementDate.getDate() &&
+      currentDayOfMonth <= expirationDate.getDate() &&
+      listing.status === "inactive"
+    ) {
+      return "pending";
+    } else {
+      return listing.status;
+    }
+  };
 
   const getAvatar = async (id) => {
     const userID = id;
@@ -152,6 +209,20 @@ function RentalAgreement() {
       console.log(error);
       return;
     }
+
+    for (let i = 0; i < data; i++) {
+      let status = await checkListingStatus(data[i]);
+      let { data: rentalAgreement, error: rentalAgreementError } = await supabase
+        .from("rental_agreement")
+        .update({ status: status })
+        .eq("rentalAgreementID", data[i].rentalAgreementID);
+
+      if (rentalAgreementError) {
+        console.log(rentalAgreementError);
+        return;
+      }
+    }
+
     const sortedListings = sortListings(data);
     const listingsWithModalVisibility = sortedListings.map((listing) => ({
       ...listing,
@@ -297,7 +368,7 @@ function RentalAgreement() {
                 <h2 style={{ fontSize: "1rem" }}>Terms and Conditions</h2>
                 <ol>
                   <li>
-                    Payment of rental shall be made on or before the 1st day of
+                    Payment of rental shall be made on or before the 10th day of
                     each month.
                   </li>
                   <li>
@@ -405,26 +476,25 @@ function RentalAgreement() {
 
     if (selectedPaymentMethod === "fpx") {
       message.info("Redirecting to FPX payment gateway...");
-    }
-    else {
-      message.info("Paying with card...")
+    } else {
+      message.info("Paying with card...");
     }
 
     setTimeout(async () => {
       setPaymentDetailVisible("none");
       setResultVisible("block");
 
-      let { data: rentalAgreement, error: rentalAgreementError } = await supabase
-      .from("rental_agreement")
-      .update({ status: "active" })
-      .eq("rentalAgreementID", paymentInfo.rentalAgreementID);
+      let { data: rentalAgreement, error: rentalAgreementError } =
+        await supabase
+          .from("rental_agreement")
+          .update({ status: "active" })
+          .eq("rentalAgreementID", paymentInfo.rentalAgreementID);
 
-    if (rentalAgreementError) {
-      console.log(rentalAgreementError);
-      return;
-    }
+      if (rentalAgreementError) {
+        console.log(rentalAgreementError);
+        return;
+      }
     }, 3000);
-
   };
 
   const handlePaymentCancel = () => {
@@ -1056,7 +1126,7 @@ function RentalAgreement() {
                     </div>
                   </div>
                   <Result
-                  style={{ display: resultVisible }}
+                    style={{ display: resultVisible }}
                     status="success"
                     title="Successfully Paid!"
                     extra={[
