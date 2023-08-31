@@ -121,25 +121,52 @@ function AboutUs() {
             <SolutionCard 
               title="Exclusive Access"
               content="We restrict access to TARUMT students, ensuring they have priority when searching for accommodations."
-              icon= {<PiStudentFill style={{ fontSize: '3rem' }} />}
+              icon= {<PiStudentFill 
+                style={{ 
+                  color: 'red',
+                  backgroundColor: "rgba(255,0,0,0.25)",
+                  borderRadius: '50%',
+                  fontSize: '3rem',
+                  padding: 8,
+               }} />}
             />
 
             <SolutionCard
               title="Verified Listings"
               content="Our admin team carefully reviews and approves rental listings, minimizing the risk of scams and fraud."
-              icon= {<MdSecurity style={{ fontSize: '3rem' }} />}
+              icon= {<MdSecurity 
+                style={{ 
+                  color: 'blue',
+                  backgroundColor: "rgba(0,0,255,0.25)",
+                  borderRadius: '50%',
+                  fontSize: '3rem',
+                  padding: 8,
+                 }} />}
             />
 
             <SolutionCard
               title="Transparent Pricing"
               content="We provide a platform for agents to list their properties for free, ensuring that students get the best deals."
-              icon= {<MdOutlinePriceCheck style={{ fontSize: '3rem' }} />}
+              icon= {<MdOutlinePriceCheck style={{ 
+                color: 'green',
+                backgroundColor: "rgba(0,255,0,0.25)",
+                borderRadius: '50%',
+                fontSize: '3rem',
+                padding: 8,
+               }} />}
             />
 
             <SolutionCard
               title="Rental Agreements"
               content="We generate digital rental agreements for a seamless and efficient renting process."
-              icon= {<FaFileContract style={{ fontSize: '3rem' }} />}
+              icon= {<FaFileContract 
+                  style={{ 
+                    color: 'orange',
+                    backgroundColor: "rgba(255,165,0,0.25)",
+                    borderRadius: '50%',
+                    fontSize: '3rem',
+                    padding: 8,
+                   }} />}
             />
           </Space>
         </div>

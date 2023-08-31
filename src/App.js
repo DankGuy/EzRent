@@ -45,6 +45,7 @@ import { supabase } from "./supabase-client";
 import { useEffect } from "react";
 import MyRequest from "./Pages/student/roommate/MyRequest";
 import Loading from "./Pages/Result/Loading";
+import SuperadminHome from "./Pages/superadmin/SuperadminHome";
 
 function App() {
     const { userSession, auth } = useAuth();
@@ -177,29 +178,46 @@ function App() {
                         <Route path="*" element={<NotFound />} />
                     </>
                 );
+            } else {
+                return (
+                    <>
+                        <Route path="/" element={<Navigate to="/superadmin" />} />
+                        <Route path="/login" element={<Navigate to="/superadmin" />} />
+                        <Route path="/signup" element={<Navigate to="/superadmin" />} />
+                        <Route path="/forgot-password" element={<Navigate to="/superadmin" />} />
+                        <Route path="/update-password" element={<Navigate to="/superadmin" />} />
+
+                        <Route path="/agent/" element={<SuperadminHome />}>
+                            <Route index element={<SuperadminHome />} />
+                            <Route path="*" element={<NotFound />} />
+                        </Route>
+                        <Route path="*" element={<NotFound />} />
+                    </>
+                );
             }
-        }
+
+        };
     };
 
 
 
-    return (
-        <>
-            {isLoading ? (
-                <Loading /> // Show loading component
-            ) : (
-                <Routes>
-                    {userTypeRoutes()}
-                    <Route path="/signup" element={<SignUp />} />
-                    <Route path="/login" element={<Login />} />
-                    <Route path="/forgot-password" element={<ForgotPassword />} />
-                    <Route path="/update-password" element={<UpdatePassword />} />
-                    <Route path="*" element={<NotFound />} />
-                    <Route path="/" element={<Login />} />
-                </Routes>
-            )}
-        </>
-    );
-}
+        return (
+            <>
+                {isLoading ? (
+                    <Loading /> // Show loading component
+                ) : (
+                    <Routes>
+                        {userTypeRoutes()}
+                        <Route path="/signup" element={<SignUp />} />
+                        <Route path="/login" element={<Login />} />
+                        <Route path="/forgot-password" element={<ForgotPassword />} />
+                        <Route path="/update-password" element={<UpdatePassword />} />
+                        <Route path="*" element={<NotFound />} />
+                        <Route path="/" element={<Login />} />
+                    </Routes>
+                )}
+            </>
+        );
+    }
 
-export default App;
+    export default App;
