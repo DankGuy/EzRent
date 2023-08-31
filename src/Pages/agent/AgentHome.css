@@ -6,7 +6,7 @@
     align-items: center !important; */
 }
 
-.menuSidebar .ant-menu-item{
+.menuSidebar .ant-menu-item {
     margin-bottom: 20px !important;
     font-weight: 500;
 }
@@ -26,6 +26,7 @@
     color: white !important;
     font-weight: bold;
 }
+
 .profileLayout .ant-menu-item-selected {
     background-color: #430f58 !important;
     color: white !important;
@@ -39,13 +40,15 @@
 }
 
 
-.ant-menu-vertical > li > svg {
+.ant-menu-vertical>li>svg {
     margin-left: -5px !important;
     margin-top: 7px !important;
-    
+
 }
 
 
-.postIDcolumn .ant-table-filter-trigger{
+.postIDcolumn .ant-table-filter-trigger {
     margin-inline: 4px 0px !important;
 }
+
+

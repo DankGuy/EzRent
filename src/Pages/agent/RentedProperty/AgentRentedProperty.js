@@ -175,6 +175,11 @@ function AgentRentedProperty() {
             ellipsis: {
                 showTitle: false,
             },
+            render: (rentalAgreementID) => (
+                <Tooltip placement="topLeft" title={rentalAgreementID}>
+                    {rentalAgreementID}
+                </Tooltip>
+            ),
             className: "postIDcolumn",
             width: '20%',
             sorter: (a, b) => a.rentalAgreementID.localeCompare(b.rentalAgreementID),
@@ -261,15 +266,18 @@ function AgentRentedProperty() {
             <div>
                 <h1>Rented Property</h1>
             </div>
-            <Table
-                columns={columns}
-                dataSource={properties}
-                bordered={true}
-                pagination={{ pageSize: 5, position: ['bottomCenter'] }}
-                // tableLayout="fixed"
-                className="propertyTable"
-                scroll={{ x: 1300 }}
-            />
+            <div>
+                <Table
+                    columns={columns}
+                    dataSource={properties}
+                    bordered={true}
+                    pagination={{ pageSize: 5, position: ['bottomCenter'] }}
+                    // tableLayout="fixed"
+                    className="propertyTable"
+                    scroll={{ x: 1300 }}
+                    tableLayout="fixed"
+                />
+            </div>
 
             <RentedPropertyDetails
                 value={isModalOpen}

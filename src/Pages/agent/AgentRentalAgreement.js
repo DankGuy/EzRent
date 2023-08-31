@@ -283,7 +283,7 @@ function AgentRentalAgreement() {
     }
 
     const values = {
-      'rentalAgreementID': trimmedAgentName + "-" + fieldsValue['date-picker'].format('DD-MMMM') + "-" + (count + 1),
+      'rentalAgreementID': trimmedAgentName + "-" + fieldsValue['date-picker'].format('DD-MMMM-YYYY') + "-" + (count + 1),
       'postID': postInfo.postID,
       'agentID': postInfo.propertyAgentID,
       'rentalPrice': postInfo.propertyPrice,

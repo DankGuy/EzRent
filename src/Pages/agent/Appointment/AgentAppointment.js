@@ -236,7 +236,7 @@ function AgentAppointment() {
                     status: appointment.status,
                     studentName: appointment.student.name,
                     appointmentID: appointment.appointmentID,
-                    post: appointment.postID,
+                    postID: appointment.postID,
                     studentID: appointment.student,
                     agentID: appointment.agentID,
                 });
@@ -251,7 +251,7 @@ function AgentAppointment() {
                     status: appointment.status,
                     studentName: appointment.student.name,
                     appointmentID: appointment.appointmentID,
-                    post: appointment.postID,
+                    postID: appointment.postID,
                     studentID: appointment.student,
                     agentID: appointment.agentID,
                 });

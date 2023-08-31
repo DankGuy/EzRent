@@ -11,6 +11,9 @@ function AppointmentDetails() {
 
     const location = useLocation();
     const { state } = location;
+
+    console.log(state);
+
     const [messageApi, contextHolder] = message.useMessage();
     const navigate = useNavigate();
 
@@ -116,10 +119,10 @@ function AppointmentDetails() {
                     title="Property Details"
                     labelStyle={{ fontWeight: "bold", width: "10%" }}
                     bordered>
-                    <Descriptions.Item label="Name" span={3}>{state.post.propertyName}</Descriptions.Item>
-                    <Descriptions.Item label="Type" span={3}>{state.post.propertyType}</Descriptions.Item>
-                    <Descriptions.Item label="Location" span={3}>{state.post.propertyAddress},
-                        {state.post.propertyPostcode} {state.post.propertyCity}, {state.post.propertyState}</Descriptions.Item>
+                    <Descriptions.Item label="Name" span={3}>{state.postID.propertyName}</Descriptions.Item>
+                    <Descriptions.Item label="Type" span={3}>{state.postID.propertyType}</Descriptions.Item>
+                    <Descriptions.Item label="Location" span={3}>{state.postID.propertyAddress},
+                        {state.postID.propertyPostcode} {state.postID.propertyCity}, {state.postID.propertyState}</Descriptions.Item>
                 </Descriptions>
                 <br />
                 <Descriptions
