@@ -39,6 +39,7 @@ function AgentHome() {
     const [pendingPost, setPendingPost] = useState(0);
 
     const [rentedPost, setRentedPost] = useState({});
+    const [totalRentedPost, setTotalRentedPost] = useState(0);
 
     useEffect(() => {
         const fetchAppointments = async () => {
@@ -129,6 +130,8 @@ function AgentHome() {
             }
 
             console.log(data);
+
+            setTotalRentedPost(data.length);
 
             // Create an object to store the count of posts for each month
             const monthCounts = {};
@@ -340,6 +343,26 @@ function AgentHome() {
                         <Statistic
                             title="Pending Post"
                             value={pendingPost}
+                            style={{ textAlign: 'center' }}
+                            formatter={formatter}
+                        />
+                    </Space>
+                </Card>
+
+                <Card hoverable bodyStyle={{ paddingLeft: '10px' }}>
+                    <Space direction="horizontal">
+                        <MdOutlineInsertDriveFile size={30}
+                            style={{
+                                marginLeft: '10px',
+                                color: 'blue',
+                                backgroundColor: "rgba(0,0,255,0.25)",
+                                borderRadius: 20,
+                                padding: 5
+                            }}
+                        />
+                        <Statistic
+                            title="Rented Post"
+                            value={totalRentedPost}
                             style={{ textAlign: 'center' }}
                             formatter={formatter}
                         />
