@@ -1,7 +1,7 @@
 import { Fragment } from "react";
 import { supabase } from "../../../supabase-client";
 import { useState, useEffect } from "react";
-import { Button, Modal, Table, Tooltip, Descriptions } from "antd";
+import { Button, Modal, Table, Tooltip, Descriptions, Tag } from "antd";
 import { getDateOnly } from "../../../Components/timeUtils";
 import { Input, Space } from "antd";
 import { SearchOutlined } from "@ant-design/icons";
@@ -73,6 +73,7 @@ function AgentRentedProperty() {
           duration: rentalDuration(),
           tenantName: element.studentID.name,
           commencementDate: element.commencementDate,
+          status: element.status,
           student: element.studentID,
           occupant: element.occupantID,
         });
@@ -147,9 +148,9 @@ function AgentRentedProperty() {
     onFilter: (value, record) => {
       return record[dataIndex]
         ? record[dataIndex]
-            .toString()
-            .toLowerCase()
-            .includes(value.toLowerCase())
+          .toString()
+          .toLowerCase()
+          .includes(value.toLowerCase())
         : "";
     },
     onFilterDropdownOpenChange: (visible) => {
@@ -398,6 +399,50 @@ function AgentRentedProperty() {
     );
   }
 
+  function renderStatus(status) {
+
+    if (status === "pending") {
+      return <Tag color="orange">Pending</Tag>;
+    } else if (status === "active") {
+      return <Tag color="green">Active</Tag>;
+    } else if (status === "inactive") {
+      return <Tag color="red">Inactive</Tag>;
+    }
+
+  };
+
+  function getDate(rentalAgreementID) {
+    //format is KelvinEe-18-August-2023-4
+    const split = rentalAgreementID.split("-");
+
+
+    //get the month in format: mm
+    const month = split[2];
+    let monthInNumber = 0;
+
+    const monthInWords = ["January", "February", "March", "April", "May", "June", "July", "August", "September",
+      "October", "November", "December"];
+
+    for (let i = 0; i < monthInWords.length; i++) {
+      if (monthInWords[i] === month) {
+        monthInNumber = i + 1;
+      }
+    }
+
+    //get the day in format: dd
+    const day = split[1];
+
+    //get the year in format: yyyy
+
+    const year = split[3];
+
+    //convert to date format: dd-mm-yyyy
+    const date = day + "-" + monthInNumber + "-" + year;
+
+
+    return date;
+  }
+
   const columns = [
     {
       title: "Rental Agreement ID",
@@ -487,12 +532,36 @@ function AgentRentedProperty() {
       width: "15%",
     },
     {
+      title: "Generated Date",
+      dataIndex: "generatedDate",
+      key: "generatedDate",
+      render: (date, record) => (
+        <>
+          {getDate(record.rentalAgreementID)}
+        </>
+      ),
+      width: "15%",
+      sorter: (a, b) => getDate(a.rentalAgreementID).localeCompare(getDate(b.rentalAgreementID)),
+    },
+    {
       title: "Commencement Date",
       dataIndex: "commencementDate",
       key: "commencementDate",
       sorter: (a, b) => a.commencementDate.localeCompare(b.commencementDate),
       render: (commencementDate) => <p>{getDateOnly(commencementDate)}</p>,
       width: "15%",
+    },
+    {
+      title: "Status",
+      dataIndex: "status",
+      key: "status",
+      sorter: (a, b) => a.status.localeCompare(b.status),
+      width: "10%",
+      render: (status) => (
+        <>
+          {renderStatus(status)}
+        </>
+      ),
     },
   ];
 
@@ -509,7 +578,7 @@ function AgentRentedProperty() {
           pagination={{ pageSize: 5, position: ["bottomCenter"] }}
           // tableLayout="fixed"
           className="propertyTable"
-          scroll={{ x: 1300 }}
+          scroll={{ x: 1700 }}
           tableLayout="fixed"
         />
       </div>

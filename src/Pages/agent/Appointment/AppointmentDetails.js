@@ -1,6 +1,6 @@
 import { useLocation } from "react-router-dom";
 import { useEffect, useState } from 'react';
-import { Button, Descriptions, Popconfirm, message } from "antd";
+import { Button, Descriptions, Popconfirm, Tag, message } from "antd";
 import { getCurrentDateTime, getDateOnly } from "../../../Components/timeUtils";
 import { supabase } from "../../../supabase-client"
 import { useNavigate } from "react-router-dom";
@@ -37,6 +37,7 @@ function AppointmentDetails() {
             .select('*')
             .eq('date', state.date)
             .eq('agentID', state.agentID.agent_id)
+            .single();
 
         if (error2) {
             console.log(error2);
@@ -46,19 +47,26 @@ function AppointmentDetails() {
 
 
 
-        if (data2.length > 0) {
+        if (data2.timeslot !== null && data2.timeslot !== undefined && data2.timeslot.length > 0) {
 
-            const newTimeslot = data2.timeslot;
+            const currentTimeslot = data2.timeslot;
+            console.log(currentTimeslot);
+            
+            //add back the timeslot
+            const newTimeslot = [...currentTimeslot, state.timeslot];
             console.log(newTimeslot);
 
-            newTimeslot.push(state.timeslot);
+            //sort the timeslot (string)
+            const sortedTimeslot = newTimeslot.sort((a, b) => {
+                return a.localeCompare(b);
+            });
+            console.log(sortedTimeslot);
 
             const { data: data3, error: error3 } = await supabase
                 .from('available_timeslot')
-                .update('timeslot', newTimeslot)
+                .update({ timeslot: sortedTimeslot })
                 .eq('date', state.date)
-                .eq('agentID', state.agentID.agent_id)
-                .single();
+                .eq('agentID', state.agentID.agent_id);
 
             if (error3) {
                 console.log(error3);
@@ -90,7 +98,7 @@ function AppointmentDetails() {
             const today = dayjs();
             const formattedDate = today.format('YYYY-MM-DD');
 
-            if (state.date > formattedDate) {
+            if (state.date >= formattedDate) {
                 return (
                     <>
                         {contextHolder}
@@ -111,6 +119,18 @@ function AppointmentDetails() {
     }
 
     console.log(state);
+
+    const renderStatus = (status) => {
+        if (status === "Valid") {
+            return (
+                <Tag color="green">Valid</Tag>
+            )
+        } else if (status === "Cancelled") {
+            return (
+                <Tag color="red">Cancelled</Tag>
+            )
+        }
+    }
 
     return (
         <div style={{ display: 'flex', flexDirection: 'row' }}>
@@ -144,7 +164,7 @@ function AppointmentDetails() {
                     <Descriptions.Item label="Date" span={3}>{getDateOnly(state.date)}</Descriptions.Item>
                     <Descriptions.Item label="Timeslot" span={3}>{state.timeslot}</Descriptions.Item>
                     <Descriptions.Item label="Status" span={3}>
-                        {state.status === "Valid" ? <span style={{ color: 'green' }}>{state.status}</span> : <span style={{ color: 'red' }}>{state.status}</span>}
+                        {renderStatus(state.status)}
                     </Descriptions.Item>
                 </Descriptions>
                 <br />
