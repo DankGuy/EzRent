@@ -393,7 +393,7 @@ function SuperadminHome() {
         items={navItems}
         onClick={logout}
       />
-      <Card style={{ marginTop: "20px", height: "90vh" }}>
+      <Card style={{ marginTop: "20px", height: "auto" }}>
         <div
           style={{
             display: "flex",
