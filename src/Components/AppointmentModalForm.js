@@ -99,19 +99,22 @@ function AppointmentModalForm({ post }) {
     //default time option
     const timeslotOptions = () => {
         const defaultOption = [
-            <Option disabled={true} key="1" value='08:00 - 09:00'>9:00 AM - 10:00 AM</Option>,
-            <Option disabled={true} key="2" value='09:00 - 10:00'>10:00 AM - 11:00 AM</Option>,
-            <Option disabled={true} key="3" value='10:00 - 11:00'>11:00 AM - 12:00 PM</Option>,
-            <Option disabled={true} key="4" value='11:00 - 12:00'>12:00 PM - 1:00 PM</Option>,
-            <Option disabled={true} key="5" value='13:00 - 14:00'>1:00 PM - 2:00 PM</Option>,
-            <Option disabled={true} key="6" value='14:00 - 15:00'>2:00 PM - 3:00 PM</Option>,
-            <Option disabled={true} key="7" value='15:00 - 16:00'>3:00 PM - 4:00 PM</Option>,
-            <Option disabled={true} key="8" value='16:00 - 17:00'>4:00 PM - 5:00 PM</Option>,
-            <Option disabled={true} key="9" value='17:00 - 18:00'>5:00 PM - 6:00 PM</Option>,
-            <Option disabled={true} key="10" value='18:00 - 19:00'>6:00 PM - 7:00 PM</Option>,
-            <Option disabled={true} key="11" value='19:00 - 20:00'>7:00 PM - 8:00 PM</Option>,
-            <Option disabled={true} key="12" value='20:00 - 21:00'>8:00 PM - 9:00 PM</Option>,
-            <Option disabled={true} key="13" value='21:00 - 22:00'>9:00 PM - 10:00 PM</Option>,
+            <Option disabled={true} key="1" value='08:00 - 09:00'>8:00 AM - 9:00 AM</Option>,
+            <Option disabled={true} key="2" value='09:00 - 10:00'>9:00 AM - 10:00 AM</Option>,
+            <Option disabled={true} key="3" value='10:00 - 11:00'>10:00 AM - 11:00 AM</Option>,
+            <Option disabled={true} key="4" value='11:00 - 12:00'>11:00 AM - 12:00 PM</Option>,
+            <Option disabled={true} key="5" value='12:00 - 13:00'>12:00 PM - 1:00 PM</Option>,
+            <Option disabled={true} key="6" value='13:00 - 14:00'>1:00 PM - 2:00 PM</Option>,
+            <Option disabled={true} key="7" value='14:00 - 15:00'>2:00 PM - 3:00 PM</Option>,
+            <Option disabled={true} key="8" value='15:00 - 16:00'>3:00 PM - 4:00 PM</Option>,
+            <Option disabled={true} key="9" value='16:00 - 17:00'>4:00 PM - 5:00 PM</Option>,
+            <Option disabled={true} key="10" value='17:00 - 18:00'>5:00 PM - 6:00 PM</Option>,
+            <Option disabled={true} key="11" value='18:00 - 19:00'>6:00 PM - 7:00 PM</Option>,
+            <Option disabled={true} key="12" value='19:00 - 20:00'>7:00 PM - 8:00 PM</Option>,
+            <Option disabled={true} key="13" value='20:00 - 21:00'>8:00 PM - 9:00 PM</Option>,
+            <Option disabled={true} key="14" value='21:00 - 22:00'>9:00 PM - 10:00 PM</Option>,
+            
+           
         ]
 
         const selectedDateTimeslot = availableDate.find((date) => date.date === dayjs(selectedDate, 'DD-MM-YYYY').format('YYYY-MM-DD'));

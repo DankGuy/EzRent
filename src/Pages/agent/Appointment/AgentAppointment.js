@@ -207,7 +207,7 @@ function AgentAppointment() {
             .from('appointment')
             .select('*, postID(*), student(*), agentID(*)')
             .eq('agentID', userID)
-            .order('date', { ascending: false });
+            .order('date', { ascending: true });
 
         if (error) {
             console.log(error);
@@ -226,7 +226,7 @@ function AgentAppointment() {
 
             //If the appointment date is exceed today, it is active appointment
             //dont use moment
-            if (new Date(appointment.date) >= new Date()) {
+            if (new Date(appointment.date) >= new Date() && appointment.status === 'Valid') {
                 actData.push({
                     key: index,
                     date: appointment.date,
@@ -339,6 +339,10 @@ function AgentAppointment() {
                 }
             },
             width: '8%',
+            sorter: {
+                compare: (a, b) => a.status.localeCompare(b.status),
+                multiple: 1,
+            },
         },
         {
             title: 'Student Name',

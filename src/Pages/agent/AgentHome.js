@@ -50,9 +50,10 @@ function AgentHome() {
                 .from('appointment')
                 .select('*, postID(*), studentID(*), agentID(*)')
                 .eq('agentID', userID)
+                .eq('status', 'Valid')
                 .order('date', { ascending: true })
                 .order('timeslot', { ascending: true })
-                .gt('date', todayDate);
+                .gte('date', todayDate);
 
             if (error) {
                 console.log(error);
@@ -121,8 +122,7 @@ function AgentHome() {
             const { data, error } = await supabase
                 .from('rental_agreement')
                 .select('*')
-                .eq('agentID', userID)
-                .eq('status', 'active');
+                .eq('agentID', userID);
 
             if (error) {
                 console.log(error);
@@ -182,7 +182,9 @@ function AgentHome() {
         const appointmentElements = appointments.slice(0, 3).map((appointment, index) => {
             const currentDate = getDateOnly(appointment.date);
 
-            const renderDate = isFirstAppointment;
+            const previousDate = index > 0 ? getDateOnly(appointments[index - 1].date) : null;
+
+            const renderDate = isFirstAppointment || currentDate !== previousDate;
             isFirstAppointment = false;
 
             return (
@@ -202,7 +204,7 @@ function AgentHome() {
                             key={appointment.appointmentID}
                             style={{
                                 width: '100%',
-                                marginTop: '10px',
+                                marginBottom: '10px',
                                 backgroundColor: 'rgb(240, 245, 255)',
                             }}
                             bodyStyle={{ padding: '10px' }}
@@ -233,7 +235,7 @@ function AgentHome() {
                             display: 'flex',
                             flexDirection: 'column',
                             alignItems: 'center',
-                            marginTop: '20px',
+                            marginTop: '10px',
                             textDecoration: 'none',
                             cursor: 'pointer',
                             transition: 'transform 0.2s, color 0.2s, box-shadow 0.2s', // Add transitions for multiple properties
