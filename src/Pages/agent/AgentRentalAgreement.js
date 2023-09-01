@@ -168,8 +168,10 @@ function AgentRentalAgreement() {
 
   const handleDurationChange = (value, field) => {
     const startDate = form.getFieldValue('date-picker');
-    const years = field === 'duration' ? value : form.getFieldValue('duration');
-    const months = field === 'durationMonths' ? value : form.getFieldValue('durationMonths');
+    const years = form.getFieldValue('durationYears');
+    const months = form.getFieldValue('durationMonths');
+
+    console.log(years, months);
 
     const calculatedEndDate = moment(startDate)
       .add(years, 'years')
