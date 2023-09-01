@@ -67,7 +67,7 @@ function AgentProfile() {
         }}
       >
         <div className="avatar-div">
-          <Avatar size={64} src={userAvatar} icon={<UserOutlined />} />
+          <Avatar size={100} src={userAvatar} icon={<UserOutlined />} />
         </div>
       </div>
       <div
@@ -76,7 +76,7 @@ function AgentProfile() {
           justifyContent: "center",
           alignItems: "center",
           flexDirection: "column",
-          marginTop: "5vh",
+          marginTop: "2vh",
           width: "100%",
         }}
       >
