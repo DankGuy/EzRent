@@ -987,7 +987,7 @@ function RentalAgreement() {
                             }}
                             rules={[
                               {
-                                pattern: new RegExp("^[1-12]{1,2}/[0-9]{2}$"),
+                                pattern: new RegExp("^[0-9]{1,2}/[0-9]{2}$"),
                                 message: "Invalid expiry date",
                               },
                               {
