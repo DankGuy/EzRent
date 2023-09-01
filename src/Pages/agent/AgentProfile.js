@@ -8,6 +8,7 @@ import { useNavigate } from "react-router-dom";
 function AgentProfile() {
   // get user information from database
   const [userInfo, setUserInfo] = useState(null);
+  const [userRating, setUserRating] = useState(0);
   const [userAvatar, setUserAvatar] = useState(null);
   const getUserInfo = async () => {
     // get user id from supabase
@@ -19,6 +20,7 @@ function AgentProfile() {
     if (error) console.log("error", error);
     else return agent[0];
   };
+
   const getAvatar = async () => {
     const userID = (await supabase.auth.getUser()).data.user.id;
     const timestamp = new Date().getTime(); // Generate a timestamp to serve as the cache-busting query parameter
@@ -48,6 +50,7 @@ function AgentProfile() {
     avatar.then((url) => {
       setUserAvatar(url);
     });
+    setUserRating(userInfo?.rating);
   }, [userInfo]);
 
   const editProfile = () => {
@@ -61,7 +64,6 @@ function AgentProfile() {
           display: "flex",
           justifyContent: "center",
           alignItems: "center",
-          // flexDirection: "column",
         }}
       >
         <div className="avatar-div">
@@ -79,7 +81,7 @@ function AgentProfile() {
         }}
       >
         <div className="rate-div">
-          <Rate disabled allowHalf defaultValue={3.7} />
+          <Rate disabled allowHalf value={userRating} />
         </div>
 
         <fieldset
