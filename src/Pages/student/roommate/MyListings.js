@@ -1,4 +1,4 @@
-import { Breadcrumb, Button, Col, Row } from "antd";
+import { Breadcrumb, Button, Col, Empty, Row } from "antd";
 import { useEffect, useState } from "react";
 import { supabase } from "../../../supabase-client";
 import MyListingPost from "./MyListingPost";
@@ -104,22 +104,8 @@ function MyListings() {
             }
 
             {!isLoading && myListings.length === 0 &&
-                <div style={{
-                    display: 'flex',
-                    flexDirection: 'column',
-                    alignItems: 'center',
-                    justifyContent: 'center',
-                    padding: '2%',
-                    width: '30%',
-                }}>
-                    <p style={{ fontFamily: 'arial', fontSize: '15px' }}> You have not posted any listings yet... </p>
-                    <Button type="primary" className="viewButton" style={{ width: '40%' }}
-                        onClick={handleCreateModal}
-                    >
-                        Create a listing
-                    </Button>
-                    <CreateRoommatePost value={postModal} onModalChange={setPostModal} onTrigger={handleTrigger} />
-                </div>
+                <Empty style={{ margin: '10% 0 2% 0' }} 
+                description={<span style={{fontSize: '20px'}}>You have no listings</span>} />
             }
 
 

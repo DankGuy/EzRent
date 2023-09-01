@@ -1,4 +1,4 @@
-import { Card, Col, Row, Space, Statistic } from "antd";
+import { Card, Col, Empty, Row, Space, Statistic } from "antd";
 import { useEffect, useState } from "react";
 import { supabase } from "../../supabase-client";
 import { convertDate, getDateOnly } from "../../Components/timeUtils";
@@ -177,6 +177,18 @@ function AgentHome() {
 
 
     const showAppointments = () => {
+
+
+        //show no appointment if there is no appointment
+        if (appointments.length === 0) {
+            return (
+               <Empty description="No Appointments" style={{ marginTop: '10px', marginBottom: '20px' }} />
+            );
+        }
+
+
+
+
         let isFirstAppointment = true;
 
         const appointmentElements = appointments.slice(0, 3).map((appointment, index) => {

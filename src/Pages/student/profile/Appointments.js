@@ -1,4 +1,4 @@
-import { App, Table, Tabs, Tag } from "antd";
+import { App, Table, Tabs, Tag, Tooltip } from "antd";
 import { useState } from "react";
 import { supabase } from "../../../supabase-client";
 import { useEffect } from "react";
@@ -7,7 +7,7 @@ import { Link } from "react-router-dom";
 import dayjs from 'dayjs';
 import { getDateOnly } from "../../../Components/timeUtils";
 
-function Appointments(){
+function Appointments() {
 
     const [historyData, setHistoryData] = useState([]);
     const [activeData, setActiveData] = useState([]);
@@ -40,7 +40,7 @@ function Appointments(){
 
             const address = `${appointment.postID.propertyAddress}, ${appointment.postID.propertyPostcode} ${appointment.postID.propertyCity}, ${appointment.postID.propertyState}`;
 
-            
+
             if (new Date(appointment.date) >= new Date()) {
                 actData.push({
                     key: index,
@@ -85,7 +85,7 @@ function Appointments(){
             dataIndex: 'no',
             key: 'no',
             render: (text, record, index) => index + 1,
-            width: '4%',
+            width: '6%',
         },
         {
             title: 'Date',
@@ -123,7 +123,16 @@ function Appointments(){
             title: 'Property Address',
             dataIndex: 'propertyAddress',
             key: 'propertyAddress',
-            width: '30%',
+            width: '25%',
+            ellipsis: {
+                showTitle: false,
+            },
+            render: (address) => (
+                <Tooltip placement="topLeft" title={address}>
+                    {address}
+                </Tooltip>
+            ),
+
         },
         {
             title: 'Status',
@@ -159,9 +168,9 @@ function Appointments(){
                         <AiOutlineZoomIn size={20} style={{ cursor: 'pointer' }} />
                     </Link>
                 )
-                
+
             },
-            width: '5%',
+            width: '8%',
         },
     ];
 

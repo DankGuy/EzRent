@@ -253,7 +253,7 @@ function Roommate() {
         ) : <>
 
             {listings && listings.length === 0 ? <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', height: '50vh' }}>
-                <Empty description={<span style={{ color: '#b80606', fontStyle: 'italic', fontSize: '20px' }}>No listings found. Please try refining your search.</span>} />
+                <Empty description={<span style={{ fontSize: '20px' }}>No listings found. Please try refining your search.</span>} />
             </div> :
                 <div style={{ display: 'flex', alignItems: 'center', height: '50px', marginLeft: '10%', marginTop: '10px' }}>
                     <span

@@ -37,6 +37,7 @@ function StudentAppointmentDetails() {
             .select('*')
             .eq('date', state.date)
             .eq('agentID', state.agentID.agent_id)
+            .single();
 
         if (error2) {
             console.log(error2);
@@ -46,19 +47,28 @@ function StudentAppointmentDetails() {
 
 
 
-        if (data2.length > 0) {
-            console.log(data2)
-            const newTimeslot = data2.timeslot;
+        if (data2.timeslot !== null && data2.timeslot !== undefined && data2.timeslot.length > 0) {
+            
+            const currentTimeslot = data2.timeslot;
+            console.log(currentTimeslot);
+
+            //add back the timeslot
+            const newTimeslot = [...currentTimeslot, state.timeslot];
             console.log(newTimeslot);
 
-            newTimeslot.push(state.timeslot);
+            //sort the timeslot (string)
+
+            const sortedTimeslot = newTimeslot.sort((a, b) => {
+                return a.localeCompare(b);
+            });
+            console.log(sortedTimeslot);
+
 
             const { data: data3, error: error3 } = await supabase
                 .from('available_timeslot')
-                .update('timeslot', newTimeslot)
+                .update({ timeslot: sortedTimeslot })
                 .eq('date', state.date)
-                .eq('agentID', state.agentID.agent_id)
-                .single();
+                .eq('agentID', state.agentID.agent_id);
 
             if (error3) {
                 console.log(error3);
@@ -94,6 +104,10 @@ function StudentAppointmentDetails() {
                 return (
                     <>
                         {contextHolder}
+                        <Button type="primary" className="viewButton" style={{ width: '35%', marginTop: '10em' }} onClick={() => {
+                            navigate('/student/profile/appointments')
+                        }}>Back
+                        </Button>
                         <Popconfirm title="Are you sure to cancel this appointment?" onConfirm={() => {
                             cancelAppointment();
                         }}>

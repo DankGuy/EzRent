@@ -1,7 +1,7 @@
 import { IoAddCircle } from 'react-icons/io5'
 import { Link, useNavigate } from 'react-router-dom'
 import { useEffect, useState } from 'react';
-import { Col, Form, Image, Popconfirm, Row, message, Pagination, Select, Tooltip, Input } from 'antd';
+import { Col, Form, Image, Popconfirm, Row, message, Pagination, Select, Tooltip, Input, Empty } from 'antd';
 import { supabase } from '../../../supabase-client';
 import CurrentPost from './CurrentPost';
 import PostSortingSelection from '../../../Components/PostSortingSelection';
@@ -64,10 +64,13 @@ function AgentRoomRental() {
     useEffect(() => {
         const fetchProcessedData = async () => {
 
+            const userID = (await supabase.auth.getUser()).data.user.id;
+
             let query = supabase.from('property_post')
                 .select('*')
                 .not('propertyStatus', 'cs', '{ "stage": "drafted" }')
                 .not('propertyStatus', 'cs', '{ "stage": "rented" }')
+                .eq('propertyAgentID', userID);
 
             if (postStatus !== 'all')
                 query = query.contains('propertyStatus', { stage: postStatus });
@@ -108,11 +111,15 @@ function AgentRoomRental() {
     }
 
     const fetchData = async () => {
+
+        const userID = (await supabase.auth.getUser()).data.user.id;
+
         const { data, error } = await supabase
             .from('property_post')
             .select('*')
             .contains('propertyStatus', { stage: 'drafted' })
-            .order('lastModifiedDate', { ascending: false });
+            .order('lastModifiedDate', { ascending: false })
+            .eq('propertyAgentID', userID);
 
         if (error) {
             console.log(error);
@@ -127,7 +134,8 @@ function AgentRoomRental() {
             .select('*')
             .not('propertyStatus', 'cs', '{ "stage": "drafted" }')
             .not('propertyStatus', 'cs', '{ "stage": "rented" }')
-            .order('lastModifiedDate', { ascending: false });
+            .order('lastModifiedDate', { ascending: false })
+            .eq('propertyAgentID', userID);
 
         if (error2) {
             console.log(error2);
@@ -266,9 +274,13 @@ function AgentRoomRental() {
             </Row>
             <div>
                 <Row>
-                    {currentDraftPosts.map((post) => (
-                        <CurrentPost post={post} key={post.postID} deletePost={deletePost} uploadPost={uploadPost} contextHolder={contextHolder} />
-                    ))}
+                    {draftPosts.length === 0 ?
+                        <Empty description="No draft post found" style={{ width: '100%', height: '100%', marginBottom: '20px' }} />
+                        :
+                        currentDraftPosts.map((post) => (
+                            <CurrentPost post={post} key={post.postID} deletePost={deletePost} uploadPost={uploadPost} contextHolder={contextHolder} />
+                        ))
+                    }
                 </Row>
                 <Pagination
                     current={currentDraftPage}
@@ -359,9 +371,8 @@ function AgentRoomRental() {
                     {
                         posts.length === 0 ?
 
-                            <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', width: '100%', height: '100%' }}>
-                                <h1 style={{ fontSize: '25px' }}>No post found</h1>
-                            </div>
+                            <Empty description="No current post found" style={{ width: '100%', height: '100%', marginBottom: '20px' }} />
+
                             :
                             currentPosts.map((post) => (
                                 <CurrentPost post={post} key={post.postID} deletePost={deletePost} contextHolder={contextHolder} />

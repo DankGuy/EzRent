@@ -437,7 +437,7 @@ function AgentRentedProperty() {
     const year = split[3];
 
     //convert to date format: dd-mm-yyyy
-    const date = day + "-" + monthInNumber + "-" + year;
+    const date = day + "/" + monthInNumber + "/" + year;
 
 
     return date;
@@ -541,13 +541,13 @@ function AgentRentedProperty() {
         </>
       ),
       width: "15%",
-      sorter: (a, b) => getDate(a.rentalAgreementID).localeCompare(getDate(b.rentalAgreementID)),
+      sorter: (a, b) => new Date(getDate(a.rentalAgreementID)) - new Date(getDate(b.rentalAgreementID)),
     },
     {
       title: "Commencement Date",
       dataIndex: "commencementDate",
       key: "commencementDate",
-      sorter: (a, b) => a.commencementDate.localeCompare(b.commencementDate),
+      sorter: (a, b) => (new Date(a.commencementDate) - new Date(b.commencementDate)),
       render: (commencementDate) => <p>{getDateOnly(commencementDate)}</p>,
       width: "15%",
     },
@@ -568,7 +568,9 @@ function AgentRentedProperty() {
   return (
     <Fragment>
       <div>
-        <h1>Rented Property</h1>
+        <h1 style={{ marginBlockStart: "0.2em", marginBlockEnd: "0.8em" }}>
+          Rented Property
+        </h1>
       </div>
       <div>
         <Table
@@ -580,6 +582,7 @@ function AgentRentedProperty() {
           className="propertyTable"
           scroll={{ x: 1700 }}
           tableLayout="fixed"
+          size="middle"
         />
       </div>
 

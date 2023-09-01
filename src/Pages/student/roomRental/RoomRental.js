@@ -448,7 +448,7 @@ function RoomRental() {
         </div>
 
         {posts.length === 0 && <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', height: '50vh' }}>
-            <Empty description={<span style={{ color: '#b80606', fontStyle: 'italic', fontSize: '20px' }}>No properties found. Please try refining your search.</span>} />
+            <Empty description={<span style={{  fontSize: '20px' }}>No properties found. Please try refining your search.</span>} />
         </div>}
 
         {/* mention how many results found */}
