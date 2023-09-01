@@ -77,7 +77,9 @@ function SignUpCard() {
 
         message.success("Please check your email for confirmation link!");
 
-        window.location.href = "/login";
+        setTimeout(() => {
+          window.location.href = "/login";
+        }, 2000);
       } else {
         const { data, error } = await supabase.auth.signUp({
           email: formData.email,
@@ -100,7 +102,9 @@ function SignUpCard() {
 
         message.success("Please check your email for confirmation link!");
 
-        window.location.href = "/login";
+        setTimeout(() => {
+          window.location.href = "/login";
+        }, 2000);
       }
     } catch (error) {
       message.error(error.error_description ?? error.message);
