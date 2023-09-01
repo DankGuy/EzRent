@@ -39,6 +39,8 @@ function AgentRentalAgreement() {
   const [isModalVisible, setIsModalVisible] = useState(false);
 
   function pdfContent(rentalAgreementInfo) {
+    const idArr = rentalAgreementInfo.rentalAgreementID.split("-");
+    const id = idArr[1] + "-" + idArr[2] + "-" + idArr[3];
     return (
       <div
         style={{
@@ -105,7 +107,7 @@ function AgentRentalAgreement() {
                       {rentalAgreementInfo.rentalAgreementID}
                     </Descriptions.Item>
                     <Descriptions.Item label="Date" span={3}>
-                      {new Date().toJSON().slice(0, 10)}
+                      {id}
                     </Descriptions.Item>
                     <Descriptions.Item label="Address" span={3}>
                       {postInfo.propertyName +
@@ -419,33 +421,32 @@ function AgentRentalAgreement() {
       }
     }
 
-    const values = {
-      rentalAgreementID:
-        trimmedAgentName +
-        "-" +
-        fieldsValue["date-picker"].format("DD-MMMM-YYYY") +
-        "-" +
-        (count + 1),
-      postID: postInfo.postID,
-      agentID: postInfo.propertyAgentID,
-      rentalPrice: postInfo.propertyPrice,
-      commencementDate: fieldsValue["date-picker"].format("YYYY-MM-DD"),
-      rentalDuration: {
-        year: fieldsValue["durationYears"],
-        month: fieldsValue["durationMonths"],
-      },
-      studentID: tenant[0].student_id,
-      rentalDeposit: {
-        UtilityDeposit: Number(postInfo.propertyPrice * 2.5),
-        SecurityDeposit: Number(postInfo.propertyPrice * 0.1),
-      },
-      status: "pending",
-      expirationDate: fieldsValue["end-date-picker"].format("YYYY-MM-DD"),
-    };
-    setRentalAgreementInfo(values);
-    setIsModalVisible(true);
-
     if (!exist) {
+      const values = {
+        rentalAgreementID:
+          trimmedAgentName +
+          "-" +
+          fieldsValue["date-picker"].format("DD-MMMM-YYYY") +
+          "-" +
+          (count + 1),
+        postID: postInfo.postID,
+        agentID: postInfo.propertyAgentID,
+        rentalPrice: postInfo.propertyPrice,
+        commencementDate: fieldsValue["date-picker"].format("YYYY-MM-DD"),
+        rentalDuration: {
+          year: fieldsValue["durationYears"],
+          month: fieldsValue["durationMonths"],
+        },
+        studentID: tenant[0].student_id,
+        rentalDeposit: {
+          UtilityDeposit: Number(postInfo.propertyPrice * 2.5),
+          SecurityDeposit: Number(postInfo.propertyPrice * 0.1),
+        },
+        status: "pending",
+        expirationDate: fieldsValue["end-date-picker"].format("YYYY-MM-DD"),
+      };
+      setRentalAgreementInfo(values);
+
       let { data: addRental, error: addRentalError } = await supabase
         .from("rental_agreement")
         .insert([
@@ -466,8 +467,7 @@ function AgentRentalAgreement() {
       if (addRentalError) {
         console.log(addRentalError);
       } else {
-        // pdfContent(values);
-
+        // Update the number of properties rented out by the agent
         let { data: agentData, error: agentError } = await supabase
           .from("agent")
           .select("properties_rented_out")
@@ -505,8 +505,29 @@ function AgentRentalAgreement() {
         }
       }
     } else {
+      console.log(rental);
+      const values = {
+        rentalAgreementID: rental[0].rentalAgreementID,
+        postID: rental[0].postID,
+        agentID: rental[0].propertyAgentID,
+        rentalPrice: rental[0].rentalPrice,
+        commencementDate: rental[0].commencementDate,
+        rentalDuration: {
+          year: rental[0].rentalDuration.year,
+          month: rental[0].rentalDuration.month,
+        },
+        studentID: rental[0].studentID,
+        rentalDeposit: {
+          UtilityDeposit: rental[0].rentalDeposit.UtilityDeposit,
+          SecurityDeposit: rental[0].rentalDeposit.SecurityDeposit,
+        },
+        status: "pending",
+        expirationDate: rental[0].expirationDate
+      };
+      setRentalAgreementInfo(values);
       message.error("Rental Agreement already exist!");
     }
+    setIsModalVisible(true);
   };
 
   const getAgentDetails = async () => {
