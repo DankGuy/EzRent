@@ -1,6 +1,8 @@
 import { Col, Row } from "antd";
 import { Fragment } from "react";
 import { ImFacebook2, ImTwitter, ImInstagram, ImYoutube } from "react-icons/im";
+import { Link } from "react-router-dom";
+import "./footer.css" 
 
 
 function Footer() {
@@ -38,6 +40,7 @@ function Footer() {
         color: "white",
         marginBlockStart: "0.5em",
         marginBlockEnd: "0.5em",
+        lineHeight: '1.5',
 
     }
 
@@ -54,25 +57,27 @@ function Footer() {
             }} >
                 <Col span={8} style={{...colStyle, paddingLeft: '100px'}}>
                     <h1 style={h1Style}>Sitemap</h1>
-                    <p style={fontStyle}>Home</p>
-                    <p style={fontStyle}>About Us</p>
-                    <p style={fontStyle}>Contact Us</p>
-                    <p style={fontStyle}>Privacy</p>
-                    <p style={fontStyle}>Terms of Service</p>
+                    <Link to="/student/roomRental" style={fontStyle}>Room Rental</Link>
+                    <Link to="/student/roommate" style={fontStyle}>Roommate</Link>
+                    <Link to="/student/aboutUs" style={fontStyle}>About Us</Link>
+                    <Link to="/student/privacy" style={fontStyle}>Privacy Policy</Link>
+                    <Link to="/student/terms" style={fontStyle}>Terms and Conditions</Link>
 
                 </Col>
 
                 <Col span={8} style={colStyle}>
                     <h1 style={h1Style}>Contact Information</h1>
                     <h2 style={h2Style}>Address</h2>
-                    <p style={fontStyle}>No. 1, Jalan 1, Taman 1, 12345, Kuala Lumpur, Malaysia</p>
+                    <p style={{ ...fontStyle, marginBlockStart: '0.5em', marginBlockEnd: '0.5em' }}>
+                        5th Floor, Wisma Maba, No 5-5, Jalan Hang Jebat, 50150 Kuala Lumpur, Wilayah Persekutuan Kuala Lumpur
+                    </p>
                     <br />
                     <h2 style={h2Style}>Office Hours</h2>
                     <p style={fontStyle}>Monday - Friday: 9:00am - 5:00pm</p>
                     <p style={fontStyle}>Saturday: 9:00am - 1:00pm</p>
                     <p style={fontStyle}>Sunday: Closed</p>
                     <br />
-                    <p style={fontStyle}>Email: <a href="mailto:kelvinewk-wp20@student.tarc.edu.my">kelvinewk@student.tarc.edu.my</a></p>
+                    <p style={fontStyle}>Email: <a href="mailto:kelvinee37@gmail.com">kelvinee37@gmail.com</a></p>
                     <p style={fontStyle}>Phone: <a href="tel:+6016-555-5555">+6016-555-5555</a></p>
                 </Col>
 

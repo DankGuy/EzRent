@@ -411,37 +411,6 @@ function AgentRentedProperty() {
 
   };
 
-  function getDate(rentalAgreementID) {
-    //format is KelvinEe-18-August-2023-4
-    const split = rentalAgreementID.split("-");
-
-
-    //get the month in format: mm
-    const month = split[2];
-    let monthInNumber = 0;
-
-    const monthInWords = ["January", "February", "March", "April", "May", "June", "July", "August", "September",
-      "October", "November", "December"];
-
-    for (let i = 0; i < monthInWords.length; i++) {
-      if (monthInWords[i] === month) {
-        monthInNumber = i + 1;
-      }
-    }
-
-    //get the day in format: dd
-    const day = split[1];
-
-    //get the year in format: yyyy
-
-    const year = split[3];
-
-    //convert to date format: dd-mm-yyyy
-    const date = day + "/" + monthInNumber + "/" + year;
-
-
-    return date;
-  }
 
   const columns = [
     {
@@ -532,18 +501,6 @@ function AgentRentedProperty() {
       width: "15%",
     },
     {
-      title: "Generated Date",
-      dataIndex: "generatedDate",
-      key: "generatedDate",
-      render: (date, record) => (
-        <>
-          {getDate(record.rentalAgreementID)}
-        </>
-      ),
-      width: "15%",
-      sorter: (a, b) => new Date(getDate(a.rentalAgreementID)) - new Date(getDate(b.rentalAgreementID)),
-    },
-    {
       title: "Commencement Date",
       dataIndex: "commencementDate",
       key: "commencementDate",
@@ -577,7 +534,7 @@ function AgentRentedProperty() {
           columns={columns}
           dataSource={properties}
           bordered={true}
-          pagination={{ pageSize: 5, position: ["bottomCenter"] }}
+          pagination={{ pageSize: 5}}
           // tableLayout="fixed"
           className="propertyTable"
           scroll={{ x: 1700 }}

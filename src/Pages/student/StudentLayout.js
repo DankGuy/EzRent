@@ -1,7 +1,7 @@
 import { Layout } from 'antd';
 import NavBar from '../../Components/NavBar'
 import { Outlet } from "react-router-dom";
-import FooterCard from './FooterCard.js';
+import FooterCard from './footer/FooterCard';
 const { Footer } = Layout;
 
 

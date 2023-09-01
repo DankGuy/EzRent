@@ -46,6 +46,8 @@ import { useEffect } from "react";
 import MyRequest from "./Pages/student/roommate/MyRequest";
 import Loading from "./Pages/Result/Loading";
 import SuperadminHome from "./Pages/superadmin/superadminHome";
+import Privacy from "./Pages/student/footer/Privacy";
+import TermsAndCondition from "./Pages/student/footer/TermsAndCondition";
 
 function App() {
     const { userSession, auth } = useAuth();
@@ -148,6 +150,8 @@ function App() {
                             <Route path="roommate/myRequest" element={<MyRequest />} />
                             <Route path="roommate/post/:id" element={<RoommatePost />} />
                             <Route path="aboutUs" element={<AboutUs />} />
+                            <Route path="privacy" element={<Privacy />} />
+                            <Route path="terms" element={<TermsAndCondition />} />
 
                             <Route path="/student/admin/" element={<AdminLayout />}>
                                 <Route index element={<PendingPosts />} />
