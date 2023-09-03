@@ -6,7 +6,7 @@ import { Link, useLocation, useNavigate } from 'react-router-dom';
 import "./AgentRoomRentalPost.css"
 import FurnishTypeSelection from '../../../Components/FurnishTypeSelection';
 import { formatDateTime, getCurrentDateTime } from '../../../Components/timeUtils';
-import { supabase, postCodeSupabase } from '../../../supabase-client';
+import { supabase } from '../../../supabase-client';
 import { RiInformationFill } from 'react-icons/ri';
 import "../../../Components/timeUtils"
 
@@ -719,7 +719,7 @@ function AgentRoomRentalPost() {
                 setPropertyState('');
                 setPropertyCity('');
             } else {
-                const { data, error } = await postCodeSupabase
+                const { data, error } = await supabase
                     .from('malaysia_postcode')
                     .select('postcode, post_office, state_code, state(state_name)')
                     .eq('postcode', e.target.value);
@@ -957,7 +957,7 @@ function AgentRoomRentalPost() {
         let propertyState = '';
         let propertyCity = '';
 
-        const { data, error } = await postCodeSupabase
+        const { data, error } = await supabase
             .from('malaysia_postcode')
             .select('postcode, post_office, state_code, state(state_name)')
             .eq('postcode', e["propertyPostcode"])

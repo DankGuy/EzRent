@@ -5,7 +5,7 @@ import FurnishTypeSelection from '../../../Components/FurnishTypeSelection';
 import TextArea from 'antd/es/input/TextArea';
 import { useNavigate } from 'react-router-dom';
 import { getCurrentDateTime } from '../../../Components/timeUtils';
-import { supabase, postCodeSupabase } from '../../../supabase-client';
+import { supabase } from '../../../supabase-client';
 import { RiInformationFill } from 'react-icons/ri';
 
 function AgentCreatePost() {
@@ -481,7 +481,7 @@ function AgentCreatePost() {
                 setPropertyState('');
                 setPropertyCity('');
             } else {
-                const { data, error } = await postCodeSupabase
+                const { data, error } = await supabase
                     .from('malaysia_postcode')
                     .select('postcode, post_office, state_code, state(state_name)')
                     .eq('postcode', e.target.value);
@@ -575,7 +575,7 @@ function AgentCreatePost() {
         let propertyState = '';
         let propertyCity = '';
 
-        const { data, error } = await postCodeSupabase
+        const { data, error } = await supabase
             .from('malaysia_postcode')
             .select('postcode, post_office, state_code, state(state_name)')
             .eq('postcode', e["propertyPostcode"])
