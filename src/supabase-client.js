@@ -16,7 +16,7 @@ export const useCheckLogin = () => {
     } = supabase.auth.onAuthStateChange((_event, session) => {
       setSession(session);
       console.log(_event);
-      if (_event != "SIGNED_IN") {
+      if (_event !== "SIGNED_IN") {
         window.location.href = "/";
       }
     });
