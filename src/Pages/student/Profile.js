@@ -1,8 +1,7 @@
 import {
   MenuFoldOutlined,
   MenuUnfoldOutlined,
-  CreditCardOutlined,
-  DollarOutlined,
+  HistoryOutlined,
   ScheduleOutlined,
   SolutionOutlined,
   UserOutlined,
@@ -112,7 +111,7 @@ function Profile() {
               {
                 label: "Payment History",
                 key: "/student/profile/paymentHistory",
-                icon: <DollarOutlined style={{ fontSize: '25px' }} />,
+                icon: <HistoryOutlined style={{ fontSize: '25px' }} />,
               },
             ]}
           />
