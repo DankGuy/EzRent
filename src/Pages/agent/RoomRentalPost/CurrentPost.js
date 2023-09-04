@@ -1,4 +1,4 @@
-import { Col, Image, Popconfirm, Popover, Row, Tag, message } from "antd";
+import { Col, Image, Popconfirm, Popover, Row, Spin, Tag, message } from "antd";
 import { FiEdit3 } from "react-icons/fi";
 import { GrDocumentPdf, GrView } from "react-icons/gr";
 import { MdOutlineDeleteOutline, MdOutlinePublish } from "react-icons/md";
@@ -20,6 +20,7 @@ function CurrentPost({ post, deletePost, uploadPost, contextHolder }) {
 
     const [firstImage, setFirstImage] = useState(null);
     const [isOpen, setIsOpen] = useState(false);
+    const [isLoading, setIsLoading] = useState(false);
 
     useEffect(() => {
         getFirstImage();
@@ -27,6 +28,7 @@ function CurrentPost({ post, deletePost, uploadPost, contextHolder }) {
 
     //Get first image from supabase storage
     const getFirstImage = async () => {
+        setIsLoading(true);
         const { data, error } = await supabase
             .storage
             .from('post')
@@ -37,6 +39,7 @@ function CurrentPost({ post, deletePost, uploadPost, contextHolder }) {
         }
 
         setFirstImage(data[0]);
+        setIsLoading(false);
     }
 
     const popOverStyle = {
@@ -100,23 +103,23 @@ function CurrentPost({ post, deletePost, uploadPost, contextHolder }) {
             }
 
             {post.propertyStatus.stage === 'drafted' &&
-                
-                    <Row className="popOutBox">
-                        <Col span={24} style={popOverStyle}
-                            onClick={
-                                () => {
-                                    uploadPost(post.postID);
-                                    setIsOpen(!isOpen);
-                                }}>
-                            <span
-                                style={{ display: 'flex', alignItems: 'center', cursor: 'pointer' }}>
-                                <span style={{ flexGrow: 1 }}>Post</span>
-                                <MdOutlinePublish size={18} />
-                            </span>
-                        </Col>
-                    </Row>
 
-                }
+                <Row className="popOutBox">
+                    <Col span={24} style={popOverStyle}
+                        onClick={
+                            () => {
+                                uploadPost(post.postID);
+                                setIsOpen(!isOpen);
+                            }}>
+                        <span
+                            style={{ display: 'flex', alignItems: 'center', cursor: 'pointer' }}>
+                            <span style={{ flexGrow: 1 }}>Post</span>
+                            <MdOutlinePublish size={18} />
+                        </span>
+                    </Col>
+                </Row>
+
+            }
         </div>
     );
 
@@ -166,15 +169,23 @@ function CurrentPost({ post, deletePost, uploadPost, contextHolder }) {
                     </Col>
                 </Row>
                 <Row >
-                    {firstImage && <Col span={24} style={{ display: 'flex', justifyContent: 'center', marginBottom: '10px' }}>
-                        <Image style={{ justifyContent: 'center' }} height={200} src={`https://exsvuquqspmbrtyjdpyc.supabase.co/storage/v1/object/public/post/${post.postID}/Property/${firstImage?.name}`} />
-                    </Col>}
+                    {isLoading ? (
+                        <div style={{
+                            display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center',
+                            height: '200px', width: '200px'
+                        }}>
+                            <Spin size="small" />
+                            <span style={{ marginTop: '10px', fontFamily: 'arial', fontSize: '15px' }}>
+                                Loading...
+                            </span>
+                        </div>
+                    ) : (
+                        <Col span={24} style={{ display: 'flex', justifyContent: 'center', marginBottom: '10px' }}>
+                            <Image style={{ justifyContent: 'center' }} height={200} src={`https://exsvuquqspmbrtyjdpyc.supabase.co/storage/v1/object/public/post/${post.postID}/Property/${firstImage?.name}`} />
+                        </Col>
+                    )}
+
                 </Row>
-                {/* <Row>
-                    <Col span={24} style={{ paddingLeft: '15px', fontSize: '13px' }}>
-                        ID: {post.postID}
-                    </Col>
-                </Row> */}
                 <Row>
                     <Col span={24}
                         style={{

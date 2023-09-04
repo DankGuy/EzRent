@@ -182,7 +182,7 @@ function AgentHome() {
         //show no appointment if there is no appointment
         if (appointments.length === 0) {
             return (
-               <Empty description="No Appointments" style={{ marginTop: '10px', marginBottom: '20px' }} />
+                <Empty description="No Appointments" style={{ marginTop: '10px', marginBottom: '20px' }} />
             );
         }
 
@@ -210,6 +210,9 @@ function AgentHome() {
                         to={`/agent/appointment/${appointment.appointmentID}`}
                         style={{ color: 'black' }}
                         state={appointment}
+                        onClick={() => {
+                            localStorage.setItem('selectedKey', '/agent/appointment');
+                        }}
                     >
                         <Card
                             hoverable
@@ -260,6 +263,10 @@ function AgentHome() {
                             e.currentTarget.style.transform = 'scale(1)'; // Reset scale on hover out
                             e.currentTarget.style.color = '#6b6b6b'; // Reset text color on hover out
                         }}
+                        onClick={() => {
+                            localStorage.setItem('selectedKey', '/agent/appointment');
+                        }
+                        }
                     >
                         <BsArrowRightCircle size={25} style={{ marginBottom: '5px' }} />
                         <span style={{ fontWeight: 'bold' }}>
@@ -318,70 +325,52 @@ function AgentHome() {
             direction="vertical"
         >
             <Space direction="horizontal">
-                <Card
-                    hoverable
-                    bodyStyle={
-                        {
-                            paddingLeft: '10px',
-                        }
-                    }>
-                    <Space direction="horizontal">
-                        <MdOutlineInsertDriveFile size={30}
+                <StatisticsCard
+                    title="Active Post"
+                    value={activePost}
+                    icon={
+                        <MdOutlineInsertDriveFile size={35}
                             style={{
-                                marginLeft: '10px',
+                                marginLeft: '50px',
                                 color: 'green',
                                 backgroundColor: "rgba(0,255,0,0.25)",
-                                borderRadius: 20,
+                                borderRadius: 5,
                                 padding: 5
                             }}
                         />
-                        <Statistic
-                            title="Active Post"
-                            value={activePost}
-                            style={{ textAlign: 'center' }}
-                            formatter={formatter}
-                        />
-                    </Space>
-                </Card>
-
-                <Card hoverable bodyStyle={{ paddingLeft: '10px' }}>
-                    <Space direction="horizontal">
+                    }
+                />
+                
+                <StatisticsCard
+                    title={"Pending Post"}
+                    value={pendingPost}
+                    icon={
                         <MdPendingActions size={30}
                             style={{
-                                marginLeft: '10px',
+                                marginLeft: '50px',
                                 color: 'orange',
                                 backgroundColor: "rgba(255,165,0,0.25)",
-                                borderRadius: 20,
+                                borderRadius: 5,
                                 padding: 5,
                             }} />
-                        <Statistic
-                            title="Pending Post"
-                            value={pendingPost}
-                            style={{ textAlign: 'center' }}
-                            formatter={formatter}
-                        />
-                    </Space>
-                </Card>
+                    }
+                />
 
-                <Card hoverable bodyStyle={{ paddingLeft: '10px' }}>
-                    <Space direction="horizontal">
+                <StatisticsCard
+                    title="Rented Post"
+                    value={totalRentedPost}
+                    icon={
                         <MdOutlineInsertDriveFile size={30}
                             style={{
-                                marginLeft: '10px',
+                                marginLeft: '50px',
                                 color: 'blue',
                                 backgroundColor: "rgba(0,0,255,0.25)",
-                                borderRadius: 20,
+                                borderRadius: 5,
                                 padding: 5
                             }}
                         />
-                        <Statistic
-                            title="Rented Post"
-                            value={totalRentedPost}
-                            style={{ textAlign: 'center' }}
-                            formatter={formatter}
-                        />
-                    </Space>
-                </Card>
+                    }
+                />
             </Space>
 
             <Space style={{ marginTop: '10px' }} direction="horizontal">
@@ -422,6 +411,36 @@ function AgentHome() {
             </Space>
         </Space>
     );
+}
+
+function StatisticsCard({title, value, icon}){
+    return (
+        <Card
+        hoverable
+        style={{
+            width: 200,
+            height: 90,
+        }}
+        bodyStyle={
+            {
+                paddingLeft: '15px',
+                paddingTop: '15px',
+                paddingBottom: '15px',
+                paddingRight: '10px',
+            }
+        }>
+        <Space direction="horizontal">
+            <Statistic
+                title={title}
+                value={value}
+                style={{ textAlign: 'center' }}
+                formatter={formatter}
+            />
+            {icon}
+        </Space>
+    </Card>
+
+    )
 }
 
 export default AgentHome;

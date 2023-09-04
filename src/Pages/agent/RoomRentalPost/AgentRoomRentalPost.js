@@ -622,6 +622,7 @@ function AgentRoomRentalPost() {
                                         message: 'Please enter the quantity!',
                                     },
                                 ]}
+                                initialValue={1}
                             >
                                 <InputNumber
                                     placeholder="Quantity"
