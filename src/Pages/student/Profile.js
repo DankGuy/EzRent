@@ -50,6 +50,10 @@ function Profile() {
       case "/student/profile/rentalAgreement":
         setTitle("Rental Agreement");
         break;
+        case "/student/profile/paymentHistory":
+          setTitle("Payment History ");
+          break;
+  
     }
   };
 
@@ -104,6 +108,11 @@ function Profile() {
                 label: "Rental Agreement",
                 key: "/student/profile/rentalAgreement",
                 icon: <SolutionOutlined style={{ fontSize: '25px' }} />,
+              },
+              {
+                label: "Payment History",
+                key: "/student/profile/paymentHistory",
+                icon: <DollarOutlined style={{ fontSize: '25px' }} />,
               },
             ]}
           />

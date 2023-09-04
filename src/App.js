@@ -23,6 +23,7 @@ import Appointments from "./Pages/student/profile/Appointments";
 import RentalAgreement from "./Pages/student/profile/RentalAgreement";
 import EditProfile from "./Pages/student/profile/EditProfile";
 import RoomRentalPost from "./Pages/student/roomRental/RoomRentalPost";
+import PaymentHistory from "./Pages/student/profile/PaymentHistory";
 
 import AgentHome from "./Pages/agent/AgentHome";
 import AgentProfile from "./Pages/agent/AgentProfile";
@@ -175,6 +176,7 @@ function App() {
                                 />
                                 <Route path="rentalAgreement" element={<RentalAgreement />} />
                                 <Route path="editProfile" element={<EditProfile />} />
+                                <Route path="paymentHistory" element={<PaymentHistory />} />
                             </Route>
                             <Route path="roomRental/:id" element={<RoomRentalPost />} />
                             <Route path="*" element={<NotFound />} />
