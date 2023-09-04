@@ -39,8 +39,6 @@ function AgentRentalAgreement() {
   const [isModalVisible, setIsModalVisible] = useState(false);
 
   function pdfContent(rentalAgreementInfo) {
-    const idArr = rentalAgreementInfo.rentalAgreementID.split("-");
-    const id = idArr[1] + "-" + idArr[2] + "-" + idArr[3];
     return (
       <div
         style={{
@@ -107,7 +105,7 @@ function AgentRentalAgreement() {
                       {rentalAgreementInfo.rentalAgreementID}
                     </Descriptions.Item>
                     <Descriptions.Item label="Date" span={3}>
-                      {id}
+                      {rentalAgreementInfo.generatedDate}
                     </Descriptions.Item>
                     <Descriptions.Item label="Address" span={3}>
                       {postInfo.propertyName +
@@ -444,6 +442,7 @@ function AgentRentalAgreement() {
         },
         status: "pending",
         expirationDate: fieldsValue["end-date-picker"].format("YYYY-MM-DD"),
+        generatedDate: moment().format("YYYY-MM-DD"),
       };
       setRentalAgreementInfo(values);
 
@@ -461,6 +460,7 @@ function AgentRentalAgreement() {
             rentalDeposit: values["rentalDeposit"],
             status: values["status"],
             expirationDate: values["expirationDate"],
+            generatedDate: values["generatedDate"],
           },
         ]);
 
@@ -522,7 +522,8 @@ function AgentRentalAgreement() {
           SecurityDeposit: rental[0].rentalDeposit.SecurityDeposit,
         },
         status: "pending",
-        expirationDate: rental[0].expirationDate
+        expirationDate: rental[0].expirationDate,
+        generatedDate: rental[0].generatedDate,
       };
       setRentalAgreementInfo(values);
       message.error("Rental Agreement already exist!");

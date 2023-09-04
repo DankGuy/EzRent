@@ -262,7 +262,7 @@ function AgentRentedProperty() {
                       {rentalAgreementInfo?.rentalAgreementID}
                     </Descriptions.Item>
                     <Descriptions.Item label="Date" span={3}>
-                      {new Date().toJSON().slice(0, 10)}
+                      {rentalAgreementInfo?.generatedDate}
                     </Descriptions.Item>
                     <Descriptions.Item label="Address" span={3}>
                       {rentalAgreementInfo?.postID.propertyName +
