@@ -489,7 +489,6 @@ function RoommateRequest() {
                             continue; // Continue to the next iteration.
                         }
                     }
-
                     // Get the postID that has the same room type
                     const sameRoomTypePostID = selectedPostIDs.filter((postID) => {
                         return selectedRoomIDs[selectedPostIDs.indexOf(postID)] === roomID;
@@ -508,9 +507,6 @@ function RoommateRequest() {
             setFetchTrigger((prevTrigger) => prevTrigger + 1);
         }
     };
-
-    
-
 
     const approvePost = async (postIDArr) => {
         let approveStatus = true;
@@ -595,8 +591,6 @@ function RoommateRequest() {
             return;
         }
 
-        console.log(data);
-
         //Get the rental agreement ID from the roommate post ID
         let { data: data2, error: error2 } = await supabase
             .from("roommate_post")
@@ -607,8 +601,6 @@ function RoommateRequest() {
             console.log("error", error2);
             return;
         }
-
-        console.log(data2);
 
         //Check if the rental agreement ID is null
         if (data2[0].rentalAgreementID === null) {
@@ -625,8 +617,6 @@ function RoommateRequest() {
             console.log("error", error3);
             return;
         }
-
-        console.log(data3);
 
         let occupantID = data3[0].occupantID;
 
@@ -647,19 +637,12 @@ function RoommateRequest() {
                 console.log("error", error4);
                 return;
             }
-
-            console.log(data4);
-
             //to check no duplicated
             if (!occupantID.includes(data4.studentID)) {
                 occupantID.push(data4.studentID);
             }
 
         }
-
-
-        console.log(occupantID);
-
         //Update the occupant array
         let { data: data4, error: error4 } = await supabase
             .from("rental_agreement")
@@ -670,7 +653,6 @@ function RoommateRequest() {
             console.log("error", error4);
             return;
         }
-
     };
 
     const handleRejectClick = async () => {

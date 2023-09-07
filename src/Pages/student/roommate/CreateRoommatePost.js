@@ -600,13 +600,10 @@ function CreateRoommatePost({ value, onModalChange, onTrigger }) {
             console.log(error);
             return;
         }
-
-        console.log("Post:", post);
         if (post.length > 0) {
             message.error("You have already posted a roommate post for this rental agreement");
             return true;
         }
-
         const { data: post1, error1 } = await supabase
             .from('roommate_post')
             .select('*')
@@ -616,15 +613,10 @@ function CreateRoommatePost({ value, onModalChange, onTrigger }) {
             console.log(error1);
             return;
         }
-
-        console.log("Post1:", post1);
         if (post1.length > 0) {
             message.error("This rental agreement has already been posted by another user");
             return true;
         }
-
-
-        console.log("Selected values:", selectedValues);
         const { data: post2, error2 } = await supabase
             .from('roommate_post')
             .select('*')
@@ -635,8 +627,6 @@ function CreateRoommatePost({ value, onModalChange, onTrigger }) {
             console.log(error2);
             return;
         }
-
-        console.log("Post2:", post2);
         let hasMatchingLocation = false; // Initialize the variable
 
         post2.forEach((post) => {
@@ -716,11 +706,6 @@ function CreateRoommatePost({ value, onModalChange, onTrigger }) {
                 message.error("Please fill in all the required fields");
             });
     };
-
-
-
-
-
 
     return <>
 
