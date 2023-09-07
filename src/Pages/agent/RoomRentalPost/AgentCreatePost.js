@@ -440,10 +440,14 @@ function AgentCreatePost() {
         setPFurnishChecklist(values)
     }
 
+    const clearPropertyStateAndCity = () => {
+        setPropertyState('');
+        setPropertyCity('');
+      };
+
     const validatePostcode = (value) => {
         if (value.length == 0) {
-            setPropertyState('');
-            setPropertyCity('');
+            clearPropertyStateAndCity();
             return {
                 validateStatus: 'error',
                 errorMsg: 'Please enter valid postcode!',
@@ -459,54 +463,54 @@ function AgentCreatePost() {
         }
     }
 
+    
     const handlePostCode = async (e) => {
         const value = e.target.value;
+        const POSTCODE_REGEX = /^\d{5}$/;
 
+        //Check if the postcode is empty
         if (value.length === 0) {
             setPostCode({
                 validateStatus: 'error',
                 errorMsg: 'Please enter the property postcode!',
             });
-            setPropertyState('');
-            setPropertyCity('');
+            clearPropertyStateAndCity();
             return;
-        } else {
-            const postcodeRegex = /^\d{5}$/;
-            const format = postcodeRegex.test(value);
-
-            if (!format) {
-                setPostCode({
-                    validateStatus: 'error',
-                    errorMsg: 'Incorrect format!',
-                });
-                setPropertyState('');
-                setPropertyCity('');
-            } else {
-                const { data, error } = await supabase
-                    .from('malaysia_postcode')
-                    .select('postcode, post_office, state_code, state(state_name)')
-                    .eq('postcode', e.target.value);
-
-
-                if (error) {
-                    console.log(error)
-                    return;
-                }
-
-                const validationResult = validatePostcode(data);
-                setPostCode({
-                    ...validationResult,
-                    value,
-                });
-
-                if (validationResult.validateStatus === 'success') {
-                    setPropertyState(data[0].state.state_name);
-                    setPropertyCity(data[0].post_office);
-                } else {
-                    setPropertyState('');
-                    setPropertyCity('');
-                }
+        }
+        //Check if the postcode is in correct format
+        if (!POSTCODE_REGEX.test(value)) {
+            setPostCode({
+                validateStatus: 'error',
+                errorMsg: 'Incorrect format!',
+            });
+            clearPropertyStateAndCity();
+            return;
+        } 
+        //Check if the postcode is valid
+        try {
+            const { data, error } = await supabase
+                .from('malaysia_postcode')
+                .select('postcode, post_office, state_code, state(state_name)')
+                .eq('postcode', e.target.value);
+            if (error) {
+                console.log(error)
+                return;
             }
+            const validationResult = validatePostcode(data);
+            setPostCode({
+                ...validationResult,
+                value,
+            });
+
+            //If the postcode is valid, set the property state and city
+            if (validationResult.validateStatus === 'success') {
+                setPropertyState(data[0].state.state_name);
+                setPropertyCity(data[0].post_office);
+            } else {
+                clearPropertyStateAndCity();
+            }
+        } catch (error) {
+            console.log(error)
         }
     };
 
@@ -633,7 +637,7 @@ function AgentCreatePost() {
             ])
             .select('postID');
 
-            console.log(postData[0].postID)
+        console.log(postData[0].postID)
 
 
         Array.from({ length: roomNum }, (_, i) => i + 1).forEach(async (index) => {
@@ -1049,7 +1053,7 @@ function AgentCreatePost() {
 
                 <Form.Item>
                     <Button
-                        onClick={() => { 
+                        onClick={() => {
                             form.validateFields().then((values) => {
                                 onFinish(values, "SaveDraft")
                             }
@@ -1071,7 +1075,7 @@ function AgentCreatePost() {
                     {contextHolder}
 
                     <Button
-                        onClick={() => { 
+                        onClick={() => {
                             form.validateFields().then((values) => {
                                 onFinish(values, "Submit")
                             }

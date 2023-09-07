@@ -436,11 +436,7 @@ function RoommateRequest() {
 
         //Get the maximum tenant allowed
         if (hasRentalAgreement) {
-
-            console.log(selectedRoomIDs);
-
             const roommatePostID = listingID;
-
             const { data, error } = await supabase
                 .from('roommate_post')
                 .select('*, rental_agreement(*)')
@@ -451,18 +447,11 @@ function RoommateRequest() {
                 console.log(error);
                 return;
             }
-
-            console.log(data);
-
             const propertyPostID = data.rental_agreement.postID;
-
             const roomTypeCounts = selectedRoomIDs.reduce((acc, curr) => {
                 acc[curr] = (acc[curr] || 0) + 1;
                 return acc;
             }, {});
-
-            console.log(roomTypeCounts);
-
 
             const { data: data2, error: error2 } = await supabase
                 .from('property_room')
@@ -474,16 +463,10 @@ function RoommateRequest() {
                 console.log(error2);
                 return;
             }
-
-            console.log(data2);
-
             const idArray = [];
 
             async function processRoomTypes() {
                 for (const roomID of Object.keys(roomTypeCounts)) {
-                    console.log(roomID);
-                    console.log(roomTypeCounts[roomID]);
-
                     const { data: data3, error: error3 } = await supabase
                         .from('property_room')
                         .select('*')
@@ -495,11 +478,7 @@ function RoommateRequest() {
                         continue; // Continue to the next iteration if there's an error.
                     }
 
-                    console.log(data3);
-
                     const availableSpace = data3.availableSpace;
-
-                    console.log(availableSpace);
 
                     if (availableSpace === 0) {
                         message.error(`The maximum tenant for ${data3.roomType} has been reached`);
@@ -515,42 +494,22 @@ function RoommateRequest() {
                     const sameRoomTypePostID = selectedPostIDs.filter((postID) => {
                         return selectedRoomIDs[selectedPostIDs.indexOf(postID)] === roomID;
                     });
-
-                    console.log(sameRoomTypePostID);
-
                     idArray.push(sameRoomTypePostID);
                 }
-
-                console.log(idArray);
-
                 if (idArray.length === 0) {
                     return;
                 }
-
                 await approvePost(idArray.flat());
                 setFetchTrigger((prevTrigger) => prevTrigger + 1);
-
             }
-
             processRoomTypes();
-
         } else {
             await approvePost(selectedPostIDs);
             setFetchTrigger((prevTrigger) => prevTrigger + 1);
-
         }
-        // add fetch trigger to rerender the table
     };
 
-    const handleRejectClick = async () => {
-        if (selectedPostIDs.length === 0) {
-            message.error("Please select at least one post to reject");
-            return;
-        }
-        await rejectPost(selectedPostIDs);
-        // add fetch trigger to rerender the table
-        setFetchTrigger((prevTrigger) => prevTrigger + 1);
-    };
+    
 
 
     const approvePost = async (postIDArr) => {
@@ -712,6 +671,16 @@ function RoommateRequest() {
             return;
         }
 
+    };
+
+    const handleRejectClick = async () => {
+        if (selectedPostIDs.length === 0) {
+            message.error("Please select at least one post to reject");
+            return;
+        }
+        await rejectPost(selectedPostIDs);
+        // add fetch trigger to rerender the table
+        setFetchTrigger((prevTrigger) => prevTrigger + 1);
     };
 
     const rejectPost = async (postIDArr) => {

@@ -6,8 +6,6 @@ import { useEffect } from "react";
 import "./AgentAppointment.css";
 import { AiOutlineZoomIn } from 'react-icons/ai'
 import { Link } from "react-router-dom";
-import dayjs from "dayjs";
-import AdvancedTimeslotSelection from "./AdvancedTimeslotSelection";
 import { getDateOnly } from "../../../Components/timeUtils";
 
 
@@ -466,10 +464,6 @@ function AgentAppointment() {
                                     }}>Edit</Button>
                             </Col>
                         }
-
-                        
-                        <AdvancedTimeslotSelection isEdit={isEdit}/>
-
                     </Row>
 
                 </div>

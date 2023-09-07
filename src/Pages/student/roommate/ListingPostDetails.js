@@ -55,7 +55,7 @@ function ListingPostDetails() {
 
     useEffect(() => {
         form.setFieldsValue({
-            moveInDate: moment(listing.moveInDate),
+            moveInDate: new moment(listing.moveInDate),
             rentDuration: listing.duration,
             // locationSelection: listing.location,
             propertySelection: listing.propertyType,
@@ -349,8 +349,8 @@ function ListingPostDetails() {
                         >
                             {listing.rentalAgreementID !== null && listing.rental_agreement && (
                                 <>
-                                    <Descriptions.Item label="Rental Agreement ID">{listing.rentalAgreementID}</Descriptions.Item>
-                                    <Descriptions.Item label="Property Name" span={2}>{listing.rental_agreement.postID.propertyName}</Descriptions.Item>
+                                    <Descriptions.Item label="Rental Agreement ID" span={2}>{listing.rentalAgreementID}</Descriptions.Item>
+                                    <Descriptions.Item label="Property Name" span={1}>{listing.rental_agreement.postID.propertyName}</Descriptions.Item>
                                     <Descriptions.Item label="Property Address" span={3}>{listing.rental_agreement.postID.propertyAddress}</Descriptions.Item>
                                 </>
                             )}

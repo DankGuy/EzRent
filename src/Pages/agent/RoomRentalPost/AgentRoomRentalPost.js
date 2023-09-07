@@ -787,7 +787,6 @@ function AgentRoomRentalPost() {
     //Funtion to upload propertyImage to supabase storage
     const uploadImage = async (e, id) => {
         try {
-
             //Get all images in the property folder
             const { data: images, error } = await supabase
                 .storage
@@ -831,7 +830,7 @@ function AgentRoomRentalPost() {
                     return;
                 }
             }
-
+            
             //--------------------------------------------------------------------------------------
             //Delete the room folder that is not in the roomID
             //Get the current folder
@@ -843,12 +842,8 @@ function AgentRoomRentalPost() {
                 console.log(folderError);
             }
 
-            console.log(folders)
-
             //Filter the folder that is not Property
             const filteredFolders = folders.filter((folder) => folder.name !== 'Property');
-
-            console.log(filteredFolders)
 
             //Get the new room 
             const newRoomFileName = [];
@@ -858,12 +853,8 @@ function AgentRoomRentalPost() {
                 newRoomFileName.push(`${roomType}_${index}`);
             })
 
-            console.log(newRoomFileName)
-
             //Get the missing folder from the filteredFolders
             const missingFolders = filteredFolders.filter((folder) => !newRoomFileName.includes(folder.name));
-
-            console.log(missingFolders)
 
             //Delete the missing folder
             for (const folder of missingFolders) {
@@ -891,8 +882,6 @@ function AgentRoomRentalPost() {
                 }
             }
 
-
-            //Delete the room image that is not in the roomFileList
             //Iterate through the roomNum
             Array.from({ length: roomNum }, (_, i) => i + 1).forEach(async (index) => {
                 const roomType = form.getFieldValue(`roomType${index}`);
@@ -922,7 +911,6 @@ function AgentRoomRentalPost() {
                         return;
                     }
                 }
-
                 //Get the new upload image
                 const newUploadImages = roomFileList[index]?.filter((image) => image.originFileObj);
 

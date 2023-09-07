@@ -30,8 +30,8 @@ function RoomRentalPost() {
     const queryParams = new URLSearchParams(location.search);
     const stateParam = queryParams.get('state');
     const postID = stateParam ? JSON.parse(decodeURIComponent(stateParam)) : null;
-    // console.log(postID);
 
+    
     const [post, setPost] = useState({});
     const [rooms, setRooms] = useState({});
     const [propertyImages, setPropertyImages] = useState([]);
