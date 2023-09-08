@@ -48,18 +48,12 @@ function AgentAppointment() {
             setIsEditBtnDisabled(true);
             setIsEdit(false);
             setIsCheckBoxDisabled(true);
-            // setIsCheckBoxDisabled(true);
             return;
         }
         setIsEditBtnDisabled(false);
-        //Convert the date to the format of YYYY-MM-DD
         setSelectedDate(date.format('YYYY-MM-DD'));
         setIsEditBtnDisabled(false);
-        // setIsCheckBoxDisabled(false);
-
     }
-
-
 
     const onChange = (list) => {
         setCheckedList(list);
@@ -416,7 +410,12 @@ function AgentAppointment() {
             <div style={{ display: 'flex', flexDirection: 'column', marginRight: '20%', marginLeft: '20px' }}>
                 <div style={{ width: '100%', height: '300px' }} className="timeslotOptions">
                     <h3>Available Timeslot</h3>
-                    <Checkbox.Group className="timeslotCheckbox" options={defaultOptions} value={checkedList} onChange={onChange} disabled={isCheckBoxDisabled} />
+                    <Checkbox.Group 
+                        className="timeslotCheckbox" 
+                        options={defaultOptions} 
+                        value={checkedList} 
+                        onChange={onChange} 
+                        disabled={isCheckBoxDisabled} />
                 </div>
 
                 <div style={{ width: '100%', height: '300px', marginTop: '20px' }}>

@@ -31,8 +31,6 @@ function AppointmentModalForm({ post }) {
             return;
         }
 
-        console.log(post.agent.agent_id);
-
         getAvailableDate();
     }, [post.agent]);
 
@@ -54,7 +52,6 @@ function AppointmentModalForm({ post }) {
                 .select('*')
                 .eq('agentID', post.agent.agent_id);
 
-
             if (error) {
                 console.log(error);
                 return;
@@ -71,7 +68,6 @@ function AppointmentModalForm({ post }) {
                     const uniqueDates = [...new Set([...prevAvailableDate, ...newDates])];
                     return uniqueDates;
                 });
-
             }
         } catch (error) {
             console.log(error);
@@ -113,8 +109,6 @@ function AppointmentModalForm({ post }) {
             <Option disabled={true} key="12" value='19:00 - 20:00'>7:00 PM - 8:00 PM</Option>,
             <Option disabled={true} key="13" value='20:00 - 21:00'>8:00 PM - 9:00 PM</Option>,
             <Option disabled={true} key="14" value='21:00 - 22:00'>9:00 PM - 10:00 PM</Option>,
-            
-           
         ]
 
         const selectedDateTimeslot = availableDate.find((date) => date.date === dayjs(selectedDate, 'DD-MM-YYYY').format('YYYY-MM-DD'));
@@ -122,14 +116,12 @@ function AppointmentModalForm({ post }) {
         if (selectedDateTimeslot) {
             //if the selected date timeslot is in the default option, set disabled to false
             selectedDateTimeslot.times.map((time) => {
-
                 const index = defaultOption.findIndex((option) => option.props.value === time);
                 if (index !== -1) {
                     defaultOption[index] = <Option key={index + 1} value={time}>{defaultOption[index].props.children}</Option>
                 }
             }
             )
-
             return defaultOption
         }
         return defaultOption;
