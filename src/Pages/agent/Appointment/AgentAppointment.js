@@ -91,16 +91,12 @@ function AgentAppointment() {
             '20:00 - 21:00',
             '21:00 - 22:00',
         ];
-
         if (!selectedDate) {
             setDefaultOptions(options);
             return options;
         }
 
         const userID = (await supabase.auth.getUser()).data.user.id;
-
-        console.log(userID);
-
         //Get the available time slot from the supabase with the selected date and agent id
         const { data, error } = await supabase
             .from('available_timeslot')
@@ -112,9 +108,6 @@ function AgentAppointment() {
             console.log(error);
             return;
         }
-
-        console.log(data);
-
         const newOptions = [];
 
         if (data.length > 0) {
@@ -122,13 +115,9 @@ function AgentAppointment() {
 
                 if (timeslots) {
                     timeslots.timeslot.forEach((timeslot) => {
-                        console.log(timeslot);
                         const index = options.findIndex((option) => option === timeslot);
-                        console.log(index);
-
                         if (index > -1) {
                             newOptions.push(timeslot);
-
                         }
                     });
                 }
