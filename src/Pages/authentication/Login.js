@@ -37,10 +37,14 @@ function LoginCard() {
 
   const hoverStyleForgot = {
     color: isHoveredForgot ? "#430f58" : "#6643b5",
+
   };
   const hoverStyleSignUp = {
     color: isHoveredSignup ? "#430f58" : "#6643b5",
   };
+
+  const fontFamily = "-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,'Helvetica Neue',Arial,'Noto Sans',sans-serif,'Apple Color Emoji','Segoe UI Emoji','Segoe UI Symbol','Noto Color Emoji'";
+
 
   const [formData, setFormData] = useState({
     email: "",
@@ -224,7 +228,7 @@ function LoginCard() {
               onMouseEnter={() => setIsHoveredForgot(true)}
               onMouseLeave={() => setIsHoveredForgot(false)}
             >
-              Forgot your password?
+              <span style={{ fontFamily: fontFamily }}>Forgot password?</span>
             </Link>
           </p>
           <p>
@@ -234,7 +238,7 @@ function LoginCard() {
               onMouseEnter={() => setIsHoveredSignup(true)}
               onMouseLeave={() => setIsHoveredSignup(false)}
             >
-              Don't have an account? Sign up here!
+              <span style={{ fontFamily: fontFamily }}>Don't have an account? Sign up here!</span>
             </Link>
           </p>
         </div>

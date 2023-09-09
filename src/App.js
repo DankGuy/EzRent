@@ -126,9 +126,9 @@ function App() {
                             <Route path="roomRental/rentalAgreement" element={<AgentRentalAgreement />} />
                             <Route path="roomRental/editPost/:id" element={<AgentRoomRentalPost />} />
                             <Route path="roomRental/viewPost/:id" element={<AgentRoomRentalPost />} />
-                            <Route path="*" element={<NotFound />} />
+                            <Route path="*" element={<NotFound backTo="agent"/>} />
                         </Route>
-                        <Route path="*" element={<NotFound />} />
+                        <Route path="*" element={<NotFound backTo="agent"/>} />
                     </>
                 );
             } else if (userSession.user.user_metadata.userType === "student") {
@@ -179,9 +179,9 @@ function App() {
                                 <Route path="paymentHistory" element={<PaymentHistory />} />
                             </Route>
                             <Route path="roomRental/:id" element={<RoomRentalPost />} />
-                            <Route path="*" element={<NotFound />} />
+                            <Route path="*" element={<NotFound backTo="student"/>} />
                         </Route>
-                        <Route path="*" element={<NotFound />} />
+                        <Route path="*" element={<NotFound backTo="student"/>} />
                     </>
                 );
             } else {
@@ -195,9 +195,9 @@ function App() {
 
                         <Route path="/" element={<SuperadminHome />}>
                             <Route index element={<SuperadminHome />} />
-                            <Route path="*" element={<NotFound />} />
+                            <Route path="*" element={<NotFound backTo="superadmin"/>} />
                         </Route>
-                        <Route path="*" element={<NotFound />} />
+                        <Route path="*" element={<NotFound backTo="superadmin"/>} />
                     </>
                 );
             }
@@ -218,7 +218,7 @@ function App() {
                         <Route path="/login" element={<Login />} />
                         <Route path="/forgot-password" element={<ForgotPassword />} />
                         <Route path="/update-password" element={<UpdatePassword />} />
-                        <Route path="*" element={<NotFound />} />
+                        <Route path="*" element={<NotFound backTo="login"/>} />
                         <Route path="/" element={<Login />} />
                     </Routes>
                 )}

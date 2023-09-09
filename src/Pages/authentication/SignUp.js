@@ -22,6 +22,9 @@ function SignUpCard() {
   const [userType, setUserType] = useState("student");
   const [isAgent, setIsAgent] = useState(false);
 
+  const fontFamily = "-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,'Helvetica Neue',Arial,'Noto Sans',sans-serif,'Apple Color Emoji','Segoe UI Emoji','Segoe UI Symbol','Noto Color Emoji'";
+
+
   const handleUserChange = (value) => {
     setUserType(value.target.value);
   };
@@ -181,8 +184,8 @@ function SignUpCard() {
           colon={true}
         >
           <h1 style={{ textAlign: "center" }}>Sign Up</h1>
-          <Form.Item name="user-type" className="radioItem">
-            <Radio.Group onChange={handleUserChange} defaultValue={"student"}>
+          <Form.Item name="user-type" className="radioItem" initialValue="student">
+            <Radio.Group onChange={handleUserChange} >
               <Radio value={"student"} defaultChecked>
                 Student
               </Radio>
@@ -368,7 +371,9 @@ function SignUpCard() {
           onMouseEnter={() => setIsHovered(true)}
           onMouseLeave={() => setIsHovered(false)}
         >
-          Already have an account? Login here
+          <span style={{ fontFamily: fontFamily }}>
+            Already have an account? Login here
+          </span>
         </Link>
       </div>
       <div

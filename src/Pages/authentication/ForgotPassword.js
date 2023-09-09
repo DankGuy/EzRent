@@ -10,6 +10,8 @@ function ForgotPasswordCard() {
   const hoverStyle = {
     color: isHovered ? "#430f58" : "#6643b5",
   };
+  const fontFamily = "-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,'Helvetica Neue',Arial,'Noto Sans',sans-serif,'Apple Color Emoji','Segoe UI Emoji','Segoe UI Symbol','Noto Color Emoji'";
+
 
   const [email, setEmail] = useState("");
 
@@ -21,6 +23,10 @@ function ForgotPasswordCard() {
       });
       if (error) throw error;
       message.success("Password recovery email has been sent!");
+
+      setTimeout(() => {
+        window.location.href = '/login';
+      }, 1000);
     } catch (error) {
       message.error(error.error_description || error.message);
     }
@@ -83,10 +89,10 @@ function ForgotPasswordCard() {
           </p>
 
           <Form.Item
-          style={{
-            textAlign: "center",
-            width: "100%",
-          }}
+            style={{
+              textAlign: "center",
+              width: "100%",
+            }}
             name="email"
             rules={[
               {
@@ -145,7 +151,9 @@ function ForgotPasswordCard() {
           onMouseEnter={() => setIsHovered(true)}
           onMouseLeave={() => setIsHovered(false)}
         >
-          Back to Login
+          <span style={{ fontFamily: fontFamily }}>
+            Back to Login
+          </span>
         </Link>
       </div>
     </div>
