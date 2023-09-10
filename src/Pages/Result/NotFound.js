@@ -13,7 +13,9 @@ function NotFound({ backTo }) {
             navigate("/student");
         } else if (backTo === "agent") {
             navigate("/agent");
-        } 
+        } else if (backTo === "superadmin") {
+            navigate("/superadmin");
+        }
     }
 
     const extraButton = <Button type="primary" onClick={handleBackHome} 

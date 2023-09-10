@@ -193,7 +193,7 @@ function App() {
                         <Route path="/forgot-password" element={<Navigate to="/superadmin" />} />
                         <Route path="/update-password" element={<Navigate to="/superadmin" />} />
 
-                        <Route path="/" element={<SuperadminHome />}>
+                        <Route path="/superadmin">
                             <Route index element={<SuperadminHome />} />
                             <Route path="*" element={<NotFound backTo="superadmin"/>} />
                         </Route>
