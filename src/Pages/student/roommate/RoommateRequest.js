@@ -1,4 +1,4 @@
-import { Badge, Breadcrumb, Button, Col, Popconfirm, Row, Table, Tabs, Tooltip, message } from "antd";
+import { Breadcrumb, Button, Col, Popconfirm, Row, Table, Tabs, Tooltip, message } from "antd";
 import { useEffect, useState } from "react";
 import { useLocation } from "react-router-dom";
 import { supabase } from "../../../supabase-client";
@@ -10,21 +10,17 @@ function RoommateRequest() {
 
     const location = useLocation();
     const { listingID } = location.state;
-
-    console.log(listingID);
-
     const [requestDetails, setRequestDetails] = useState([]);
     const [currentRoommateDetails, setCurrentRoommateDetails] = useState([]);
     const [currentListingStatus, setCurrentListingStatus] = useState([]);
-
     const [selectedPostIDs, setSelectedPostIDs] = useState([]);
     const [selectedRoomIDs, setSelectedRoomIDs] = useState([]);
-
     const [fetchTrigger, setFetchTrigger] = useState(0);
-
     const [activeKey, setActiveKey] = useState("1");
-
     const [hasRentalAgreement, setHasRentalAgreement] = useState(false);
+    const [roomDetailsLoading, setRoomDetailsLoading] = useState(false);
+    const [roomRequestLoading, setRoomRequestLoading] = useState(false);
+    const [currentRoommateLoading, setCurrentRoommateLoading] = useState(false);
 
     useEffect(() => {
         getHasRentalAgreement();
@@ -40,11 +36,11 @@ function RoommateRequest() {
 
         setSelectedPostIDs([]);
         setSelectedRoomIDs([]);
-        
 
     }, [fetchTrigger]);
 
     const getHasRentalAgreement = async () => {
+        setRoomDetailsLoading(true);
         const { data, error } = await supabase
             .from('roommate_post')
             .select('rentalAgreementID(*)')
@@ -74,8 +70,6 @@ function RoommateRequest() {
                 return;
             }
 
-            console.log(data2);
-
             const currentListingStatusData = [];
 
             data2.forEach((element) => {
@@ -89,14 +83,15 @@ function RoommateRequest() {
             });
 
             setCurrentListingStatus(currentListingStatusData);
-
-
+            setRoomDetailsLoading(false);
         } else {
             setHasRentalAgreement(false);
+            setRoomDetailsLoading(false);
         }
     }
 
     const getCurrentRoommateDetails = async () => {
+        setCurrentRoommateLoading(true);
         const { data, error } = await supabase
             .from('roommate_request')
             .select('*, student(*), roommate_post(*), roomID(*)')
@@ -109,7 +104,6 @@ function RoommateRequest() {
             return;
         }
 
-        console.log(data);
         const tableData = [];
 
         data.forEach((element) => {
@@ -134,10 +128,11 @@ function RoommateRequest() {
         });
 
         setCurrentRoommateDetails(tableData);
+        setCurrentRoommateLoading(false);
     }
 
     const handleRemove = async (requestID, studentID) => {
-        let { data, error } = await supabase
+        let { error } = await supabase
             .from("roommate_request")
             .update({ requestStatus: "Rejected" })
             .eq("requestID", requestID);
@@ -166,8 +161,6 @@ function RoommateRequest() {
             return;
         }
 
-        console.log(data);
-
         //Get the rental agreement ID from the roommate post ID
         let { data: data2, error: error2 } = await supabase
             .from("roommate_post")
@@ -179,19 +172,13 @@ function RoommateRequest() {
             return;
         }
 
-        console.log(data2);
-
         const occupantID = data2[0].rentalAgreementID.occupantID;
-
-        console.log(occupantID);
 
         //Remove the student ID from the occupant array
         const newOccupantID = occupantID.filter((id) => id !== studentID);
 
-        console.log(newOccupantID);
-
         //Update the occupant array
-        let { data: data3, error: error3 } = await supabase
+        let { error: error3 } = await supabase
             .from("rental_agreement")
             .update({ occupantID: newOccupantID })
             .eq("rentalAgreementID", data2[0].rentalAgreementID.rentalAgreementID);
@@ -206,6 +193,7 @@ function RoommateRequest() {
 
 
     const getRequestDetails = async () => {
+        setRoomRequestLoading(true);
         const { data, error } = await supabase
             .from('roommate_request')
             .select('*, student(*), roommate_post(*), roomID(*)')
@@ -218,7 +206,6 @@ function RoommateRequest() {
             return;
         }
 
-        console.log(data);
         const tableData = [];
 
         data.forEach((element) => {
@@ -236,6 +223,7 @@ function RoommateRequest() {
         });
 
         setRequestDetails(tableData);
+        setRoomRequestLoading(false);
     }
 
 
@@ -696,6 +684,7 @@ function RoommateRequest() {
                     dataSource={currentRoommateDetails}
                     bordered={true}
                     pagination={{ pageSize: 5 }}
+                    loading={currentRoommateLoading}
                 />
         },
         {
@@ -740,6 +729,7 @@ function RoommateRequest() {
                         ...rowSelection,
                     }}
                     scroll={{ x: 1400 }}
+                    loading={roomRequestLoading}
                 />
         },
     ];
@@ -790,6 +780,7 @@ function RoommateRequest() {
                             dataSource={currentListingStatus}
                             bordered={true}
                             pagination={false}
+                            loading={roomDetailsLoading}
                         />
                     </div>
                 }

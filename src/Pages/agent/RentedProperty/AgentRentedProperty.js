@@ -1,7 +1,7 @@
 import { Fragment } from "react";
 import { supabase } from "../../../supabase-client";
 import { useState, useEffect } from "react";
-import { Button, Modal, Table, Tooltip, Descriptions, Tag } from "antd";
+import { Button, Modal, Table, Tooltip, Descriptions, Tag, Typography } from "antd";
 import { getDateOnly } from "../../../Components/timeUtils";
 import { Input, Space } from "antd";
 import { SearchOutlined } from "@ant-design/icons";
@@ -25,8 +25,11 @@ function AgentRentedProperty() {
   const [isRentalModalOpen, setIsRentalModalOpen] = useState(false);
   const [rentalAgreementInfo, setRentalAgreementInfo] = useState(null);
 
+  const [loading, setLoading] = useState(true);
+
   useEffect(() => {
     const fetchProperties = async () => {
+      setLoading(true);
       const userID = (await supabase.auth.getUser()).data.user.id;
 
       const { data, error } = await supabase
@@ -80,6 +83,7 @@ function AgentRentedProperty() {
       });
 
       setProperties(tableData);
+      setLoading(false);
     };
 
     fetchProperties();
@@ -525,21 +529,17 @@ function AgentRentedProperty() {
   return (
     <Fragment>
       <div>
-        <h1 style={{ marginBlockStart: "0.2em", marginBlockEnd: "0.8em" }}>
-          Rented Property
-        </h1>
-      </div>
-      <div>
+        <Typography.Title level={3}>Rented Property</Typography.Title>
         <Table
           columns={columns}
           dataSource={properties}
           bordered={true}
           pagination={{ pageSize: 5}}
-          // tableLayout="fixed"
           className="propertyTable"
           scroll={{ x: 1700 }}
           tableLayout="fixed"
           size="middle"
+          loading={loading}
         />
       </div>
 

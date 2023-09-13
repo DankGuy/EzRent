@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { Table, Button, message } from "antd";
+import { Table, Button, message, Typography } from "antd";
 import { supabase } from "../../../supabase-client";
 import GenerateLog from "../../../Components/GenerateLog";
 
@@ -8,8 +8,10 @@ function UserActivation() {
   const [fetchTrigger, setFetchTrigger] = useState(0);
   const [selectionType, setSelectionType] = useState("checkbox");
   const [selectedAgentID, setSelectedAgentID] = useState([]);
+  const [loading, setLoading] = useState(true);
 
   const fetchData = async () => {
+    setLoading(true);
     const { data: agent, agentError } = await supabase
       .from("agent")
       .select("*")
@@ -44,6 +46,7 @@ function UserActivation() {
         })
       );
       setTableData(tableDataMap);
+      setLoading(false);
     }
   };
 
@@ -155,6 +158,7 @@ function UserActivation() {
 
   return (
     <div style={{ display: "flex", flexDirection: "column" }}>
+      <Typography.Title level={3}>User Activation</Typography.Title>
       <Table
         key={fetchTrigger}
         rowSelection={{
@@ -164,6 +168,7 @@ function UserActivation() {
         columns={columns}
         dataSource={tableData}
         bordered
+        loading={loading}
       />
       <div style={{ display: "flex", flexDirection: "column" }}>
         <div
@@ -180,7 +185,7 @@ function UserActivation() {
             style={{
               width: "auto",
               height: "auto",
-              margin: "10px",
+              marginTop: "20px",
               fontSize: "1.1rem",
             }}
             onClick={handleActivate}

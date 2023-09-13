@@ -1,12 +1,12 @@
-import { DatePicker, Row, Col, Checkbox, Button, Divider, message, Table, Tabs, Tag, Tooltip } from "antd";
+import { DatePicker, Row, Col, Checkbox, Button, Divider, message, Table, Tabs, Tag, Tooltip, Typography } from "antd";
 import moment from "moment";
 import { useState } from "react";
 import { supabase } from "../../../supabase-client";
 import { useEffect } from "react";
 import "./AgentAppointment.css";
-import { AiOutlineZoomIn } from 'react-icons/ai'
 import { Link } from "react-router-dom";
 import { getDateOnly } from "../../../Components/timeUtils";
+import { EyeOutlined } from '@ant-design/icons';
 
 
 function AgentAppointment() {
@@ -20,8 +20,7 @@ function AgentAppointment() {
     const [defaultOptions, setDefaultOptions] = useState([]);
     const [isEdit, setIsEdit] = useState(false);
     const [isCheckedAll, setIsCheckedAll] = useState(false);
-
-
+    const [loading, setLoading] = useState(true);
 
     useEffect(() => {
         getOptions();
@@ -182,6 +181,7 @@ function AgentAppointment() {
 
     //Get the appointment data from the supabase
     async function getData() {
+        setLoading(true);
         const userID = (await supabase.auth.getUser()).data.user.id;
 
         const { data, error } = await supabase
@@ -241,6 +241,7 @@ function AgentAppointment() {
 
         setActiveData(actData);
         setHistoryData(hisData);
+        setLoading(false);
     }
 
 
@@ -350,7 +351,7 @@ function AgentAppointment() {
             render: (text, record) => {
                 return (
                     <Link to={`/agent/appointment/${record.appointmentID}`} state={record}>
-                        <AiOutlineZoomIn size={20} style={{ cursor: 'pointer' }} />
+                        <EyeOutlined style={{ fontSize: "20px", color: "#1677FF" }} />
                     </Link>
                 )
 
@@ -372,6 +373,7 @@ function AgentAppointment() {
                     bordered={true}
                     pagination={{ pageSize: 5 }}
                     tableLayout="fixed"
+                    loading={loading}
                 />
         },
         {
@@ -384,6 +386,7 @@ function AgentAppointment() {
                     bordered={true}
                     pagination={{ pageSize: 5 }}
                     tableLayout="fixed"
+                    loading={loading}
                 />
         },
     ];
@@ -393,8 +396,7 @@ function AgentAppointment() {
 
 
     return <>
-
-        <h1>Set Available Timeslot</h1>
+        <Typography.Title level={3}>Set Available Timeslot</Typography.Title>
         <div style={{ height: '300px', display: 'flex' }}>
             <div style={{ width: '70%', height: '300px' }}>
                 <h3>Select Date</h3>
@@ -410,11 +412,11 @@ function AgentAppointment() {
             <div style={{ display: 'flex', flexDirection: 'column', marginRight: '20%', marginLeft: '20px' }}>
                 <div style={{ width: '100%', height: '300px' }} className="timeslotOptions">
                     <h3>Available Timeslot</h3>
-                    <Checkbox.Group 
-                        className="timeslotCheckbox" 
-                        options={defaultOptions} 
-                        value={checkedList} 
-                        onChange={onChange} 
+                    <Checkbox.Group
+                        className="timeslotCheckbox"
+                        options={defaultOptions}
+                        value={checkedList}
+                        onChange={onChange}
                         disabled={isCheckBoxDisabled} />
                 </div>
 
@@ -440,7 +442,7 @@ function AgentAppointment() {
                                 </Col>
 
                             </> :
-                            <Col span={4} style={{ display: 'inline-block',}}>
+                            <Col span={4} style={{ display: 'inline-block', }}>
                                 <Button
                                     type="primary"
                                     className="viewButton"
@@ -459,7 +461,7 @@ function AgentAppointment() {
         </div>
 
         <div style={{ marginTop: '20px' }}>
-            <h3>Appointment</h3>
+            <Typography.Title level={3}>Appointment</Typography.Title>
             <Tabs defaultActiveKey="1" items={items} />
         </div>
 

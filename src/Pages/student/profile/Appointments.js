@@ -1,22 +1,25 @@
-import { App, Table, Tabs, Tag, Tooltip } from "antd";
+import { Table, Tabs, Tag, Tooltip, Typography } from "antd";
 import { useState } from "react";
 import { supabase } from "../../../supabase-client";
 import { useEffect } from "react";
 import { AiOutlineZoomIn } from 'react-icons/ai'
 import { Link } from "react-router-dom";
-import dayjs from 'dayjs';
 import { getDateOnly } from "../../../Components/timeUtils";
+import { EyeOutlined } from '@ant-design/icons';
+
 
 function Appointments() {
 
     const [historyData, setHistoryData] = useState([]);
     const [activeData, setActiveData] = useState([]);
+    const [loading, setLoading] = useState(true);
 
     useEffect(() => {
         getData();
     }, []);
 
     async function getData() {
+        setLoading(true);
         const userID = (await supabase.auth.getUser()).data.user.id;
 
         const { data, error } = await supabase
@@ -75,6 +78,7 @@ function Appointments() {
 
         setActiveData(actData);
         setHistoryData(hisData);
+        setLoading(false);
     }
 
 
@@ -165,7 +169,7 @@ function Appointments() {
             render: (text, record) => {
                 return (
                     <Link to={`/student/profile/appointments/${record.appointmentID}`} state={record}>
-                        <AiOutlineZoomIn size={20} style={{ cursor: 'pointer' }} />
+                        <EyeOutlined style={{ fontSize: "20px", color: "#1677FF" }} />
                     </Link>
                 )
 
@@ -185,6 +189,7 @@ function Appointments() {
                     dataSource={activeData}
                     bordered={true}
                     pagination={{ pageSize: 5 }}
+                    loading={loading}
                 />
         },
         {
@@ -196,6 +201,7 @@ function Appointments() {
                     dataSource={historyData}
                     bordered={true}
                     pagination={{ pageSize: 5 }}
+                    loading={loading}
                 />
         },
     ];
@@ -206,7 +212,7 @@ function Appointments() {
 
     return (
         <div style={{ marginTop: '20px' }}>
-            <h3>Appointment</h3>
+            <Typography.Title level={3}>Appointments</Typography.Title>
             <Tabs defaultActiveKey="1" items={items} />
         </div>
     )

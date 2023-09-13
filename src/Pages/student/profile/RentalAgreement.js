@@ -625,6 +625,7 @@ function RentalAgreement() {
         </div>
       ) : (
         <div>
+          <Typography.Title level={3}>Rental Agreement</Typography.Title>
           <Row gutter={[16, 16]}>
             {/* Add gutter for spacing between columns and rows */}
             {listings.map((listing) => (
@@ -675,6 +676,7 @@ function RentalAgreement() {
                           color: "#1890FF",
                           width: "100%",
                           height: "100%",
+                          fontWeight: "bold",
                         }}
                         disabled={listing.status !== "pending"}
                       >
@@ -689,6 +691,7 @@ function RentalAgreement() {
                           color: "#1890FF",
                           width: "100%",
                           height: "100%",
+                          fontWeight: "bold",
                         }}
                         onClick={() => {
                           const updatedListings = listings.map((l) =>
@@ -710,6 +713,7 @@ function RentalAgreement() {
                           color: "#1890FF",
                           width: "100%",
                           height: "100%",
+                          fontWeight: "bold",
                         }}
                         onClick={() => {
                           setIsRatingModalVisible(true);

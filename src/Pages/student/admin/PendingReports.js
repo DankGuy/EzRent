@@ -1,7 +1,4 @@
 import {
-  CheckOutlined,
-  SwitcherOutlined,
-  UserDeleteOutlined,
   EyeOutlined,
   SearchOutlined,
 } from "@ant-design/icons";
@@ -12,6 +9,7 @@ import { supabase } from "../../../supabase-client";
 import { formatDateTime } from "../../../Components/timeUtils";
 import Carousel from "react-multi-carousel";
 import GenerateLog from "../../../Components/GenerateLog";
+import Typography from "antd/es/typography/Typography";
 
 
 function PendingReports() {
@@ -31,7 +29,7 @@ function PendingReports() {
   const [propertyImages, setPropertyImages] = useState();
   const [roomImages, setRoomImages] = useState({});
   const [loadingImages, setLoadingImages] = useState(false);
-
+  const [tableLoading, setTableLoading] = useState(true);
   const [userID, setUserID] = useState("");
 
   const getUser = async () => {
@@ -70,89 +68,71 @@ function PendingReports() {
     confirm();
   };
 
-  const getColumnSearchProps = (dataIndex) => ({
+  const getColumnSearchProps = (dataIndex, placeholder) => ({
     filterDropdown: ({
       setSelectedKeys,
       selectedKeys,
       confirm,
       clearFilters,
-      close,
     }) => (
       <div
-        style={{
-          padding: 8,
+        style={{ padding: 8 }}
+        onKeyDown={(e) => {
+          e.stopPropagation();
         }}
-        onKeyDown={(e) => e.stopPropagation()}
       >
         <Input
           ref={searchInput}
-          placeholder={`Search ${dataIndex}`}
+          placeholder={placeholder}
           value={selectedKeys[0]}
-          onChange={(e) =>
-            setSelectedKeys(e.target.value ? [e.target.value] : [])
-          }
-          onPressEnter={() => handleSearch(selectedKeys, confirm, dataIndex)}
-          style={{
-            marginBottom: 8,
-            display: "block",
+          onChange={(e) => {
+            setSelectedKeys(e.target.value ? [e.target.value] : []);
           }}
+          onPressEnter={() => handleSearch(selectedKeys, confirm, dataIndex)}
+          style={{ marginBottom: 8, display: "block" }}
         />
+
         <Space>
           <Button
             type="primary"
             onClick={() => handleSearch(selectedKeys, confirm, dataIndex)}
             icon={<SearchOutlined />}
             size="small"
-            style={{
-              width: 90,
-            }}
+            style={{ width: 90 }}
           >
             Search
           </Button>
+
           <Button
-            onClick={() => {
-              handleReset(clearFilters, confirm);
-            }}
+            onClick={() => handleReset(clearFilters, confirm)}
             size="small"
-            style={{
-              width: 90,
-            }}
+            style={{ width: 90 }}
           >
             Reset
-          </Button>
-          <Button
-            type="link"
-            size="small"
-            onClick={() => {
-              close();
-            }}
-          >
-            close
           </Button>
         </Space>
       </div>
     ),
     filterIcon: (filtered) => (
-      <SearchOutlined
-        style={{
-          color: filtered ? "#1677ff" : undefined,
-        }}
-      />
+      <SearchOutlined style={{ color: filtered ? "black" : undefined }} />
     ),
-    onFilter: (value, record) =>
-      record[dataIndex].toString().toLowerCase().includes(value.toLowerCase()),
+    onFilter: (value, record) => {
+      return record[dataIndex]
+        ? record[dataIndex]
+          .toString()
+          .toLowerCase()
+          .includes(value.toLowerCase())
+        : "";
+    },
     onFilterDropdownOpenChange: (visible) => {
       if (visible) {
-        setTimeout(() => searchInput.current?.select(), 100);
+        setTimeout(() => searchInput.current.select(), 100);
       }
     },
     render: (text) =>
       searchedColumn === dataIndex ? (
         <Highlighter
-          highlightStyle={{
-            backgroundColor: "#ffc069",
-            padding: 0,
-          }}
+          highlightStyle={{ backgroundColor: "#ffc069", padding: 0 }}
           searchWords={[searchText]}
           autoEscape
           textToHighlight={text ? text.toString() : ""}
@@ -336,6 +316,7 @@ function PendingReports() {
                   setModalData(report.property_post);
                   getImages(report.property_post);
                 }}
+                style={{ padding: "0px" }}
               >
                 <EyeOutlined style={{ fontSize: "20px", color: "#1677FF" }} />
               </Button>
@@ -344,6 +325,7 @@ function PendingReports() {
         })
       );
       setData(newData);
+      setTableLoading(false);
     }
   };
 
@@ -391,29 +373,35 @@ function PendingReports() {
       render: (_, { report_reason }) => {
         return <Tag>{report_reason.toUpperCase()}</Tag>;
       },
+      width: "28%",
     },
     {
       title: "Description",
       dataIndex: "description",
       key: "description",
+      width: "25%",
     },
     {
       title: "Reported By",
       dataIndex: "reported_by",
       key: "reported_by",
-      ...getColumnSearchProps("reported_by"),
+      ...getColumnSearchProps("reported_by", "Search by student name"),
+      width: "15%",
+
     },
     {
       title: "Post Owner",
       dataIndex: "post_owner",
       key: "post_owner",
-      ...getColumnSearchProps("post_owner"),
+      ...getColumnSearchProps("post_owner", "Search by agent name"),
+      width: "15%",
     },
     {
-      title: "Post Name",
+      title: "Property Name",
       key: "post_name",
       dataIndex: "post_name",
-      ...getColumnSearchProps("post_name"),
+      ...getColumnSearchProps("post_name", "Search by property name"),
+      width: "15%",
     },
     {
       title: "View",
@@ -421,7 +409,8 @@ function PendingReports() {
       dataIndex: "view",
       onclick: () => {
         setIsModalOpen(true);
-      }
+      },
+      width: "6%",
     },
   ];
 
@@ -647,6 +636,7 @@ function PendingReports() {
 
   return (
     <div style={{ display: "flex", flexDirection: "column" }}>
+      <Typography.Title level={3}>Pending Reports</Typography.Title>
       <Table
         key={fetchTrigger}
         rowSelection={{
@@ -656,6 +646,9 @@ function PendingReports() {
         columns={columns}
         dataSource={data}
         bordered
+        pagination={{ pageSize: 5 }}
+        tableLayout="fixed"
+        loading={tableLoading}
       />
       <div style={{ display: "flex", flexDirection: "column" }}>
         <div style={{ display: "flex", flexDirection: "row", alignSelf: "flex-end", marginBottom: "20px", marginRight: "0" }}>

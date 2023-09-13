@@ -15,6 +15,7 @@ import { supabase } from "../../../supabase-client";
 import EzRentIcon from "../../../images/icon.png";
 import TarumtLogo from "../../../images/tarumt.png";
 import html2pdf from "html2pdf.js";
+import Typography from "antd/es/typography/Typography";
 
 function PaymentHistory() {
   const [data, setData] = useState([]);
@@ -31,104 +32,78 @@ function PaymentHistory() {
     setSearchText(selectedKeys[0]);
     setSearchedColumn(dataIndex);
   };
-  const handleReset = (clearFilters) => {
+
+  const handleReset = (clearFilters, confirm) => {
     clearFilters();
     setSearchText("");
+    confirm();
   };
-  const getColumnSearchProps = (dataIndex) => ({
+
+  const getColumnSearchProps = (dataIndex, placeholder) => ({
     filterDropdown: ({
       setSelectedKeys,
       selectedKeys,
       confirm,
       clearFilters,
-      close,
     }) => (
       <div
-        style={{
-          padding: 8,
+        style={{ padding: 8 }}
+        onKeyDown={(e) => {
+          e.stopPropagation();
         }}
-        onKeyDown={(e) => e.stopPropagation()}
       >
         <Input
           ref={searchInput}
-          placeholder={`Search ${dataIndex}`}
+          placeholder={placeholder}
           value={selectedKeys[0]}
-          onChange={(e) =>
-            setSelectedKeys(e.target.value ? [e.target.value] : [])
-          }
-          onPressEnter={() => handleSearch(selectedKeys, confirm, dataIndex)}
-          style={{
-            marginBottom: 8,
-            display: "block",
+          onChange={(e) => {
+            setSelectedKeys(e.target.value ? [e.target.value] : []);
           }}
+          onPressEnter={() => handleSearch(selectedKeys, confirm, dataIndex)}
+          style={{ marginBottom: 8, display: "block" }}
         />
+
         <Space>
           <Button
             type="primary"
             onClick={() => handleSearch(selectedKeys, confirm, dataIndex)}
             icon={<SearchOutlined />}
             size="small"
-            style={{
-              width: 90,
-            }}
+            style={{ width: 90 }}
           >
             Search
           </Button>
+
           <Button
-            onClick={() => clearFilters && handleReset(clearFilters)}
+            onClick={() => handleReset(clearFilters, confirm)}
             size="small"
-            style={{
-              width: 90,
-            }}
+            style={{ width: 90 }}
           >
             Reset
-          </Button>
-          <Button
-            type="link"
-            size="small"
-            onClick={() => {
-              confirm({
-                closeDropdown: false,
-              });
-              setSearchText(selectedKeys[0]);
-              setSearchedColumn(dataIndex);
-            }}
-          >
-            Filter
-          </Button>
-          <Button
-            type="link"
-            size="small"
-            onClick={() => {
-              close();
-            }}
-          >
-            close
           </Button>
         </Space>
       </div>
     ),
     filterIcon: (filtered) => (
-      <SearchOutlined
-        style={{
-          color: filtered ? "#1677ff" : undefined,
-        }}
-      />
+      <SearchOutlined style={{ color: filtered ? "black" : undefined }} />
     ),
-    onFilter: (value, record) =>
-      record[dataIndex].toString().toLowerCase().includes(value.toLowerCase()),
+    onFilter: (value, record) => {
+      return record[dataIndex]
+        ? record[dataIndex]
+          .toString()
+          .toLowerCase()
+          .includes(value.toLowerCase())
+        : "";
+    },
     onFilterDropdownOpenChange: (visible) => {
       if (visible) {
-        setTimeout(() => searchInput.current?.select(), 100);
+        setTimeout(() => searchInput.current.select(), 100);
       }
     },
     render: (text) =>
       searchedColumn === dataIndex ? (
         <Highlighter
-          highlightStyle={{
-            backgroundColor: "#ffc069",
-            padding: 0,
-          }}
+          highlightStyle={{ backgroundColor: "#ffc069", padding: 0 }}
           searchWords={[searchText]}
           autoEscape
           textToHighlight={text ? text.toString() : ""}
@@ -360,7 +335,7 @@ function PaymentHistory() {
 
     let { data: payments, error } = await supabase
       .from("payment")
-      .select(`*`)
+      .select(`*, agent(*)`)
       .eq("paid_by", user.id);
 
     if (error) {
@@ -374,7 +349,7 @@ function PaymentHistory() {
           payment_amount: payment.payment_amount.toFixed(2),
           payment_date: payment.payment_date,
           payment_method: payment.payment_method,
-          paid_to: payment.paid_to,
+          paid_to: payment.agent.name,
         };
       });
       setData(newData);
@@ -392,22 +367,37 @@ function PaymentHistory() {
       dataIndex: "payment_id",
       key: "payment_id",
       ...getColumnSearchProps("payment_id"),
+      ellipsis: {
+        showTitle: false,
+      },
+      render: (payment_id) => (
+        <Tooltip placement="topLeft" title={payment_id}>
+          {payment_id}
+        </Tooltip>
+      ),
+      width: "20%",
     },
     {
       title: "Rental Agreement ID",
       dataIndex: "rental_agreement_id",
       key: "rental_agreement_id",
+      ellipsis: {
+        showTitle: false,
+      },
       render: (rental_agreement_id) => (
         <div
           onClick={() => viewRentalAgreement(rental_agreement_id)}
           style={{ cursor: "pointer", color: "#1890ff" }}
         >
-          {rental_agreement_id}
+          <Tooltip placement="topLeft" title={rental_agreement_id}>
+            {rental_agreement_id}
+          </Tooltip>
         </div>
       ),
       sorter: (a, b) =>
         a.rental_agreement_id.localeCompare(b.rental_agreement_id),
       sortDirections: ["descend", "ascend"],
+      width: "25%",
     },
     {
       title: "Payment Amount (RM)",
@@ -415,6 +405,10 @@ function PaymentHistory() {
       key: "payment_amount",
       sorter: (a, b) => a.payment_amount - b.payment_amount,
       sortDirections: ["descend", "ascend"],
+      render : (payment_amount) => (
+        <span style={{textAlign: 'center'}}>{payment_amount}</span>
+      ),
+      width: "18%",
     },
     {
       title: "Payment Date",
@@ -422,6 +416,7 @@ function PaymentHistory() {
       key: "payment_date",
       sorter: (a, b) => new Date(a.payment_date) - new Date(b.payment_date),
       sortDirections: ["descend", "ascend"],
+      width: "12%",
     },
     {
       title: "Payment Method",
@@ -438,17 +433,38 @@ function PaymentHistory() {
         },
       ],
       onFilter: (value, record) => record.payment_method.indexOf(value) === 0,
+      render: (payment_method) => (
+        <>
+          {payment_method === "card" ? (
+            <span>Card Payment</span>
+          ) : (
+            <span>Online Banking (FPX)</span>
+          )}
+        </>
+      ),
+      width: "15%",
     },
     {
       title: "Paid To",
       dataIndex: "paid_to",
       key: "paid_to",
       ...getColumnSearchProps("paid_to"),
+      ellipsis: {
+        showTitle: false,
+      },
+      render: (paid_to) => (
+        <Tooltip placement="topLeft" title={paid_to}>
+          {paid_to}
+        </Tooltip>
+      ),
+      width: "10%",
+      
     },
   ];
 
   return (
     <div>
+      <Typography.Title level={3}>Payment History</Typography.Title>
       <Table columns={columns} dataSource={data} bordered loading={loading} />
       <Modal
         open={isRentalModalOpen}

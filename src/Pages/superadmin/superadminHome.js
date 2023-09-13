@@ -26,14 +26,13 @@ function SuperadminHome() {
   const [searchedColumn, setSearchedColumn] = useState("");
   const [admin, setAdmin] = useState([]);
   const [student, setStudent] = useState([]);
-  const [data, setData] = useState(null);
   const searchInput = useRef(null);
   const [fetchTrigger, setFetchTrigger] = useState(0);
   const [selectedAdmin, setSelectedAdmin] = useState([]);
   const [selectedStudent, setSelectedStudent] = useState([]);
   const [selectionType, setSelectionType] = useState("checkbox");
-  const [currentTab, setCurrentTab] = useState("1");
-
+  const [adminLoading, setAdminLoading] = useState(true);
+  const [studentLoading, setStudentLoading] = useState(true);
   const navigate = useNavigate();
   const { Title } = Typography;
 
@@ -60,104 +59,76 @@ function SuperadminHome() {
     setSearchText(selectedKeys[0]);
     setSearchedColumn(dataIndex);
   };
-  const handleReset = (clearFilters) => {
+  const handleReset = (clearFilters, confirm) => {
     clearFilters();
     setSearchText("");
+    confirm();
   };
-  const getColumnSearchProps = (dataIndex) => ({
+  const getColumnSearchProps = (dataIndex, placeholder) => ({
     filterDropdown: ({
       setSelectedKeys,
       selectedKeys,
       confirm,
       clearFilters,
-      close,
     }) => (
       <div
-        style={{
-          padding: 8,
+        style={{ padding: 8 }}
+        onKeyDown={(e) => {
+          e.stopPropagation();
         }}
-        onKeyDown={(e) => e.stopPropagation()}
       >
         <Input
           ref={searchInput}
-          placeholder={`Search ${dataIndex}`}
+          placeholder={placeholder}
           value={selectedKeys[0]}
-          onChange={(e) =>
-            setSelectedKeys(e.target.value ? [e.target.value] : [])
-          }
-          onPressEnter={() => handleSearch(selectedKeys, confirm, dataIndex)}
-          style={{
-            marginBottom: 8,
-            display: "block",
+          onChange={(e) => {
+            setSelectedKeys(e.target.value ? [e.target.value] : []);
           }}
+          onPressEnter={() => handleSearch(selectedKeys, confirm, dataIndex)}
+          style={{ marginBottom: 8, display: "block" }}
         />
+
         <Space>
           <Button
             type="primary"
             onClick={() => handleSearch(selectedKeys, confirm, dataIndex)}
             icon={<SearchOutlined />}
             size="small"
-            style={{
-              width: 90,
-            }}
+            className="filter-button"
           >
             Search
           </Button>
+
           <Button
-            onClick={() => clearFilters && handleReset(clearFilters)}
+            onClick={() => handleReset(clearFilters, confirm)}
             size="small"
-            style={{
-              width: 90,
-            }}
+            className="filter-button"
           >
             Reset
-          </Button>
-          <Button
-            type="link"
-            size="small"
-            onClick={() => {
-              confirm({
-                closeDropdown: false,
-              });
-              setSearchText(selectedKeys[0]);
-              setSearchedColumn(dataIndex);
-            }}
-          >
-            Filter
-          </Button>
-          <Button
-            type="link"
-            size="small"
-            onClick={() => {
-              close();
-            }}
-          >
-            close
           </Button>
         </Space>
       </div>
     ),
     filterIcon: (filtered) => (
-      <SearchOutlined
-        style={{
-          color: filtered ? "#1677ff" : undefined,
-        }}
-      />
+      <SearchOutlined style={{ color: filtered ? "black" : undefined }} />
     ),
-    onFilter: (value, record) =>
-      record[dataIndex].toString().toLowerCase().includes(value.toLowerCase()),
+    onFilter: (value, record) => {
+      return record[dataIndex]
+        ? record[dataIndex]
+          .toString()
+          .toLowerCase()
+          .includes(value.toLowerCase())
+        : "";
+    },
     onFilterDropdownOpenChange: (visible) => {
       if (visible) {
-        setTimeout(() => searchInput.current?.select(), 100);
+        setTimeout(() => searchInput.current.select(), 100);
       }
     },
     render: (text) =>
       searchedColumn === dataIndex ? (
         <Highlighter
-          highlightStyle={{
-            backgroundColor: "#ffc069",
-            padding: 0,
-          }}
+          highlightStyle={{ backgroundColor: "#ffc069", padding: 0 }}
           searchWords={[searchText]}
           autoEscape
           textToHighlight={text ? text.toString() : ""}
@@ -200,6 +171,7 @@ function SuperadminHome() {
   };
 
   const fetchAdmin = async () => {
+    setAdminLoading(true);
     let { data: admins, error } = await supabase
       .from("student")
       .select("*")
@@ -220,9 +192,11 @@ function SuperadminHome() {
       })
     );
     setAdmin(tableDataMap);
+    setAdminLoading(false);
   };
 
   const fetchStudent = async () => {
+    setStudentLoading(true);
     let { data: students, error } = await supabase
       .from("student")
       .select("*")
@@ -243,13 +217,13 @@ function SuperadminHome() {
       })
     );
     setStudent(tableDataMap);
+    setStudentLoading(false);
   };
 
   const grantAdmin = async () => {
     let status = true;
     for (let i = 0; i < selectedStudent.length; i++) {
-      const { data, error } = await supabase
-
+      const { error } = await supabase
         .from("student")
         .update({ role: "admin" })
         .eq("student_id", selectedStudent[i]);
@@ -268,7 +242,7 @@ function SuperadminHome() {
   const removeAdmin = async () => {
     let status = true;
     for (let i = 0; i < selectedAdmin.length; i++) {
-      const { data, error } = await supabase
+      const { error } = await supabase
 
         .from("student")
         .update({ role: "student" })
@@ -296,21 +270,21 @@ function SuperadminHome() {
       title: "Student ID",
       dataIndex: "student_id",
       width: "33.33%",
-      ...getColumnSearchProps("student_id"),
+      ...getColumnSearchProps("student_id", "Search Student ID"),
     },
     {
       key: "name",
       title: "Name",
       dataIndex: "name",
       width: "33.33%",
-      ...getColumnSearchProps("name"),
+      ...getColumnSearchProps("name", "Search Name"),
     },
     {
       key: "email",
       title: "Email",
       dataIndex: "email",
       width: "33.33%",
-      ...getColumnSearchProps("email"),
+      ...getColumnSearchProps("email", "Search Email"),
     },
   ];
 
@@ -330,6 +304,7 @@ function SuperadminHome() {
               type: selectionType,
               ...adminRowSelection,
             }}
+            loading={adminLoading}
           />
           <div
             style={{
@@ -364,6 +339,7 @@ function SuperadminHome() {
               type: selectionType,
               ...studRowSelection,
             }}
+            loading={studentLoading}
           />
           <div
             style={{
@@ -408,7 +384,7 @@ function SuperadminHome() {
             style={{ width: "80%", display: "flex", flexDirection: "column" }}
           >
             <Title level={3}>Admin Management</Title>
-            <Tabs items={items} onChange={(key) => setCurrentTab(key)} />
+            <Tabs items={items} defaultActiveKey="1" />
           </div>
         </div>
       </Card>

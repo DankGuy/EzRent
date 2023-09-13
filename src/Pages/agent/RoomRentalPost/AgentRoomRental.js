@@ -1,7 +1,7 @@
 import { IoAddCircle } from 'react-icons/io5'
 import { Link, useNavigate } from 'react-router-dom'
 import { useEffect, useState } from 'react';
-import { Col, Form, Image, Popconfirm, Row, message, Pagination, Select, Tooltip, Input, Empty } from 'antd';
+import { Col, Form, Image, Popconfirm, Row, message, Pagination, Select, Tooltip, Input, Empty, Typography } from 'antd';
 import { supabase } from '../../../supabase-client';
 import CurrentPost from './CurrentPost';
 import PostSortingSelection from '../../../Components/PostSortingSelection';
@@ -244,7 +244,7 @@ function AgentRoomRental() {
 
 
     return <>
-        <h1 style={{ fontSize: '25px' }}>Room Rental Post</h1>
+        <Typography.Title level={3}>Room Rental</Typography.Title>
         <div >
             <Row>
                 <Col span={24}>
@@ -269,7 +269,7 @@ function AgentRoomRental() {
             <br />
             <Row>
                 <Col span={24}>
-                    <h1 style={{ fontSize: '25px' }}>Draft Post</h1>
+                    <Typography.Title level={3}>Draft Post</Typography.Title>
                 </Col>
             </Row>
             <div>
@@ -294,8 +294,9 @@ function AgentRoomRental() {
             <br />
             <Row>
                 <Col span={4} style={{ display: 'flex', alignItems: 'center' }}>
-                    <h1 style={{ fontSize: '25px' }}>Current Post</h1>
-
+                    <Typography.Title level={3} style={{ paddingBottom: '15px' }}>
+                        Current Post
+                    </Typography.Title>
                     <Tooltip
                         title={
                             <>

@@ -1,5 +1,5 @@
 import React, { useState, useRef } from "react";
-import { Table, Button, Input, Space } from "antd";
+import { Table, Button, Input, Space, Tag, Typography } from "antd";
 import { SearchOutlined } from "@ant-design/icons";
 import Highlighter from "react-highlight-words";
 import { useEffect } from "react";
@@ -17,104 +17,78 @@ function ActivityLog() {
     setSearchText(selectedKeys[0]);
     setSearchedColumn(dataIndex);
   };
-  const handleReset = (clearFilters) => {
+
+  const handleReset = (clearFilters, confirm) => {
     clearFilters();
     setSearchText("");
+    confirm();
   };
-  const getColumnSearchProps = (dataIndex) => ({
+
+  const getColumnSearchProps = (dataIndex, placeholder) => ({
     filterDropdown: ({
       setSelectedKeys,
       selectedKeys,
       confirm,
       clearFilters,
-      close,
     }) => (
       <div
-        style={{
-          padding: 8,
+        style={{ padding: 8 }}
+        onKeyDown={(e) => {
+          e.stopPropagation();
         }}
-        onKeyDown={(e) => e.stopPropagation()}
       >
         <Input
           ref={searchInput}
-          placeholder={`Search ${dataIndex}`}
+          placeholder={placeholder}
           value={selectedKeys[0]}
-          onChange={(e) =>
-            setSelectedKeys(e.target.value ? [e.target.value] : [])
-          }
-          onPressEnter={() => handleSearch(selectedKeys, confirm, dataIndex)}
-          style={{
-            marginBottom: 8,
-            display: "block",
+          onChange={(e) => {
+            setSelectedKeys(e.target.value ? [e.target.value] : []);
           }}
+          onPressEnter={() => handleSearch(selectedKeys, confirm, dataIndex)}
+          style={{ marginBottom: 8, display: "block" }}
         />
+
         <Space>
           <Button
             type="primary"
             onClick={() => handleSearch(selectedKeys, confirm, dataIndex)}
             icon={<SearchOutlined />}
             size="small"
-            style={{
-              width: 90,
-            }}
+            style={{ width: 90 }}
           >
             Search
           </Button>
+
           <Button
-            onClick={() => clearFilters && handleReset(clearFilters)}
+            onClick={() => handleReset(clearFilters, confirm)}
             size="small"
-            style={{
-              width: 90,
-            }}
+            style={{ width: 90 }}
           >
             Reset
-          </Button>
-          <Button
-            type="link"
-            size="small"
-            onClick={() => {
-              confirm({
-                closeDropdown: false,
-              });
-              setSearchText(selectedKeys[0]);
-              setSearchedColumn(dataIndex);
-            }}
-          >
-            Filter
-          </Button>
-          <Button
-            type="link"
-            size="small"
-            onClick={() => {
-              close();
-            }}
-          >
-            close
           </Button>
         </Space>
       </div>
     ),
     filterIcon: (filtered) => (
-      <SearchOutlined
-        style={{
-          color: filtered ? "#1677ff" : undefined,
-        }}
-      />
+      <SearchOutlined style={{ color: filtered ? "black" : undefined }} />
     ),
-    onFilter: (value, record) =>
-      record[dataIndex].toString().toLowerCase().includes(value.toLowerCase()),
+    onFilter: (value, record) => {
+      return record[dataIndex]
+        ? record[dataIndex]
+          .toString()
+          .toLowerCase()
+          .includes(value.toLowerCase())
+        : "";
+    },
     onFilterDropdownOpenChange: (visible) => {
       if (visible) {
-        setTimeout(() => searchInput.current?.select(), 100);
+        setTimeout(() => searchInput.current.select(), 100);
       }
     },
     render: (text) =>
       searchedColumn === dataIndex ? (
         <Highlighter
-          highlightStyle={{
-            backgroundColor: "#ffc069",
-            padding: 0,
-          }}
+          highlightStyle={{ backgroundColor: "#ffc069", padding: 0 }}
           searchWords={[searchText]}
           autoEscape
           textToHighlight={text ? text.toString() : ""}
@@ -123,7 +97,6 @@ function ActivityLog() {
         text
       ),
   });
-
   const fetchData = async () => {
     let { data: activity_log, error } = await supabase
       .from("activity_log")
@@ -198,7 +171,8 @@ function ActivityLog() {
       title: "Managed By",
       dataIndex: "managed_by",
       key: "managed_by",
-      ...getColumnSearchProps("managed_by"),
+      ...getColumnSearchProps("managed_by", "Search Admin Name"),
+      width: "20%",
     },
     {
       title: "Action",
@@ -231,6 +205,24 @@ function ActivityLog() {
         },
       ],
       onFilter: (value, record) => record.action.indexOf(value) === 0,
+      render: (text) => {
+        let color;
+        if (text === "approve_post") {
+          color = "green";
+        } else if (text === "reject_post") {
+          color = "red";
+        } else if (text === "resolve_report") {
+          color = "green";
+        } else if (text === "deactivate_post") {
+          color = "red";
+        } else if (text === "deactivate_account") {
+          color = "red";
+        } else if (text === "activate_account") {
+          color = "green";
+        }
+        return <Tag color={color}>{text.toUpperCase()}</Tag>;
+      },
+      width: "15%",
     },
     {
       title: "Category",
@@ -251,12 +243,17 @@ function ActivityLog() {
         },
       ],
       onFilter: (value, record) => record.category.indexOf(value) === 0,
+      render: (text) => {
+        return <span style={{ textTransform: 'capitalize' }}>{text}</span>;
+      },
+      width: "15%",
     },
     {
       title: "Target",
       dataIndex: "target",
       key: "target",
-      ...getColumnSearchProps("target"),
+      ...getColumnSearchProps("target", "Search Target"),
+      width: "30%",
     },
     {
       title: "Date",
@@ -264,12 +261,20 @@ function ActivityLog() {
       key: "date",
       sorter: (a, b) => new Date(a.date) - new Date(b.date),
       sortDirections: ["descend", "ascend"],
+      width: "20%",
     },
   ];
 
   return (
     <div>
-      <Table columns={columns} dataSource={data} bordered loading={loading} />
+      <Typography.Title level={3}>Activity Log</Typography.Title>
+      <Table
+        columns={columns}
+        dataSource={data} 
+        pagination={{ pageSize: 10 }}
+        tableLayout="fixed"
+        bordered 
+        loading={loading} />
     </div>
   );
 }

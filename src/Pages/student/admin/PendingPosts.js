@@ -12,8 +12,9 @@ import {
   Image,
   Tabs,
   message,
+  Typography,
 } from "antd";
-import React, { useRef, useState, useEffect, Fragment } from "react";
+import React, { useRef, useState, useEffect } from "react";
 import Highlighter from "react-highlight-words";
 import { supabase } from "../../../supabase-client";
 import { formatDateTime } from "../../../Components/timeUtils";
@@ -35,7 +36,7 @@ function PendingPosts() {
   const [propertyImages, setPropertyImages] = useState();
   const [roomImages, setRoomImages] = useState({});
   const [loadingImages, setLoadingImages] = useState(false);
-
+  const [tableLoading, setTableLoading] = useState(false);
   const [userID, setUserID] = useState("");
 
   const getUser = async () => {
@@ -63,6 +64,7 @@ function PendingPosts() {
   };
 
   const fetchData = async () => {
+    setTableLoading(true);
     let { data: property_post, error } = await supabase
       .from("property_post")
       .select("*")
@@ -127,6 +129,7 @@ function PendingPosts() {
         })
       );
       setData(newData);
+      setTableLoading(false);
     }
   };
 
@@ -206,89 +209,71 @@ function PendingPosts() {
     confirm();
   };
 
-  const getColumnSearchProps = (dataIndex) => ({
+  const getColumnSearchProps = (dataIndex, placeholder) => ({
     filterDropdown: ({
       setSelectedKeys,
       selectedKeys,
       confirm,
       clearFilters,
-      close,
     }) => (
       <div
-        style={{
-          padding: 8,
+        style={{ padding: 8 }}
+        onKeyDown={(e) => {
+          e.stopPropagation();
         }}
-        onKeyDown={(e) => e.stopPropagation()}
       >
         <Input
           ref={searchInput}
-          placeholder={`Search ${dataIndex}`}
+          placeholder={placeholder}
           value={selectedKeys[0]}
-          onChange={(e) =>
-            setSelectedKeys(e.target.value ? [e.target.value] : [])
-          }
-          onPressEnter={() => handleSearch(selectedKeys, confirm, dataIndex)}
-          style={{
-            marginBottom: 8,
-            display: "block",
+          onChange={(e) => {
+            setSelectedKeys(e.target.value ? [e.target.value] : []);
           }}
+          onPressEnter={() => handleSearch(selectedKeys, confirm, dataIndex)}
+          style={{ marginBottom: 8, display: "block" }}
         />
+
         <Space>
           <Button
             type="primary"
             onClick={() => handleSearch(selectedKeys, confirm, dataIndex)}
             icon={<SearchOutlined />}
             size="small"
-            style={{
-              width: 90,
-            }}
+            style={{ width: 90 }}
           >
             Search
           </Button>
+
           <Button
-            onClick={() => {
-              handleReset(clearFilters, confirm);
-            }}
+            onClick={() => handleReset(clearFilters, confirm)}
             size="small"
-            style={{
-              width: 90,
-            }}
+            style={{ width: 90 }}
           >
             Reset
-          </Button>
-          <Button
-            type="link"
-            size="small"
-            onClick={() => {
-              close();
-            }}
-          >
-            close
           </Button>
         </Space>
       </div>
     ),
     filterIcon: (filtered) => (
-      <SearchOutlined
-        style={{
-          color: filtered ? "#1677ff" : undefined,
-        }}
-      />
+      <SearchOutlined style={{ color: filtered ? "black" : undefined }} />
     ),
-    onFilter: (value, record) =>
-      record[dataIndex].toString().toLowerCase().includes(value.toLowerCase()),
+    onFilter: (value, record) => {
+      return record[dataIndex]
+        ? record[dataIndex]
+          .toString()
+          .toLowerCase()
+          .includes(value.toLowerCase())
+        : "";
+    },
     onFilterDropdownOpenChange: (visible) => {
       if (visible) {
-        setTimeout(() => searchInput.current?.select(), 100);
+        setTimeout(() => searchInput.current.select(), 100);
       }
     },
     render: (text) =>
       searchedColumn === dataIndex ? (
         <Highlighter
-          highlightStyle={{
-            backgroundColor: "#ffc069",
-            padding: 0,
-          }}
+          highlightStyle={{ backgroundColor: "#ffc069", padding: 0 }}
           searchWords={[searchText]}
           autoEscape
           textToHighlight={text ? text.toString() : ""}
@@ -297,7 +282,6 @@ function PendingPosts() {
         text
       ),
   });
-
   const rowSelection = {
     onChange: (selectedRowKeys, selectedRows) => {
       setSelectedPostIDs(selectedRows.map((row) => row.post_ID));
@@ -319,42 +303,42 @@ function PendingPosts() {
       title: "Property Name",
       dataIndex: "property_name",
       key: "property_name",
-      width: "30.67%",
-      ...getColumnSearchProps("property_name"),
+      width: "30%",
+      ...getColumnSearchProps(
+        "property_name",
+        "Search by property"
+        ),
+
     },
     {
       title: "Property Category",
       dataIndex: "property_category",
       key: "property_category",
-      width: "30.67%",
-      ...getColumnSearchProps("property_category"),
-      sorter: (a, b) => {
-        // Compare the length first
-        const lengthComparison =
-          a.property_category.length - b.property_category.length;
-
-        // If lengths are the same, sort alphabetically by the property_category value
-        if (lengthComparison === 0) {
-          return a.property_category.localeCompare(b.property_category);
-        }
-
-        return lengthComparison;
-      },
-      sortDirections: ["descend", "ascend"],
+      width: "20%",
+      filters: [
+        {
+          text: "Room",
+          value: "Room",
+        },
+        {
+          text: "Unit",
+          value: "Unit",
+        },
+      ],
+      onFilter: (value, record) => record.property_category.indexOf(value) === 0,
     },
     {
       title: "Agent Name",
       dataIndex: "agent_name",
       key: "agent_name",
       width: "30.67%",
-      ...getColumnSearchProps("agent_name"),
+      ...getColumnSearchProps("agent_name", "Search by agent"),
     },
     {
       title: "Agent Rating",
       dataIndex: "agent_rating",
       key: "agent_rating",
       width: "30.67%",
-      ...getColumnSearchProps("agent_rating"),
       sorter: (a, b) => a.agent_rating - b.agent_rating,
       sortDirections: ["descend", "ascend"],
     },
@@ -465,37 +449,6 @@ function PendingPosts() {
         console.log(roomError);
       }
     });
-
-
-
-    // // Create an array of room numbers
-    // const roomNumbers = Array.from(
-    //   { length: post.propertyRoomNumber },
-    //   (_, i) => i + 1
-    // );
-
-    // // Map over the room numbers and retrieve room images for each
-    // await Promise.all(
-    //   roomNumbers.map(async (roomNumber) => {
-    //     const roomType = post.propertyRoomDetails[roomNumber].roomType;
-
-    //     const { data: roomData, error: roomError } = await supabase.storage
-    //       .from("post")
-    //       .list(`${post.postID}/${roomType}`);
-
-    //     if (roomData) {
-    //       setRoomImages((prevState) => {
-    //         const updatedState = { ...prevState };
-    //         updatedState[roomType] = roomData;
-    //         return updatedState;
-    //       });
-    //     }
-
-    //     if (roomError) {
-    //       console.log(roomError);
-    //     }
-    //   })
-    // );
 
     setLoadingImages(false);
   };
@@ -635,6 +588,9 @@ function PendingPosts() {
               : data.filter((post) => post.agent_rating < 3)
           }
           bordered
+          pagination={{ pageSize: 5 }}
+          tableLayout="fixed"
+          loading={tableLoading}
         />
         <div style={{ display: "flex", flexDirection: "column" }}>
           <div
@@ -818,6 +774,7 @@ function PendingPosts() {
 
   return (
     <>
+      <Typography.Title level={3}>Pending Posts</Typography.Title>
       <Tabs
         items={[
           {

@@ -1,25 +1,23 @@
-import { Breadcrumb, Button, Col, Row, Table, Tabs, Tag } from 'antd';
+import { Breadcrumb, Col, Row, Table, Tabs, Tag } from 'antd';
 import { useState, useEffect } from 'react';
 import { supabase } from '../../../supabase-client';
 import { getDateOnly } from '../../../Components/timeUtils';
 import { GrView } from 'react-icons/gr';
-import { Link } from 'react-router-dom';
 
 function MyRequest() {
 
     const [activeRequest, setActiveRequest] = useState([]);
     const [historyRequest, setHistoryRequest] = useState([]);
+    const [loading, setLoading] = useState(true);
 
     useEffect(() => {
-
-
         getRequest();
 
     }, []);
 
 
     const getRequest = async () => {
-
+        setLoading(true);
         const userID = (await supabase.auth.getUser()).data.user.id;
 
         const { data, error } = await supabase
@@ -66,6 +64,7 @@ function MyRequest() {
 
         setActiveRequest(currentData);
         setHistoryRequest(historyData);
+        setLoading(false);
     }
 
     const openLinkInNewTab = (url, stateData, event) => {
@@ -162,6 +161,7 @@ function MyRequest() {
                     dataSource={activeRequest}
                     bordered={true}
                     pagination={false}
+                    loading={loading}
                 />
         },
         {
@@ -173,6 +173,7 @@ function MyRequest() {
                     dataSource={historyRequest}
                     bordered={true}
                     pagination={{ pageSize: 5 }}
+                    loading={loading}
                 />
         }
     ];
