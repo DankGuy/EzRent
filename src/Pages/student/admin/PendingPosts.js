@@ -608,6 +608,8 @@ function PendingPosts() {
                 height: "auto",
                 margin: "10px",
                 fontSize: "1.1rem",
+                borderRadius: "0px",
+                fontWeight: "500",
               }}
               onClick={handleApproveClick}
             >
@@ -621,6 +623,8 @@ function PendingPosts() {
                 height: "auto",
                 margin: "10px",
                 fontSize: "1.1rem",
+                borderRadius: "0px",
+                fontWeight: "500",
               }}
               onClick={handleRejectClick}
             >

@@ -182,11 +182,16 @@ function UserActivation() {
         >
           <Button
             type="primary"
+            className="viewButton"
             style={{
               width: "auto",
               height: "auto",
               marginTop: "20px",
+              marginRight: "10px",
               fontSize: "1.1rem",
+              borderRadius: "0px",
+              backgroundColor: "#6643b5",
+              fontWeight: "500",
             }}
             onClick={handleActivate}
           >

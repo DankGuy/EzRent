@@ -658,6 +658,9 @@ function PendingReports() {
             height: "auto",
             margin: "10px",
             fontSize: "1.1rem",
+            borderRadius: "0px",
+            textAlign: "center",
+            fontWeight: "500",
           }}
             onClick={
               handleResolve
@@ -676,12 +679,15 @@ function PendingReports() {
             }}
             size="large"
             style={{
-              width: "10vw",
+              width: "11vw",
               height: "auto",
               margin: "10px",
               fontSize: "1.1rem",
               textAlign: "center",
+              fontWeight: "500",
+              // borderRadius: "0px",
             }}
+            className="deactivate-select"
             options={[
               {
                 value: 'deactivate_post',

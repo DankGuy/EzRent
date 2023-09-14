@@ -47,3 +47,7 @@
 .react-multi-carousel-item {
     width: auto !important;
 }
+
+.deactivate-select .ant-select-selector{
+    border-radius: 0px !important;
+}
