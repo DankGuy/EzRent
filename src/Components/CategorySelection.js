@@ -10,6 +10,7 @@ function CategorySelection({ value, onChange, ...rest }) {
     }
 
     const categoryOption = [
+        { value: 'All Categories', label: 'All Categories' },
         { value: 'Unit', label: 'Unit' },
         { value: 'Room', label: 'Room' },
     ];

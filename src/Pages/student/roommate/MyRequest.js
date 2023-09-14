@@ -2,7 +2,7 @@ import { Breadcrumb, Col, Row, Table, Tabs, Tag } from 'antd';
 import { useState, useEffect } from 'react';
 import { supabase } from '../../../supabase-client';
 import { getDateOnly } from '../../../Components/timeUtils';
-import { GrView } from 'react-icons/gr';
+import { EyeOutlined } from '@ant-design/icons';
 
 function MyRequest() {
 
@@ -138,13 +138,11 @@ function MyRequest() {
             width: '10%',
             render: (text, record) => {
                 return (
-                    // <Link to={`/student/roommate/post/${record.postID}`} state={record}>
-                    <GrView
-                        size={20}
-                        style={{ cursor: 'pointer', display: 'block', margin: 'auto' }}
+                    <EyeOutlined
+                        // size={20}
+                        style={{ cursor: 'pointer', display: 'block', margin: 'auto', color: '#6643b5', fontSize: '20px' }}
                         onClick={(e) => openLinkInNewTab(`/student/roommate/post/${record.postID}`, record.postID, e)}
                     />
-                    // </Link>
                 )
 
             },

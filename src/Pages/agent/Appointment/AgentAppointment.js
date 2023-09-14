@@ -351,7 +351,7 @@ function AgentAppointment() {
             render: (text, record) => {
                 return (
                     <Link to={`/agent/appointment/${record.appointmentID}`} state={record}>
-                        <EyeOutlined style={{ fontSize: "20px", color: "#1677FF" }} />
+                        <EyeOutlined style={{ fontSize: "20px", color: "#6643b5" }} />
                     </Link>
                 )
 

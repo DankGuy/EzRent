@@ -9,3 +9,8 @@
     display: flex !important;
     align-items: center !important;
 }
+
+.search-input .ant-btn-primary{
+    background-color: #6643b5 !important;
+    border-color: #6643b5 !important;
+}

@@ -169,7 +169,7 @@ function Appointments() {
             render: (text, record) => {
                 return (
                     <Link to={`/student/profile/appointments/${record.appointmentID}`} state={record}>
-                        <EyeOutlined style={{ fontSize: "20px", color: "#1677FF" }} />
+                        <EyeOutlined style={{ fontSize: "20px", color: "#6643b5" }} />
                     </Link>
                 )
 

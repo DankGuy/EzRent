@@ -387,7 +387,7 @@ function PaymentHistory() {
       render: (rental_agreement_id) => (
         <div
           onClick={() => viewRentalAgreement(rental_agreement_id)}
-          style={{ cursor: "pointer", color: "#1890ff" }}
+          style={{ cursor: "pointer", color: "#6643b5" }}
         >
           <Tooltip placement="topLeft" title={rental_agreement_id}>
             {rental_agreement_id}

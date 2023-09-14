@@ -635,6 +635,9 @@ function RentalAgreement() {
                     bordered
                     title={listing.rentalAgreementID}
                     size="small"
+                    style={{
+                      boxShadow: '0px 4px 6px -2px rgba(0, 0, 0, 0.2)',
+                    }}
                     extra={
                       <Badge
                         status={
@@ -673,7 +676,7 @@ function RentalAgreement() {
                           });
                         }}
                         style={{
-                          color: "#1890FF",
+                          color: "#6643b5",
                           width: "100%",
                           height: "100%",
                           fontWeight: "bold",
@@ -688,7 +691,7 @@ function RentalAgreement() {
                       <Button
                         type="link"
                         style={{
-                          color: "#1890FF",
+                          color: "#6643b5",
                           width: "100%",
                           height: "100%",
                           fontWeight: "bold",
@@ -710,7 +713,7 @@ function RentalAgreement() {
                       <Button
                         type="link"
                         style={{
-                          color: "#1890FF",
+                          color: "#6643b5",
                           width: "100%",
                           height: "100%",
                           fontWeight: "bold",

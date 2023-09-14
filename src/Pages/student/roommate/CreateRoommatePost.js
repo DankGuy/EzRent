@@ -7,6 +7,8 @@ import { MdOutlineCancel } from "react-icons/md";
 import { RiInformationFill } from "react-icons/ri";
 import moment from "moment";
 
+const {Search} = Input;
+
 
 function CreateRoommatePost({ value, onModalChange, onTrigger }) {
 
@@ -27,9 +29,7 @@ function CreateRoommatePost({ value, onModalChange, onTrigger }) {
     const [form] = Form.useForm();
     const inputRef = useRef(null);
 
-    // useEffect(() => {
-    //     console.log("Selected values:", selectedValues);
-    // }, [selectedValues]);
+
 
 
     const handleYesNo = (e) => {
@@ -96,12 +96,6 @@ function CreateRoommatePost({ value, onModalChange, onTrigger }) {
                 </>
             ),
         })));
-
-
-
-
-
-
         setIsLoading(false);
     }
 
@@ -118,14 +112,6 @@ function CreateRoommatePost({ value, onModalChange, onTrigger }) {
             inputRef.current.focus({ cursor: 'end' });
         }
     };
-
-    useEffect(() => {
-        console.log("Inside useEffect - selectedValues:", selectedValues);
-    }, [selectedValues]);
-
-    // useEffect(() => {
-    //     console.log("Inside useEffect - INPUT VALUE:", inputValue);
-    // }, [inputValue]);
 
 
     const handleRemoveValue = (value) => {
@@ -147,7 +133,15 @@ function CreateRoommatePost({ value, onModalChange, onTrigger }) {
                 {hasRentedProperty &&
                     <>
                         <Form.Item name="rentalAgreementID" label="Enter your rental agreement ID">
-                            <Input.Search placeholder="Rental Agreement ID" enterButton={true} allowClear loading={isLoading} onSearch={handleSearch} />
+                            {/* <Input.Search placeholder="Rental Agreement ID" enterButton={true} allowClear loading={isLoading} onSearch={handleSearch} /> */}
+                            <Search 
+                                placeholder="Rental Agreement ID" 
+                                enterButton={true} 
+                                allowClear 
+                                loading={isLoading} 
+                                onSearch={handleSearch} 
+                                className="search-input"
+                                />
                         </Form.Item>
                     </>}
                 <div>
@@ -757,7 +751,7 @@ function CreateRoommatePost({ value, onModalChange, onTrigger }) {
                             <div style={{ marginLeft: '5%' }}>
                                 {index !== 0 &&
                                     <Button
-                                        style={{ marginRight: 10 }}
+                                        style={{ marginRight: 10, backgroundColor: '#6643b5', color: 'white', borderRadius: '0px', fontWeight: 'bold' }}
                                         onClick={() => setCurrentStep((prev) => prev - 1)}
                                     >
                                         Back
@@ -769,6 +763,7 @@ function CreateRoommatePost({ value, onModalChange, onTrigger }) {
                                     disabled={
                                         index === 0 && hasRentedProperty && !rentedProperty ? true : false
                                     }
+                                    style={{ marginRight: 10, backgroundColor: '#6643b5', color: 'white', borderRadius: '0px', fontWeight: 'bold' }}
                                     onClick={index === stepsData.length - 1 ? handleFormFinish : handleNextStep}
                                 >
                                     {index === stepsData.length - 1 ? 'Submit' : 'Next'}

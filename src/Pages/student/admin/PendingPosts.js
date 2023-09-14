@@ -122,7 +122,7 @@ function PendingPosts() {
                   
                 }}
               >
-                <EyeOutlined style={{ fontSize: "20px", color: "#1677FF" }} />
+                <EyeOutlined style={{ fontSize: "20px", color: "#6643b5" }} />
               </Button>
             ),
           };

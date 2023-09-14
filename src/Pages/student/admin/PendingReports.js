@@ -318,8 +318,8 @@ function PendingReports() {
                 }}
                 style={{ padding: "0px" }}
               >
-                <EyeOutlined style={{ fontSize: "20px", color: "#1677FF" }} />
-              </Button>
+                <EyeOutlined style={{ fontSize: "20px", color: "#6643b5" }} />              
+                </Button>
             ),
           };
         })

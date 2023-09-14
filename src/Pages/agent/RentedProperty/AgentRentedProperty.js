@@ -432,7 +432,7 @@ function AgentRentedProperty() {
       render: (rentalAgreementID) => (
         <div
           onClick={() => viewRentalAgreement(rentalAgreementID)}
-          style={{ cursor: "pointer", color: "#1890ff" }}
+          style={{ cursor: "pointer", color: "#6643b5" }}
         >
           <Tooltip placement="topLeft" title={rentalAgreementID}>
             {rentalAgreementID}
@@ -495,7 +495,7 @@ function AgentRentedProperty() {
           {/* <Tooltip placement="topLeft" title={tenantName}> */}
           <div
             onClick={() => handleModalChange(record)}
-            style={{ cursor: "pointer", color: "#1890ff" }}
+            style={{ cursor: "pointer", color: "#6643b5" }}
           >
             {tenantName}
           </div>

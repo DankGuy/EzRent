@@ -10,6 +10,7 @@ function MinRentSelection({ value, onChange, ...rest}) {
     }
 
     const minRentOption = [
+        { value: 'No Min', label: 'No Min' },
         { value: 100, label: 'RM 100' },
         { value: 200, label: 'RM 200' },
         { value: 300, label: 'RM 300' },

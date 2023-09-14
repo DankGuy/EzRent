@@ -5,6 +5,10 @@ function StateSelection({value, onChange, className, ...rest}){
 
     const stateOption = [
         {
+            value: 'All States',
+            label: 'All States'
+        },
+        {
             value: 'Johor',
             label: 'Johor'
         },

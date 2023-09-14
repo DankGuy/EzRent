@@ -10,6 +10,7 @@ function FurnishTypeSelection({ value, onChange, bordered, ...rest }) {
     }
 
     const furnishOption = [
+        { value: 'All Furnish Type', label: 'All Furnish Type'},
         { value: 'Unfurnished', label: 'Unfurnished' },
         { value: 'Partially Furnished', label: 'Partially furnished' },
         { value: 'Fully Furnished', label: 'Fully furnished' },

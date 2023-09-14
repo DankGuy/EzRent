@@ -10,6 +10,7 @@ function MaxRentSelection({ value, onChange, ...rest }) {
     }
 
     const maxRentOption = [
+        { value: 'No Max', label: 'No Max' },
         { value: 100, label: 'RM 100' },
         { value: 200, label: 'RM 200' },
         { value: 300, label: 'RM 300' },

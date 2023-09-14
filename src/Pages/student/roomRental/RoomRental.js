@@ -3,8 +3,6 @@ import { Col, Row, Button, Form, Image, Empty, Pagination, FloatButton, Tag, Bad
 import { SearchOutlined } from '@ant-design/icons';
 import { useState, useEffect } from 'react';
 import FurnishTypeSelection from '../../../Components/FurnishTypeSelection';
-import MinRentSelection from '../../../Components/MinRentSelection';
-import MaxRentSelection from '../../../Components/MaxRentSelection';
 import BuiltupSizeSelection from '../../../Components/BuiltupSizeSelection';
 import StateSelection from '../../../Components/StateSelection';
 import CategorySelection from '../../../Components/CategorySelection';
@@ -14,6 +12,7 @@ import './RoomRental.css'
 import { getDateOnly, getElapsedTime } from '../../../Components/timeUtils';
 import { supabase } from '../../../supabase-client';
 import ScrollToTopButton from '../../../Components/ScrollToTopButton';
+import RentFilterDropdown from '../../../Components/RentFilterDropdown';
 
 
 function RoomRental() {
@@ -21,27 +20,18 @@ function RoomRental() {
     const [state, setState] = useState('null');
     const [input, setInput] = useState('null');
     const [furnish, setFurnish] = useState('null');
-    const [minRent, setMinRent] = useState(0)
-    const [maxRent, setMaxRent] = useState(0)
     const [size, setSize] = useState(500)
     const [category, setCategory] = useState('null')
     const [sortBy, setSortBy] = useState('null')
-    const [isError, setIsError] = useState(false)
-    let errorMessage = "*Minimum rent cannot larger than maximum rent";
-
-
+    const [rentRange, setRentRange] = useState([0, 3000]);
     const [posts, setPost] = useState([]);
     const [firstImages, setFirstImages] = useState({});
-
     const itemsPerPage = 10;
-
     const [currentPage, setCurrentPage] = useState(1);
-
     const [isLoading, setIsLoading] = useState({});
 
     const startIndex = (currentPage - 1) * itemsPerPage;
     const endIndex = currentPage * itemsPerPage;
-
     const currentPosts = posts.slice(startIndex, endIndex);
 
     const handlePageChange = (page) => {
@@ -58,26 +48,6 @@ function RoomRental() {
 
     const handleFurnishChange = (e) => {
         setFurnish(e);
-    }
-
-    const handleMinRentChange = (e) => {
-        if (e > maxRent) {
-            setIsError(true);
-            setMinRent(e);
-            return;
-        }
-        setMinRent(e);
-        setIsError(false);
-    }
-
-    const handleMaxRentChange = (e) => {
-        if (e < minRent) {
-            setIsError(true);
-            setMaxRent(e);
-            return;
-        }
-        setMaxRent(e);
-        setIsError(false);
     }
 
     const handleSizeChange = (e) => {
@@ -108,8 +78,7 @@ function RoomRental() {
 
             let query = supabase.from('property_post').select('*, agent(*)');
 
-            if (!!input['propertyState']) {
-                console.log("testing1")
+            if (!!input['propertyState'] && input['propertyState'] !== 'All States') {
                 query = query.eq('propertyState', input['propertyState']);
             }
 
@@ -121,25 +90,20 @@ function RoomRental() {
                 );
             }
 
-            if (!!input['propertyFurnishType']) {
+            if (!!input['propertyFurnishType'] && input['propertyFurnishType'] !== 'All Furnish Type') {
                 console.log("testing3")
                 query = query.eq('propertyFurnishType', input['propertyFurnishType']);
             }
 
-            if (!!input['propertyCategory']) {
+            if (!!input['propertyCategory'] && input['propertyCategory'] !== 'All Categories') {
                 console.log("testing4")
                 query = query.eq('propertyCategory', input['propertyCategory']);
             }
 
-            if (input["minRent"] > 0) {
-                console.log("testing5")
-                query = query.gte('propertyPrice', input["minRent"]);
-            }
+            //query rent range
+            query = query.gte('propertyPrice', input["rentRange"][0]);
+            query = query.lte('propertyPrice', input["rentRange"][1]);
 
-            if (input["maxRent"] > 0) {
-                console.log("testing6")
-                query = query.lte('propertyPrice', input["maxRent"]);
-            }
 
             if (input["propertyBuildupSize"] > 0) {
                 console.log("testing7")
@@ -211,8 +175,7 @@ function RoomRental() {
                     locationInput: input,
                     furnishType: furnish,
                     category,
-                    minRent,
-                    maxRent,
+                    rentRange,
                     builtUpSize: size,
                     sortBy,
                 };
@@ -373,8 +336,7 @@ function RoomRental() {
                     {
                         propertyState: null,
                         propertyFurnishType: null,
-                        minRent: 0,
-                        maxRent: 0,
+                        rentRange: [0, 3000],
                         propertyBuildupSize: 0,
                         propertyCategory: null,
                         sortBy: null,
@@ -417,15 +379,9 @@ function RoomRental() {
                         </Form.Item>
                     </Col>
 
-                    <Col span={3}>
-                        <Form.Item name="minRent">
-                            <MinRentSelection value={minRent} onChange={handleMinRentChange} style={{ width: '85%' }} />
-                        </Form.Item>
-                    </Col>
-
-                    <Col span={3}>
-                        <Form.Item name="maxRent">
-                            <MaxRentSelection value={maxRent} onChange={handleMaxRentChange} style={{ width: '85%' }} />
+                    <Col span={4}>
+                        <Form.Item name="rentRange">
+                            <RentFilterDropdown  value={rentRange} onChange={setRentRange} style={{ width: '100%' }} />
                         </Form.Item>
                     </Col>
 
@@ -440,9 +396,6 @@ function RoomRental() {
                             <PostSortingSelection value={sortBy} onChange={handleSortByChange} style={{ width: '200px' }} />
                         </Form.Item>
                     </Col>
-                </Row>
-                <Row style={{ marginLeft: '52%' }}>
-                    <Col style={{ color: '#b80606', fontStyle: 'italic' }}>{isError && errorMessage}</Col>
                 </Row>
             </Form>
         </div>
