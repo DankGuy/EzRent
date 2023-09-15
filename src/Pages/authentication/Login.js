@@ -84,7 +84,6 @@ function LoginCard() {
             }
             else {
               localStorage.setItem("selectedKey", "/agent");
-              navigate("/agent");
             }
           }
         } else if (user.user_metadata.userType === "student") {
@@ -92,7 +91,6 @@ function LoginCard() {
             "selectedKey",
             "/student/profile/profileInformation"
           );
-          navigate("/student");
         }
       }
     } catch (error) {
