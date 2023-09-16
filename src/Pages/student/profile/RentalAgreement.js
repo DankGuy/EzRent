@@ -562,7 +562,6 @@ function RentalAgreement() {
   };
 
   const handleRatingCancel = () => {
-    console.log("Rating Cancelled");
     setRatingValue(0);
     setIsRatingModalVisible(false);
   };
@@ -943,7 +942,6 @@ function RentalAgreement() {
                     <div className="paymentDetails">
                       <Form
                         name="card-form"
-                        className="card-form"
                         form={cardform}
                         style={{ width: "35vw" }}
                         layout="vertical"

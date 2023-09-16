@@ -240,11 +240,6 @@ function PendingReports() {
   const rowSelection = {
     onChange: (selectedRowKeys, selectedRows) => {
       setSelectedReportIDs(selectedRows.map((row) => row.report_id));
-      console.log(
-        `selectedRowKeys: ${selectedRowKeys}`,
-        "selectedRows: ",
-        selectedRows
-      );
     },
     getCheckboxProps: (record) => ({
       disabled: record.name === "Disabled User",
@@ -261,7 +256,6 @@ function PendingReports() {
     if (error) {
       console.log("error", error);
     } else {
-      console.log("reports", reports);
       const newData = await Promise.all(
         reports.map(async (report, index) => {
           let studentName;
@@ -364,8 +358,8 @@ function PendingReports() {
           value: "Discriminatory or offensive content",
         },
         {
-          text: 'Others',
-          value: 'Others',
+          text: 'Other Issues',
+          value: 'Other issues',
         }
       ],
       onFilter: (value, record) => record.report_reason.indexOf(value) === 0,

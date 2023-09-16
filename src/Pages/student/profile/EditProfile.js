@@ -66,18 +66,11 @@ function EditProfile() {
   };
   // upload image to database
   const uploadImage = async (file) => {
-
-    //delete image first
-    const { error: deleteError } = await supabase.storage
-      .from("avatar")
-      .remove([`avatar-${userInfo?.student_id}`]);
-    if (deleteError) {
-      message.error(deleteError.message);
-    }
-
     const { data, error } = await supabase.storage
       .from("avatar")
-      .upload(`avatar-${userInfo?.student_id}`, file);
+      .upload(`avatar-${userInfo?.student_id}`, file, {
+        upsert: true,
+      });
     if (error) {
       message.error(error.message);
     } else {

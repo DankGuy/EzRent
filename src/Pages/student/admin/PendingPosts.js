@@ -101,8 +101,6 @@ function PendingPosts() {
             roomData = room;
           }
 
-          console.log(roomData);
-
           return {
             key: index,
             post_ID: post.postID,
@@ -285,11 +283,6 @@ function PendingPosts() {
   const rowSelection = {
     onChange: (selectedRowKeys, selectedRows) => {
       setSelectedPostIDs(selectedRows.map((row) => row.post_ID));
-      console.log(
-        `selectedRowKeys: ${selectedRowKeys}`,
-        "selectedRows: ",
-        selectedRows
-      );
     },
     getCheckboxProps: (record) => ({
       disabled: record.name === "Disabled User",
@@ -421,16 +414,12 @@ function PendingPosts() {
       console.log(propertyError);
     }
 
-    console.log(roomData);
-
     
 
     Object.entries(roomData).forEach(async ([key, room]) => {
 
       const roomType = room.roomType;
       const roomIndex = room.roomID.split('_')[1];
-
-      console.log(roomType, roomIndex);
 
 
       const { data: roomData, error: roomError } = await supabase.storage
