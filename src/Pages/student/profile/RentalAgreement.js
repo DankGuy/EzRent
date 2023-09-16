@@ -131,11 +131,8 @@ function RentalAgreement() {
       lastPaymentMonth = -1;
     }
 
-    if (currentDate < commencementDate) {
-      // before commencement date
-      return "inactive";
-    } else if (currentDate > expirationDate) {
-      // expired
+    if (currentDate < commencementDate || currentDate > expirationDate) {
+      // before commencement date or expired
       return "inactive";
     } else {
       // within rental period
