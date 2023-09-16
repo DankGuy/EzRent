@@ -212,10 +212,12 @@ function RentalAgreement() {
 
     for (let i = 0; i < data; i++) {
       let status = await checkListingStatus(data[i]);
-      let { data: rentalAgreement, error: rentalAgreementError } = await supabase
-        .from("rental_agreement")
-        .update({ status: status })
-        .eq("rentalAgreementID", data[i].rentalAgreementID);
+      console.log(status);
+      let { data: rentalAgreement, error: rentalAgreementError } =
+        await supabase
+          .from("rental_agreement")
+          .update({ status: status })
+          .eq("rentalAgreementID", data[i].rentalAgreementID);
 
       if (rentalAgreementError) {
         console.log(rentalAgreementError);
@@ -629,166 +631,157 @@ function RentalAgreement() {
           <Row gutter={[16, 16]}>
             {/* Add gutter for spacing between columns and rows */}
             {listings.map((listing) => (
-              <>
-                <Col key={listing.rentalAgreementID} xs={24} sm={12}>
-                  <Card
-                    bordered
-                    title={listing.rentalAgreementID}
-                    size="small"
-                    style={{
-                      boxShadow: '0px 4px 6px -2px rgba(0, 0, 0, 0.2)',
-                    }}
-                    extra={
-                      <Badge
-                        status={
-                          listing.status === "pending"
-                            ? "warning"
-                            : listing.status === "active"
-                            ? "success"
-                            : "error"
-                        }
-                        text={
-                          <span style={{ textTransform: "capitalize" }}>
-                            {listing.status}
-                          </span>
-                        }
-                        className="rentalAgreementBadge"
-                      />
-                    }
-                    headStyle={{
-                      backgroundColor: "#D5DEF5",
-                      padding: "0.5em 1em",
-                    }}
-                    bodyStyle={{
-                      backgroundColor: "#F0F5FF",
-                      padding: "1em",
-                    }}
-                    actions={[
-                      <Button
-                        type="link"
-                        onClick={() => {
-                          setIsPaymentModalVisible(true);
-                          setPaymentInfo({
-                            studentID: listing.studentID,
-                            agentID: listing.agentID.agent_id,
-                            rentalAgreementID: listing.rentalAgreementID,
-                            paymentAmount: listing.rentalPrice,
-                          });
-                        }}
-                        style={{
-                          color: "#6643b5",
-                          width: "100%",
-                          height: "100%",
-                          fontWeight: "bold",
-                        }}
-                        disabled={listing.status !== "pending"}
-                      >
-                        <span style={{ marginRight: "5px" }}>
-                          <DollarOutlined />
-                        </span>
-                        Pay Rental
-                      </Button>,
-                      <Button
-                        type="link"
-                        style={{
-                          color: "#6643b5",
-                          width: "100%",
-                          height: "100%",
-                          fontWeight: "bold",
-                        }}
-                        onClick={() => {
-                          const updatedListings = listings.map((l) =>
-                            l.rentalAgreementID === listing.rentalAgreementID
-                              ? { ...l, isModalVisible: true }
-                              : l
-                          );
-                          setListings(updatedListings);
-                        }}
-                      >
-                        <span style={{ marginRight: "5px" }}>
-                          <EyeOutlined />
-                        </span>
-                        View Agreement
-                      </Button>,
-                      <Button
-                        type="link"
-                        style={{
-                          color: "#6643b5",
-                          width: "100%",
-                          height: "100%",
-                          fontWeight: "bold",
-                        }}
-                        onClick={() => {
-                          setIsRatingModalVisible(true);
-                          getAvatar(listing.agentID.agent_id).then((url) =>
-                            setAgentAvatar(url)
-                          );
-                          setRatingAgreementInfo({
-                            agentID: listing.agentID.agent_id,
-                            studentID: listing.studentID,
-                            rentalAgreementID: listing.rentalAgreementID,
-                          });
-                        }}
-                        disabled={listing.status === "inactive"}
-                      >
-                        <span style={{ marginRight: "5px" }}>
-                          <StarOutlined />
-                        </span>
-                        Rate Agent
-                      </Button>,
-                    ]}
-                  >
-                    <Meta
-                      description={
-                        <div>
-                          <Descriptions>
-                            <DescriptionsItem label="Property Name" span={3}>
-                              {listing.postID.propertyName}
-                            </DescriptionsItem>
-                            <DescriptionsItem
-                              label="Property Address"
-                              span={3}
-                              style={{
-                                overflow: "hidden",
-                                textOverflow: "ellipsis",
-                                whiteSpace: "nowrap",
-                              }}
-                              className="ellipsis-description"
-                            >
-                              <Tooltip
-                                title={
-                                  listing.postID.propertyAddress +
-                                  ", " +
-                                  listing.postID.propertyState
-                                }
-                              >
-                                {listing.postID.propertyAddress +
-                                  ", " +
-                                  listing.postID.propertyState}
-                              </Tooltip>
-                            </DescriptionsItem>
-                            <DescriptionsItem
-                              label="Commencement Date"
-                              span={3}
-                            >
-                              {listing.commencementDate}
-                            </DescriptionsItem>
-                            <DescriptionsItem label="Expiration Date" span={3}>
-                              {listing.expirationDate}
-                            </DescriptionsItem>
-                            <DescriptionsItem
-                              label="Rental Price (RM)"
-                              span={3}
-                            >
-                              {listing.rentalPrice.toFixed(2)}
-                            </DescriptionsItem>
-                          </Descriptions>
-                        </div>
+              <Col key={listing.rentalAgreementID} xs={24} sm={12}>
+                <Card
+                  bordered
+                  title={listing.rentalAgreementID}
+                  size="small"
+                  style={{
+                    boxShadow: "0px 4px 6px -2px rgba(0, 0, 0, 0.2)",
+                  }}
+                  extra={
+                    <Badge
+                      status={
+                        listing.status === "pending"
+                          ? "warning"
+                          : listing.status === "active"
+                          ? "success"
+                          : "error"
                       }
+                      text={
+                        <span style={{ textTransform: "capitalize" }}>
+                          {listing.status}
+                        </span>
+                      }
+                      className="rentalAgreementBadge"
                     />
-                  </Card>
-                </Col>
-
+                  }
+                  headStyle={{
+                    backgroundColor: "#D5DEF5",
+                    padding: "0.5em 1em",
+                  }}
+                  bodyStyle={{
+                    backgroundColor: "#F0F5FF",
+                    padding: "1em",
+                  }}
+                  actions={[
+                    <Button
+                      type="link"
+                      onClick={() => {
+                        setIsPaymentModalVisible(true);
+                        setPaymentInfo({
+                          studentID: listing.studentID,
+                          agentID: listing.agentID.agent_id,
+                          rentalAgreementID: listing.rentalAgreementID,
+                          paymentAmount: listing.rentalPrice,
+                        });
+                      }}
+                      style={{
+                        color: "#6643b5",
+                        width: "100%",
+                        height: "100%",
+                        fontWeight: "bold",
+                      }}
+                      disabled={listing.status !== "pending"}
+                    >
+                      <span style={{ marginRight: "5px" }}>
+                        <DollarOutlined />
+                      </span>
+                      Pay Rental
+                    </Button>,
+                    <Button
+                      type="link"
+                      style={{
+                        color: "#6643b5",
+                        width: "100%",
+                        height: "100%",
+                        fontWeight: "bold",
+                      }}
+                      onClick={() => {
+                        const updatedListings = listings.map((l) =>
+                          l.rentalAgreementID === listing.rentalAgreementID
+                            ? { ...l, isModalVisible: true }
+                            : l
+                        );
+                        setListings(updatedListings);
+                      }}
+                    >
+                      <span style={{ marginRight: "5px" }}>
+                        <EyeOutlined />
+                      </span>
+                      View Agreement
+                    </Button>,
+                    <Button
+                      type="link"
+                      style={{
+                        color: "#6643b5",
+                        width: "100%",
+                        height: "100%",
+                        fontWeight: "bold",
+                      }}
+                      onClick={() => {
+                        setIsRatingModalVisible(true);
+                        getAvatar(listing.agentID.agent_id).then((url) =>
+                          setAgentAvatar(url)
+                        );
+                        setRatingAgreementInfo({
+                          agentID: listing.agentID.agent_id,
+                          studentID: listing.studentID,
+                          rentalAgreementID: listing.rentalAgreementID,
+                        });
+                      }}
+                      disabled={listing.status === "inactive"}
+                    >
+                      <span style={{ marginRight: "5px" }}>
+                        <StarOutlined />
+                      </span>
+                      Rate Agent
+                    </Button>,
+                  ]}
+                >
+                  <Meta
+                    description={
+                      <div>
+                        <Descriptions>
+                          <DescriptionsItem label="Property Name" span={3}>
+                            {listing.postID.propertyName}
+                          </DescriptionsItem>
+                          <DescriptionsItem
+                            label="Property Address"
+                            span={3}
+                            style={{
+                              overflow: "hidden",
+                              textOverflow: "ellipsis",
+                              whiteSpace: "nowrap",
+                            }}
+                            className="ellipsis-description"
+                          >
+                            <Tooltip
+                              title={
+                                listing.postID.propertyAddress +
+                                ", " +
+                                listing.postID.propertyState
+                              }
+                            >
+                              {listing.postID.propertyAddress +
+                                ", " +
+                                listing.postID.propertyState}
+                            </Tooltip>
+                          </DescriptionsItem>
+                          <DescriptionsItem label="Commencement Date" span={3}>
+                            {listing.commencementDate}
+                          </DescriptionsItem>
+                          <DescriptionsItem label="Expiration Date" span={3}>
+                            {listing.expirationDate}
+                          </DescriptionsItem>
+                          <DescriptionsItem label="Rental Price (RM)" span={3}>
+                            {listing.rentalPrice.toFixed(2)}
+                          </DescriptionsItem>
+                        </Descriptions>
+                      </div>
+                    }
+                  />
+                </Card>
                 {/* Modal for displaying rental agreement details */}
                 <Modal
                   title="Rental Agreement Details"
@@ -1204,7 +1197,7 @@ function RentalAgreement() {
                     </span>
                   </div>
                 </Modal>
-              </>
+              </Col>
             ))}
           </Row>
         </div>
