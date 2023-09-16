@@ -56,9 +56,7 @@ function PendingPosts() {
   const viewPost = () => {
     setIsModalOpen(true);
   };
-  const handleOk = () => {
-    setIsModalOpen(false);
-  };
+
   const handleCancel = () => {
     setIsModalOpen(false);
   };
@@ -624,8 +622,16 @@ function PendingPosts() {
         <Modal
           title={"View Post"}
           open={isModalOpen}
-          onOk={handleOk}
           onCancel={handleCancel}
+          footer={[
+            <Button
+              key="back"
+              onClick={handleCancel}
+              className="viewButton"
+            >
+              Close
+            </Button>,
+          ]}
           width={1000}
         >
           <fieldset style={fieldsetStyle}>
@@ -649,7 +655,6 @@ function PendingPosts() {
                 {formatDateTime(modalData?.postDate)}
               </Descriptions.Item>
               <Descriptions.Item label="Last Modified Date">
-                {" "}
                 {formatDateTime(modalData?.lastModifiedDate)}
               </Descriptions.Item>
               <Descriptions.Item

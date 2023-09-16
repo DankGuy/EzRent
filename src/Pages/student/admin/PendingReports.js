@@ -22,6 +22,7 @@ function PendingReports() {
   const searchInput = useRef(null);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [modalData, setModalData] = useState();
+  const [roomDetails, setRoomDetails] = useState([]);
   const [fetchTrigger, setFetchTrigger] = useState(0);
   const [selectedAction, setSelectedAction] = useState(null);
   const [placement, SetPlacement] = useState('bottomRight');
@@ -49,9 +50,7 @@ function PendingReports() {
   const viewPost = () => {
     setIsModalOpen(true);
   };
-  const handleOk = () => {
-    setIsModalOpen(false);
-  };
+
   const handleCancel = () => {
     setIsModalOpen(false);
   };
@@ -294,6 +293,20 @@ function PendingReports() {
             postOwner = agent[0].name;
           }
 
+          //get room details
+          let roomData = [];
+          let { data: room, error: roomError } = await supabase
+            .from("property_room")
+            .select("*")
+            .eq("propertyPostID",  report.postID)
+            .order("roomID", { ascending: true });
+
+          if (roomError) {
+            console.log("error", roomError);
+          } else {
+            roomData = room;
+          }
+
           return {
             key: index,
             report_id: report.reportID ? report.reportID : "N/A",
@@ -308,7 +321,8 @@ function PendingReports() {
                 onClick={() => {
                   viewPost();
                   setModalData(report.property_post);
-                  getImages(report.property_post);
+                  setRoomDetails(roomData);
+                  getImages(report.property_post, roomData);
                 }}
                 style={{ padding: "0px" }}
               >
@@ -464,7 +478,7 @@ function PendingReports() {
     padding: "4px 11px",
   };
 
-  const getImages = async (post) => {
+  const getImages = async (post, roomData) => {
     setLoadingImages(true);
 
     // Get all images from supabase storage with id = postID
@@ -476,34 +490,34 @@ function PendingReports() {
       setPropertyImages(propertyData);
     }
 
-    // Create an array of room numbers
-    const roomNumbers = Array.from(
-      { length: post.propertyRoomNumber },
-      (_, i) => i + 1
-    );
+    if (propertyError) {
+      console.log(propertyError);
+    }
 
-    // Map over the room numbers and retrieve room images for each
-    await Promise.all(
-      roomNumbers.map(async (roomNumber) => {
-        const roomType = post.propertyRoomDetails[roomNumber].roomType;
+    
 
-        const { data: roomData, error: roomError } = await supabase.storage
-          .from("post")
-          .list(`${post.postID}/${roomType}`);
+    Object.entries(roomData).forEach(async ([key, room]) => {
 
-        if (roomData) {
-          setRoomImages((prevState) => {
-            const updatedState = { ...prevState };
-            updatedState[roomType] = roomData;
-            return updatedState;
-          });
-        }
+      const roomType = room.roomType;
+      const roomIndex = room.roomID.split('_')[1];
 
-        if (roomError) {
-          console.log(roomError);
-        }
-      })
-    );
+
+      const { data: roomData, error: roomError } = await supabase.storage
+        .from("post")
+        .list(`${post.postID}/${roomType}_${roomIndex}`);
+
+      if (roomData) {
+        setRoomImages((prevState) => {
+          const updatedState = { ...prevState };
+          updatedState[roomType] = roomData;
+          return updatedState;
+        });
+      }
+
+      if (roomError) {
+        console.log(roomError);
+      }
+    });
 
     setLoadingImages(false);
   };
@@ -532,7 +546,7 @@ function PendingReports() {
     });
   };
 
-  const displayRoomImages = (roomType) => {
+  const displayRoomImages = (roomType, roomIndex) => {
     const images = roomImages[roomType];
 
     if (loadingImages) {
@@ -545,7 +559,7 @@ function PendingReports() {
 
     if (images && images.length > 0) {
       return images.map((image) => {
-        const publicURL = `https://exsvuquqspmbrtyjdpyc.supabase.co/storage/v1/object/public/post/${modalData?.postID}/${roomType}/${image.name}`;
+        const publicURL = `https://exsvuquqspmbrtyjdpyc.supabase.co/storage/v1/object/public/post/${modalData?.postID}/${roomType}_${roomIndex}/${image.name}`;
 
         return (
           <Image
@@ -563,10 +577,10 @@ function PendingReports() {
   };
 
   const roomDetailForm = (index) => {
-    const roomType = modalData?.propertyRoomDetails[index]?.roomType;
-    const roomSize = modalData?.propertyRoomDetails[index]?.roomSquareFeet;
-    const maxTenant = modalData?.propertyRoomDetails[index]?.maxTenant;
-    const roomFurnish = modalData?.propertyRoomDetails[index]?.roomFurnish;
+    const roomType = roomDetails[index - 1]?.roomType;
+    const roomSize = roomDetails[index - 1]?.roomSquareFeet;
+    const maxTenant = roomDetails[index - 1]?.maxTenant;
+    const roomFurnish = roomDetails[index - 1]?.roomFurnish;
 
     const roomFurnishLabelArray = [];
     const roomFurnishQuantityArray = [];
@@ -588,7 +602,7 @@ function PendingReports() {
         >
           <Image.PreviewGroup>
             <Carousel responsive={responsive}>
-              {displayRoomImages(roomType)}
+              {displayRoomImages(roomType, index)}
             </Carousel>
           </Image.PreviewGroup>
         </div>
@@ -699,8 +713,16 @@ function PendingReports() {
         <Modal
           title={"View Post"}
           open={isModalOpen}
-          onOk={handleOk}
           onCancel={handleCancel}
+          footer={[
+            <Button
+              key="back"
+              onClick={handleCancel}
+              className="viewButton"
+            >
+              Close
+            </Button>,
+          ]}
           width={1000}
           // maxHeight={500}
           // scrollable={true}
