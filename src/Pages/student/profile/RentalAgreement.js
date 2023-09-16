@@ -131,50 +131,37 @@ function RentalAgreement() {
       lastPaymentMonth = -1;
     }
 
-    if (
-      // checks if the current date is within the commencement and expiration date and not paid yet
-      currentMonth >= commencementDate.getMonth() &&
-      currentMonth <= expirationDate.getMonth() &&
-      currentDayOfMonth <= expirationDate.getDate() &&
-      currentDayOfMonth <= 10 &&
-      listing.status === "active" &&
-      lastPaymentMonth !== currentMonth
-    ) {
-      return "pending";
-    } else if (
-      // checks if the rental is not paid within 10 days of each month
-      currentMonth >= commencementDate.getMonth() &&
-      currentMonth <= expirationDate.getMonth() &&
-      currentDayOfMonth <= expirationDate.getDate() &&
-      currentDayOfMonth > 10 &&
-      listing.status === "pending"
-    ) {
+    if (currentDate < commencementDate) {
+      // before commencement date
       return "inactive";
-    } else if (
-      // checks if the date is before the commencement date
-      currentMonth <= commencementDate.getMonth() &&
-      currentDayOfMonth < commencementDate.getDate() &&
-      listing.status === "pending"
-    ) {
+    } else if (currentDate > expirationDate) {
+      // expired
       return "inactive";
-    } else if (
-      // checks if the date is after the expiration date
-      currentMonth >= expirationDate.getMonth() &&
-      currentDayOfMonth > expirationDate.getDate() &&
-      listing.status === "active"
-    ) {
-      return "inactive";
-    } else if (
-      // checks if the date is after the commencement date and before the expiration date
-      currentMonth >= commencementDate.getMonth() &&
-      currentMonth <= expirationDate.getMonth() &&
-      currentDayOfMonth >= commencementDate.getDate() &&
-      currentDayOfMonth <= expirationDate.getDate() &&
-      listing.status === "inactive"
-    ) {
-      return "pending";
     } else {
-      return listing.status;
+      // within rental period
+      // the first month of rental
+      if (currentMonth === commencementDate.getMonth()) {
+        if (commencementDate > 10 && listing.status === "pending") {
+          // if the commencement date is after 10th of the month, the pay before 10th monthly doesnt apply for the first month
+          return "pending";
+        } else if (
+          commencementDate <= 10 &&
+          currentDate.getDate() >= 10 &&
+          listing.status === "pending"
+        ) {
+          // if the commencement date is before 10th of the month, the pay before 10th monthly applies for the first month
+          return "inactive";
+        }
+      } else {
+        // not the first month of rental
+        if (currentDayOfMonth >= 10 && listing.status === "pending") {
+          // if the current date is after 10th of the month, the pay before 10th monthly applies
+          return "inactive";
+        } else if (currentDayOfMonth < 10 && listing.status === "pending") {
+          // if the current date is before 10th of the month, the pay before 10th monthly doesnt apply
+          return "pending";
+        }
+      }
     }
   };
 
