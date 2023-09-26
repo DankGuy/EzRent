@@ -1,16 +1,26 @@
-import {
-  EyeOutlined,
-  SearchOutlined,
-} from "@ant-design/icons";
+import { EyeOutlined, SearchOutlined } from "@ant-design/icons";
 import Highlighter from "react-highlight-words";
-import { Button, Space, Table, Tag, Modal, Input, Select, message, Image, Descriptions, Divider, Row, Col } from "antd";
+import {
+  Button,
+  Space,
+  Table,
+  Tag,
+  Modal,
+  Input,
+  Select,
+  message,
+  Image,
+  Descriptions,
+  Divider,
+  Row,
+  Col,
+} from "antd";
 import React, { useState, useEffect, useRef } from "react";
 import { supabase } from "../../../supabase-client";
 import { formatDateTime, getDateOnly } from "../../../Components/timeUtils";
 import Carousel from "react-multi-carousel";
 import GenerateLog from "../../../Components/GenerateLog";
 import Typography from "antd/es/typography/Typography";
-
 
 function PendingReports() {
   const [data, setData] = useState([]);
@@ -25,7 +35,7 @@ function PendingReports() {
   const [roomDetails, setRoomDetails] = useState([]);
   const [fetchTrigger, setFetchTrigger] = useState(0);
   const [selectedAction, setSelectedAction] = useState(null);
-  const [placement, SetPlacement] = useState('bottomRight');
+  const [placement, SetPlacement] = useState("topRight");
 
   const [propertyImages, setPropertyImages] = useState();
   const [roomImages, setRoomImages] = useState({});
@@ -35,7 +45,9 @@ function PendingReports() {
 
   const getUser = async () => {
     try {
-      const { data: { user } } = await supabase.auth.getUser();
+      const {
+        data: { user },
+      } = await supabase.auth.getUser();
       if (user) {
         setUserID(user.id);
       }
@@ -118,9 +130,9 @@ function PendingReports() {
     onFilter: (value, record) => {
       return record[dataIndex]
         ? record[dataIndex]
-          .toString()
-          .toLowerCase()
-          .includes(value.toLowerCase())
+            .toString()
+            .toLowerCase()
+            .includes(value.toLowerCase())
         : "";
     },
     onFilterDropdownOpenChange: (visible) => {
@@ -151,8 +163,7 @@ function PendingReports() {
       if (error) {
         status = false;
         console.log("error", error);
-      }
-      else {
+      } else {
         GenerateLog("resolve_report", reportID[i], userID);
       }
     }
@@ -176,9 +187,9 @@ function PendingReports() {
       if (value === "deactivate_post") {
         let postID;
         const { data: report, reportError } = await supabase
-          .from('report')
-          .select('postID')
-          .eq('reportID', reportIDArr[i])
+          .from("report")
+          .select("postID")
+          .eq("reportID", reportIDArr[i]);
         if (reportError) {
           console.log("report error", reportError);
           status = false;
@@ -187,23 +198,22 @@ function PendingReports() {
         }
 
         const { data: post, error } = await supabase
-          .from('property_post')
+          .from("property_post")
           .update({ propertyStatus: { stage: "rejected", status: "inactive" } })
-          .eq('postID', postID)
+          .eq("postID", postID);
         if (error) {
           console.log("post error", error);
           status = false;
         } else {
           GenerateLog("deactivate_post", postID, userID);
         }
-      }
-      else {
+      } else {
         let agentID, postID;
 
         const { data: report, error } = await supabase
-          .from('report')
-          .select('postID')
-          .eq('reportID', reportIDArr[i])
+          .from("report")
+          .select("postID")
+          .eq("reportID", reportIDArr[i]);
         if (error) {
           console.log("error", error);
         } else {
@@ -211,9 +221,9 @@ function PendingReports() {
         }
 
         const { data: post, postError } = await supabase
-          .from('property_post')
-          .select('propertyAgentID')
-          .eq('postID', postID)
+          .from("property_post")
+          .select("propertyAgentID")
+          .eq("postID", postID);
         if (error) {
           console.log("error", postError);
         } else {
@@ -221,9 +231,9 @@ function PendingReports() {
         }
 
         const { data: agent, agentError } = await supabase
-          .from('agent')
-          .update({ account_status: 'FALSE' })
-          .eq('agent_id', agentID)
+          .from("agent")
+          .update({ account_status: "FALSE" })
+          .eq("agent_id", agentID);
         if (error) {
           console.log("error", agentError);
         } else {
@@ -234,7 +244,7 @@ function PendingReports() {
     if (status) {
       handleResolve(reportIDArr);
     }
-  }
+  };
 
   const rowSelection = {
     onChange: (selectedRowKeys, selectedRows) => {
@@ -299,7 +309,7 @@ function PendingReports() {
           let { data: room, error: roomError } = await supabase
             .from("property_room")
             .select("*")
-            .eq("propertyPostID",  report.postID)
+            .eq("propertyPostID", report.postID)
             .order("roomID", { ascending: true });
 
           if (roomError) {
@@ -312,7 +322,9 @@ function PendingReports() {
             key: index,
             report_id: report.reportID ? report.reportID : "N/A",
             report_reason: report.reportReason ? report.reportReason : "N/A",
-            description: report.reportDescription ? report.reportDescription : "N/A",
+            description: report.reportDescription
+              ? report.reportDescription
+              : "N/A",
             reported_by: studentName ? studentName : "N/A",
             post_owner: postOwner ? postOwner : "N/A",
             post_name: propertyName ? propertyName : "N/A",
@@ -328,8 +340,8 @@ function PendingReports() {
                 }}
                 style={{ padding: "0px" }}
               >
-                <EyeOutlined style={{ fontSize: "20px", color: "#6643b5" }} />              
-                </Button>
+                <EyeOutlined style={{ fontSize: "20px", color: "#6643b5" }} />
+              </Button>
             ),
           };
         })
@@ -345,7 +357,7 @@ function PendingReports() {
       return;
     }
     await action(value, selectedReportIDs);
-  }
+  };
 
   useEffect(() => {
     fetchData();
@@ -358,25 +370,25 @@ function PendingReports() {
       key: "report_reason",
       filters: [
         {
-          text: 'Incorrect or inaccurate information',
-          value: 'Incorrect or inaccurate information',
+          text: "Incorrect or inaccurate information",
+          value: "Incorrect or inaccurate information",
         },
         {
-          text: 'Unresponsive or suspicious poster',
-          value: 'Unresponsive or suspicious poster',
+          text: "Unresponsive or suspicious poster",
+          value: "Unresponsive or suspicious poster",
         },
         {
-          text: 'Safety and security concerns',
-          value: 'Safety and security concerns',
+          text: "Safety and security concerns",
+          value: "Safety and security concerns",
         },
         {
           text: "Discriminatory or offensive content",
           value: "Discriminatory or offensive content",
         },
         {
-          text: 'Other Issues',
-          value: 'Other issues',
-        }
+          text: "Other Issues",
+          value: "Other issues",
+        },
       ],
       onFilter: (value, record) => record.report_reason.indexOf(value) === 0,
 
@@ -397,14 +409,14 @@ function PendingReports() {
       key: "reported_by",
       ...getColumnSearchProps("reported_by", "Search by student name"),
       width: "15%",
-
     },
     {
       title: "Reported Date",
       dataIndex: "reported_date",
       key: "reported_date",
       sorter: {
-        compare: (a, b) => new Date(a.reported_date) - new Date(b.reported_date),
+        compare: (a, b) =>
+          new Date(a.reported_date) - new Date(b.reported_date),
         multiple: 1,
       },
       width: "15%",
@@ -435,7 +447,7 @@ function PendingReports() {
     },
   ];
 
-  //Modal 
+  //Modal
   const responsive = {
     desktop: {
       breakpoint: { max: 3000, min: 1024 },
@@ -507,13 +519,9 @@ function PendingReports() {
       console.log(propertyError);
     }
 
-    
-
     Object.entries(roomData).forEach(async ([key, room]) => {
-
       const roomType = room.roomType;
-      const roomIndex = room.roomID.split('_')[1];
-
+      const roomIndex = room.roomID.split("_")[1];
 
       const { data: roomData, error: roomError } = await supabase.storage
         .from("post")
@@ -654,7 +662,6 @@ function PendingReports() {
     );
   };
 
-
   return (
     <div style={{ display: "flex", flexDirection: "column" }}>
       <Typography.Title level={3}>Pending Reports</Typography.Title>
@@ -670,23 +677,32 @@ function PendingReports() {
         pagination={{ pageSize: 5 }}
         tableLayout="fixed"
         loading={tableLoading}
-        scroll={{x: 1500}}
+        scroll={{ x: 1500 }}
       />
       <div style={{ display: "flex", flexDirection: "column" }}>
-        <div style={{ display: "flex", flexDirection: "row", alignSelf: "flex-end", marginBottom: "20px", marginRight: "0" }}>
-
-          <Button type="primary" style={{
-            width: "10vw",
-            height: "auto",
-            margin: "10px",
-            fontSize: "1.1rem",
-            borderRadius: "0px",
-            textAlign: "center",
-            fontWeight: "500",
+        <div
+          style={{
+            display: "flex",
+            flexDirection: "row",
+            alignSelf: "flex-end",
+            marginBottom: "20px",
+            marginRight: "0",
           }}
-            onClick={
-              handleResolve
-            }
+        >
+          <Button
+            type="primary"
+            className="viewButton"
+            style={{
+              width: "auto",
+              height: "auto",
+              marginTop: "20px",
+              marginRight: "10px",
+              fontSize: "1.1rem",
+              borderRadius: "0px",
+              backgroundColor: "#6643b5",
+              fontWeight: "500",
+            }}
+            onClick={handleResolve}
           >
             Resolve
           </Button>
@@ -703,7 +719,7 @@ function PendingReports() {
             style={{
               width: "11vw",
               height: "auto",
-              margin: "10px",
+              marginTop: "20px",
               fontSize: "1.1rem",
               textAlign: "center",
               fontWeight: "500",
@@ -712,12 +728,12 @@ function PendingReports() {
             className="deactivate-select"
             options={[
               {
-                value: 'deactivate_post',
-                label: 'Deactivate Post',
+                value: "deactivate_post",
+                label: "Deactivate Post",
               },
               {
-                value: 'deactivate_account',
-                label: 'Deactivate Account',
+                value: "deactivate_account",
+                label: "Deactivate Account",
               },
             ]}
           />
@@ -729,11 +745,7 @@ function PendingReports() {
           open={isModalOpen}
           onCancel={handleCancel}
           footer={[
-            <Button
-              key="back"
-              onClick={handleCancel}
-              className="viewButton"
-            >
+            <Button key="back" onClick={handleCancel} className="viewButton">
               Close
             </Button>,
           ]}
@@ -746,7 +758,7 @@ function PendingReports() {
           bodyStyle={{
             // maxHeight: "80vh",
             overflowY: "auto",
-            overflow: "wrap"
+            overflow: "wrap",
           }}
         >
           <fieldset style={fieldsetStyle}>
@@ -848,9 +860,9 @@ function PendingReports() {
             {modalData?.propertyCategory === "Room"
               ? roomDetailForm(1)
               : Array.from(
-                { length: modalData?.propertyRoomNumber },
-                (v, i) => i + 1
-              ).map((roomNumber) => roomDetailForm(roomNumber))}
+                  { length: modalData?.propertyRoomNumber },
+                  (v, i) => i + 1
+                ).map((roomNumber) => roomDetailForm(roomNumber))}
           </fieldset>
           <fieldset style={fieldsetStyle}>
             <legend style={legendStyle}>Property Furnish</legend>
@@ -881,7 +893,6 @@ function PendingReports() {
             )}
           </fieldset>
         </Modal>
-
       </div>
     </div>
   );

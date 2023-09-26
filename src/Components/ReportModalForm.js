@@ -45,6 +45,7 @@ function ReportModalForm({ buttonContent, postID }) {
                     reportedBy: userID,
                     postID: postID,
                     reportStatus: 'Pending',
+                    reportedDate: new Date(),
                 },
             ]);
         

@@ -582,37 +582,41 @@ function PendingPosts() {
         <div style={{ display: "flex", flexDirection: "column" }}>
           <div
             style={{
-              width: "30%",
+              width: "100%",
               display: "flex",
               flexDirection: "row",
-              alignSelf: "flex-end",
+              justifyContent: "flex-end",
             }}
           >
             <Button
-              type="primary"
-              style={{
-                width: "40%",
-                height: "auto",
-                margin: "10px",
-                fontSize: "1.1rem",
-                borderRadius: "0px",
-                fontWeight: "500",
-              }}
+            className="viewButton"
+            style={{
+              width: "auto",
+              height: "auto",
+              marginTop: "20px",
+              marginRight: "10px",
+              fontSize: "1.1rem",
+              borderRadius: "0px",
+              backgroundColor: "#6643b5",
+              fontWeight: "500",
+            }}
               onClick={handleApproveClick}
             >
               Approve
             </Button>
             <Button
-              type="primary"
-              danger
-              style={{
-                width: "40%",
-                height: "auto",
-                margin: "10px",
-                fontSize: "1.1rem",
-                borderRadius: "0px",
-                fontWeight: "500",
-              }}
+            danger
+            type="primary"
+            className="rejectButton"
+            style={{
+              width: 100,
+              height: "auto",
+              marginTop: "20px",
+              marginRight: "10px",
+              fontSize: "1.1rem",
+              borderRadius: "0px",
+              fontWeight: "500",
+            }}
               onClick={handleRejectClick}
             >
               Reject
