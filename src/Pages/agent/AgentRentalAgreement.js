@@ -20,7 +20,7 @@ import { useLocation } from "react-router-dom";
 import { supabase } from "../../supabase-client";
 import moment from "moment";
 import html2pdf from "html2pdf.js";
-import { type } from "@testing-library/user-event/dist/type";
+import dayjs from 'dayjs';
 
 function AgentRentalAgreement() {
   const location = useLocation();
@@ -304,46 +304,42 @@ function AgentRentalAgreement() {
     }
   };
 
-  const handleDurationChange = (value, field) => {
-    const startDate = form.getFieldValue("date-picker");
+  const handleDurationChange = () => {
+    let startDate = new Date(form.getFieldValue("date-picker"));
+    startDate = moment(startDate).format("YYYY-MM-DD");
     const years = form.getFieldValue("durationYears");
     const months = form.getFieldValue("durationMonths");
+    let calculatedEndDate;
 
-    console.log(years, months);
-
-    const calculatedEndDate = moment(startDate)
-      .add(years, "years")
-      .add(months, "months");
-
-    setEndDate(calculatedEndDate);
-    form.setFieldsValue({
-      "end-date-picker": calculatedEndDate,
-    });
-  };
-
-  const updateEndDate = () => {
-    const startDate = form.getFieldValue("date-picker");
-    const years = form.getFieldValue("durationYears") || 0;
-    const months = form.getFieldValue("durationMonths") || 0;
+    console.log(startDate);
 
     if (startDate) {
-      const calculatedEndDate = moment(startDate)
-        .add(years, "years")
-        .add(months, "months");
+      if (!years && !months || years === 0 && months === 0) {
+        calculatedEndDate = startDate;
 
-      // Calculate the maximum possible day in the end month
-      const maxDayInEndMonth = calculatedEndDate.clone().endOf("month").date();
-
-      // Check if the start day is greater than the maximum possible day in the end month
-      if (startDate.date() > maxDayInEndMonth) {
-        // If yes, set the end date to the maximum possible day in the end month
-        calculatedEndDate.date(maxDayInEndMonth);
-      } else {
-        // If no, keep the same day as the start day
-        calculatedEndDate.date(startDate.date());
+        console.log("!years && !months")
       }
-
-      setEndDate(calculatedEndDate);
+      else if (!months) {
+        calculatedEndDate = moment(startDate)
+          .add(years, "years")
+          .format("YYYY-MM-DD");
+        console.log("!months", calculatedEndDate)
+      }
+      else if (!years) {
+        calculatedEndDate = moment(startDate)
+          .add(months, "months")
+          .format("YYYY-MM-DD");
+        console.log("!years", calculatedEndDate)
+      }
+      else {
+        calculatedEndDate = moment(startDate)
+          .add(years, "years")
+          .add(months, "months")
+          .format("YYYY-MM-DD");
+        console.log("else", calculatedEndDate)
+      }
+      
+      calculatedEndDate = dayjs(calculatedEndDate);
       form.setFieldsValue({
         "end-date-picker": calculatedEndDate,
       });
@@ -658,7 +654,7 @@ function AgentRentalAgreement() {
                     style={{ width: "40%" }}
                     allowClear
                     disabledDate={disabledDate}
-                    onChange={updateEndDate}
+                    onChange={handleDurationChange}
                   />
                 </Form.Item>
               </Descriptions.Item>
@@ -671,9 +667,7 @@ function AgentRentalAgreement() {
                 >
                   <InputNumber
                     style={{ width: "90%" }}
-                    onChange={(value) =>
-                      handleDurationChange(value, "duration")
-                    }
+                    onChange={handleDurationChange}
                     placeholder="Year"
                   />
                 </Form.Item>
@@ -685,9 +679,7 @@ function AgentRentalAgreement() {
                 >
                   <InputNumber
                     style={{ width: "90%" }}
-                    onChange={(value) =>
-                      handleDurationChange(value, "durationMonths")
-                    }
+                    onChange={handleDurationChange}
                     min={0}
                     max={11}
                     placeholder="Month"
@@ -703,7 +695,6 @@ function AgentRentalAgreement() {
                     style={{ width: "40%" }}
                     allowClear
                     disabled
-                    value={endDate ? moment(endDate) : null}
                     placeholder="End Date"
                   />
                 </Form.Item>
