@@ -35,7 +35,8 @@ function AgentRentedProperty() {
       const { data, error } = await supabase
         .from("rental_agreement")
         .select("* , postID(*), studentID(*), agentID(*)")
-        .eq("agentID", userID);
+        .eq("agentID", userID)
+        .order("generatedDate", { ascending: false });
 
       const tableData = [];
 
@@ -79,6 +80,7 @@ function AgentRentedProperty() {
           status: element.status,
           student: element.studentID,
           occupant: element.occupantID,
+          generatedDate: element.generatedDate,
         });
       });
 
@@ -510,6 +512,14 @@ function AgentRentedProperty() {
       key: "commencementDate",
       sorter: (a, b) => (new Date(a.commencementDate) - new Date(b.commencementDate)),
       render: (commencementDate) => <p>{getDateOnly(commencementDate)}</p>,
+      width: "15%",
+    },
+    {
+      title: "Generated Date",
+      dataIndex: "generatedDate",
+      key: "generatedDate",
+      sorter: (a, b) => (new Date(a.generatedDate) - new Date(b.generatedDate)),
+      render: (generatedDate) => <p>{getDateOnly(generatedDate)}</p>,
       width: "15%",
     },
     {

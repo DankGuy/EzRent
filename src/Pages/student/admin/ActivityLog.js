@@ -100,7 +100,8 @@ function ActivityLog() {
   const fetchData = async () => {
     let { data: activity_log, error } = await supabase
       .from("activity_log")
-      .select("*");
+      .select("*")
+      .order("date", { ascending: false });
 
     if (error) {
       console.log("error", error);

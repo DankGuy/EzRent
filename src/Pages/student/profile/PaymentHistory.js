@@ -16,6 +16,7 @@ import EzRentIcon from "../../../images/icon.png";
 import TarumtLogo from "../../../images/tarumt.png";
 import html2pdf from "html2pdf.js";
 import Typography from "antd/es/typography/Typography";
+import { getDateOnly } from "../../../Components/timeUtils";
 
 function PaymentHistory() {
   const [data, setData] = useState([]);
@@ -336,7 +337,8 @@ function PaymentHistory() {
     let { data: payments, error } = await supabase
       .from("payment")
       .select(`*, agent(*)`)
-      .eq("paid_by", user.id);
+      .eq("paid_by", user.id)
+      .order("payment_date", { ascending: false });
 
     if (error) {
       console.log(error);
@@ -415,6 +417,7 @@ function PaymentHistory() {
       dataIndex: "payment_date",
       key: "payment_date",
       sorter: (a, b) => new Date(a.payment_date) - new Date(b.payment_date),
+      render: (text, record) => getDateOnly(text),
       sortDirections: ["descend", "ascend"],
       width: "12%",
     },

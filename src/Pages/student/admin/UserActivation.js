@@ -26,7 +26,8 @@ function UserActivation() {
             .from("activity_log")
             .select("*")
             .eq("target", agent.agent_id)
-            .eq("action", "deactivate_account");
+            .eq("action", "deactivate_account")
+            .order("date", { ascending: false });
 
           if (logError) {
             console.log("logError", logError);

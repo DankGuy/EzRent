@@ -6,7 +6,7 @@ import Highlighter from "react-highlight-words";
 import { Button, Space, Table, Tag, Modal, Input, Select, message, Image, Descriptions, Divider, Row, Col } from "antd";
 import React, { useState, useEffect, useRef } from "react";
 import { supabase } from "../../../supabase-client";
-import { formatDateTime } from "../../../Components/timeUtils";
+import { formatDateTime, getDateOnly } from "../../../Components/timeUtils";
 import Carousel from "react-multi-carousel";
 import GenerateLog from "../../../Components/GenerateLog";
 import Typography from "antd/es/typography/Typography";
@@ -251,7 +251,8 @@ function PendingReports() {
     let { data: reports, error } = await supabase
       .from("report")
       .select("*, property_post(*)")
-      .eq("reportStatus", "Pending");
+      .eq("reportStatus", "Pending")
+      .order("reportedDate", { ascending: false });
     if (error) {
       console.log("error", error);
     } else {
@@ -315,6 +316,7 @@ function PendingReports() {
             reported_by: studentName ? studentName : "N/A",
             post_owner: postOwner ? postOwner : "N/A",
             post_name: propertyName ? propertyName : "N/A",
+            reported_date: report.reportedDate ? report.reportedDate : "N/A",
             view: (
               <Button
                 type="text"
@@ -396,6 +398,17 @@ function PendingReports() {
       ...getColumnSearchProps("reported_by", "Search by student name"),
       width: "15%",
 
+    },
+    {
+      title: "Reported Date",
+      dataIndex: "reported_date",
+      key: "reported_date",
+      sorter: {
+        compare: (a, b) => new Date(a.reported_date) - new Date(b.reported_date),
+        multiple: 1,
+      },
+      width: "15%",
+      render: (text, record) => getDateOnly(text),
     },
     {
       title: "Post Owner",
@@ -657,6 +670,7 @@ function PendingReports() {
         pagination={{ pageSize: 5 }}
         tableLayout="fixed"
         loading={tableLoading}
+        scroll={{x: 1500}}
       />
       <div style={{ display: "flex", flexDirection: "column" }}>
         <div style={{ display: "flex", flexDirection: "row", alignSelf: "flex-end", marginBottom: "20px", marginRight: "0" }}>
