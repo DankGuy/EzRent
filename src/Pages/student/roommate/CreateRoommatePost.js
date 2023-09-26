@@ -7,7 +7,7 @@ import { MdOutlineCancel } from "react-icons/md";
 import { RiInformationFill } from "react-icons/ri";
 import moment from "moment";
 
-const {Search} = Input;
+const { Search } = Input;
 
 
 function CreateRoommatePost({ value, onModalChange, onTrigger }) {
@@ -134,14 +134,14 @@ function CreateRoommatePost({ value, onModalChange, onTrigger }) {
                     <>
                         <Form.Item name="rentalAgreementID" label="Enter your rental agreement ID">
                             {/* <Input.Search placeholder="Rental Agreement ID" enterButton={true} allowClear loading={isLoading} onSearch={handleSearch} /> */}
-                            <Search 
-                                placeholder="Rental Agreement ID" 
-                                enterButton={true} 
-                                allowClear 
-                                loading={isLoading} 
-                                onSearch={handleSearch} 
+                            <Search
+                                placeholder="Rental Agreement ID"
+                                enterButton={true}
+                                allowClear
+                                loading={isLoading}
+                                onSearch={handleSearch}
                                 className="search-input"
-                                />
+                            />
                         </Form.Item>
                     </>}
                 <div>
@@ -224,12 +224,6 @@ function CreateRoommatePost({ value, onModalChange, onTrigger }) {
                                             </Tooltip>
                                         </>
                                     }
-                                    rules={[
-                                        {
-                                            required: true,
-                                            message: 'Please input your preferred location(s)',
-                                        },
-                                    ]}
                                     style={{ marginBottom: '0px' }}>
 
                                     <Input
@@ -311,15 +305,15 @@ function CreateRoommatePost({ value, onModalChange, onTrigger }) {
                             message: 'Please select a move-in date',
                         },
                     ]}>
-                    <DatePicker 
+                    <DatePicker
                         placeholder="Select"
                         disabledDate={(current) => {
                             return current && current < moment().endOf('day');
 
-                        } }
+                        }}
                         format="DD-MM-YYYY"
                         style={{ width: '21%' }}
-                        />
+                    />
                 </Form.Item>
                 <Form.Item name="rentDuration" label="Rent Duration"
                     rules={[
@@ -543,34 +537,34 @@ function CreateRoommatePost({ value, onModalChange, onTrigger }) {
                     },
                 ]);
 
-            //Update the available space
-            const { data: room, error2 } = await supabase
-                .from('property_room')
-                .select('*')
-                .eq('roomID', values.roomType)
-                .single();
+            if (values.rentalAgreementID) {
+                //Update the available space
+                const { data: room, error2 } = await supabase
+                    .from('property_room')
+                    .select('*')
+                    .eq('roomID', values.roomType)
+                    .single();
 
-            if (error2) {
-                console.log(error2);
-                return;
-            }
+                if (error2) {
+                    console.log(error2);
+                    return;
+                }
 
-            const newAvailableSpace = room.availableSpace - 1;
+                const newAvailableSpace = room.availableSpace - 1;
 
-            const { data: room2, error3 } = await supabase
-                .from('property_room')
-                .update({ availableSpace: newAvailableSpace })
-                .eq('roomID', values.roomType);
+                const { data: room2, error3 } = await supabase
+                    .from('property_room')
+                    .update({ availableSpace: newAvailableSpace })
+                    .eq('roomID', values.roomType);
 
-            if (error3) {
-                console.log(error3);
-                return;
-            }
+                if (error3) {
+                    console.log(error3);
+                    return;
+                }
 
-
-
-            if (error) {
-                throw error;
+                if (error) {
+                    throw error;
+                }
             }
 
             message.success("Post created successfully");
