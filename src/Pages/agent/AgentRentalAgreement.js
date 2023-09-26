@@ -323,7 +323,7 @@ function AgentRentalAgreement() {
 
   const updateEndDate = () => {
     const startDate = form.getFieldValue("date-picker");
-    const years = form.getFieldValue("duration") || 0;
+    const years = form.getFieldValue("durationYears") || 0;
     const months = form.getFieldValue("durationMonths") || 0;
 
     if (startDate) {

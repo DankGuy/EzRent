@@ -32,6 +32,11 @@
     color: black !important;
 }
 
+.rejectButton:hover {
+    background-color: #fc7979 !important;
+    color: black !important;
+}
+
 .ant-select-selection-placeholder {
     color: black !important;
   }
