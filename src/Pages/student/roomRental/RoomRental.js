@@ -113,7 +113,7 @@ function RoomRental() {
             //Sort by option
             if (sortBy === 'ascDate') {
                 query = query.order('postDate', { ascending: true });
-            } else if (sortBy === 'descDate') {
+            } else if (sortBy === 'descDate' || sortBy === 'null') {
                 query = query.order('postDate', { ascending: false });
             } else if (sortBy === 'ascPrice') {
                 query = query.order('propertyPrice', { ascending: true });
@@ -212,7 +212,7 @@ function RoomRental() {
         setIsLoading((prevLoading) => ({ ...prevLoading, [post.postID]: false }));
     };
 
-   
+
 
 
     const openLinkInNewTab = (url, stateData, event) => {
@@ -243,7 +243,7 @@ function RoomRental() {
                         <Row >
                             <Col span={24} style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', width: "300px", paddingLeft: '10px' }}>
 
-                                {isLoading[post.postID] && 
+                                {isLoading[post.postID] &&
                                     <div style={{
                                         display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center',
                                         height: '200px', width: '200px'
@@ -254,7 +254,7 @@ function RoomRental() {
                                         </span>
                                     </div>}
 
-                                {!isLoading[post.postID] && firstImage && 
+                                {!isLoading[post.postID] && firstImage &&
                                     <Image
                                         style={{ justifyContent: 'center' }}
                                         height={200}
@@ -285,11 +285,13 @@ function RoomRental() {
                                 <Row>
                                     <Col span={24} style={{ fontSize: '20px', marginTop: '5px' }}>RM{post.propertyPrice}/month </Col>
                                 </Row>
-                                <Row>
-                                    <Col span={24} style={{ fontSize: '16px', marginTop: '5px' }}>
-                                        <span style={{ marginRight: '10px' }}>&bull;</span>
+                                <Row gutter={[16, 16]}>
+                                    <Col style={{ fontSize: '16px', marginTop: '5px' }} xs={24} sm={24} md={8}>
+                                        <span>&bull;</span>
                                         {post.propertyFurnishType}
-                                        <span style={{ marginLeft: '20px', marginRight: '10px' }}>&bull;</span>
+                                    </Col>
+                                    <Col style={{ fontSize: '16px', marginTop: '5px' }} xs={24} sm={24} md={8}>
+                                        <span>&bull;</span>
                                         Built-up size: {post.propertySquareFeet} sq.ft.
                                     </Col>
                                 </Row>
@@ -332,66 +334,62 @@ function RoomRental() {
         }}>
             <Form
                 onFinish={onFinish}
-                initialValues={
-                    {
-                        propertyState: null,
-                        propertyFurnishType: null,
-                        rentRange: [0, 3000],
-                        propertyBuildupSize: 0,
-                        propertyCategory: null,
-                        sortBy: null,
-                        searchInput: null,
-                    }
-                }>
-                <Row style={{ marginLeft: '10%', marginRight: '5%', height: '25px' }}>
-                    <Col span={6}>
+                initialValues={{
+                    propertyState: null,
+                    propertyFurnishType: null,
+                    rentRange: [0, 3000],
+                    propertyBuildupSize: 0,
+                    propertyCategory: null,
+                    sortBy: null,
+                    searchInput: null,
+                }}>
+                <Row gutter={[16, 16]} style={{ marginLeft: '5%', marginRight: '5%', height: '25px' }}>
+                    <Col xs={24} sm={8} md={6}>
                         <Form.Item name="propertyState">
-                            <StateSelection value={state} onChange={handleStateChange} style={{ width: '90%' }} />
+                            <StateSelection value={state} onChange={handleStateChange} style={{ width: '100%' }} />
                         </Form.Item>
                     </Col>
 
-                    <Col span={15}>
+                    <Col xs={24} sm={12} md={15}>
                         <Form.Item name="searchInput">
-                            <SearchInput placeholder='Search by location or property name' style={{ width: '90%' }} value={input} onChange={handleInputChange} />
+                            <SearchInput placeholder='Search by location or property name' style={{ width: '100%' }} value={input} onChange={handleInputChange} />
                         </Form.Item>
                     </Col>
 
-                    <Col span={3} >
+                    <Col xs={24} sm={4} md={3}>
                         <Form.Item>
-                            <Button htmlType='submit' style={{ display: 'flex', alignItems: 'center', backgroundColor: '#6643b5', borderRadius: '0px', fontWeight: 'bold' }} type="primary" icon={<SearchOutlined />}><Col />
+                            <Button htmlType='submit' style={{ display: 'flex', alignItems: 'center', backgroundColor: '#6643b5', borderRadius: '0px', fontWeight: 'bold' }} type="primary" icon={<SearchOutlined />}>
                                 Search
                             </Button>
                         </Form.Item>
                     </Col>
-
-
                 </Row>
-                <Row style={{ marginLeft: '10%', marginTop: '20px' }}>
-                    <Col span={3}>
+                <Row gutter={[16, 16]} style={{ marginLeft: '5%', marginTop: '20px' }}>
+                    <Col xs={24} sm={8} md={3}>
                         <Form.Item name='propertyFurnishType'>
-                            <FurnishTypeSelection bordered={false} value={furnish} onChange={handleFurnishChange} style={{ width: '95%' }} />
+                            <FurnishTypeSelection bordered={false} value={furnish} onChange={handleFurnishChange} style={{ width: '100%' }} />
                         </Form.Item>
                     </Col>
 
-                    <Col span={3}>
+                    <Col xs={24} sm={8} md={3}>
                         <Form.Item name="propertyCategory">
-                            <CategorySelection value={category} onChange={handleCategoryChange} style={{ width: '80%' }} />
+                            <CategorySelection value={category} onChange={handleCategoryChange} style={{ width: '100%' }} />
                         </Form.Item>
                     </Col>
 
-                    <Col span={4}>
+                    <Col xs={24} sm={8} md={4}>
                         <Form.Item name="rentRange">
-                            <RentFilterDropdown  value={rentRange} onChange={setRentRange} style={{ width: '100%' }} />
+                            <RentFilterDropdown value={rentRange} onChange={setRentRange} style={{ width: '100%' }} />
                         </Form.Item>
                     </Col>
 
-                    <Col span={3}>
+                    <Col xs={24} sm={8} md={3}>
                         <Form.Item name="propertyBuildupSize">
                             <BuiltupSizeSelection value={size} onChange={handleSizeChange} style={{ width: '100%' }} />
                         </Form.Item>
                     </Col>
 
-                    <Col span={7} offset={2}>
+                    <Col xs={24} sm={12} md={7} offset={2}>
                         <Form.Item name="sortBy" label="Sort by:" style={{ display: 'inline-block' }}>
                             <PostSortingSelection value={sortBy} onChange={handleSortByChange} style={{ width: '200px' }} />
                         </Form.Item>
@@ -400,8 +398,9 @@ function RoomRental() {
             </Form>
         </div>
 
+
         {posts.length === 0 && <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', height: '50vh' }}>
-            <Empty description={<span style={{  fontSize: '20px' }}>No properties found. Please try refining your search.</span>} />
+            <Empty description={<span style={{ fontSize: '20px' }}>No properties found. Please try refining your search.</span>} />
         </div>}
 
         {/* mention how many results found */}
@@ -419,12 +418,10 @@ function RoomRental() {
         <div style={{
             display: 'flex',
             flexDirection: 'column',
-            // alignItems: 'center', 
-            // height: '50px', 
             marginLeft: '10%',
-            marginRight: '25%',
-            // border: '1px solid black',
-            marginTop: '10px'
+            // marginRight: '25%',
+            marginTop: '10px',
+            width: '75%',
         }}>
             {renderedPost}
         </div>

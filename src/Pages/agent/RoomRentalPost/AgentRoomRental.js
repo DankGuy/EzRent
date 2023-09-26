@@ -165,6 +165,29 @@ function AgentRoomRental() {
         });
     }
 
+    const unpostPost = async (postID) => {
+        const { data, error } = await supabase
+            .from('property_post')
+            .update({
+                propertyStatus: {
+                    stage: 'drafted',
+                    status: "inactive"
+                }
+            })
+            .eq('postID', postID);
+
+        if (error) {
+            console.log(error);
+        }
+
+        fetchData();
+        setSortBy(null);
+        setPostStatus('all');
+
+        //display successful message
+        message.success('Success! Your post has been unposted.');
+    }
+
     const uploadPost = async (postID) => {
         console.log(postID);
         const { data, error } = await supabase
@@ -376,7 +399,7 @@ function AgentRoomRental() {
 
                             :
                             currentPosts.map((post) => (
-                                <CurrentPost post={post} key={post.postID} deletePost={deletePost} contextHolder={contextHolder} />
+                                <CurrentPost post={post} key={post.postID} deletePost={deletePost} contextHolder={contextHolder} unpostPost={unpostPost} />
                             ))
                     }
                 </Row>

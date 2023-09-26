@@ -2,6 +2,7 @@ import { Col, Image, Popconfirm, Popover, Row, Spin, Tag, message } from "antd";
 import { FiEdit3 } from "react-icons/fi";
 import { GrDocumentPdf, GrView } from "react-icons/gr";
 import { MdOutlineDeleteOutline, MdOutlinePublish } from "react-icons/md";
+import { GrRevert } from "react-icons/gr";
 import { BsThreeDotsVertical } from "react-icons/bs";
 import { Link } from "react-router-dom";
 import { useEffect, useState } from "react";
@@ -16,7 +17,7 @@ import {
 
 
 
-function CurrentPost({ post, deletePost, uploadPost, contextHolder }) {
+function CurrentPost({ post, deletePost, uploadPost, contextHolder ,unpostPost}) {
 
     const [firstImage, setFirstImage] = useState(null);
     const [isOpen, setIsOpen] = useState(false);
@@ -102,8 +103,25 @@ function CurrentPost({ post, deletePost, uploadPost, contextHolder }) {
                 </Row>
             }
 
-            {post.propertyStatus.stage === 'drafted' &&
+            {post.propertyStatus.stage !== 'drafted' &&
+                <Row className="popOutBox">
+                <Col span={24} style={popOverStyle}
+                    onClick={
+                        () => {
+                            unpostPost(post.postID);
+                            setIsOpen(!isOpen);
+                        }}>
+                    <span
+                        style={{ display: 'flex', alignItems: 'center', cursor: 'pointer' }}>
+                        <span style={{ flexGrow: 1 }}>Unpost</span>
+                        <GrRevert size={18} />
+                    </span>
+                </Col>
+            </Row>
+            }
 
+            {post.propertyStatus.stage === 'drafted' &&
+                
                 <Row className="popOutBox">
                     <Col span={24} style={popOverStyle}
                         onClick={

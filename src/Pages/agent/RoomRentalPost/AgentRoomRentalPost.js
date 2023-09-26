@@ -55,7 +55,6 @@ function AgentRoomRentalPost() {
     }, [isView])
 
 
-
     //Get the image list from supabase storage and set it to fileList
     useEffect(() => {
         const fetchPropertyImages = async () => {
@@ -191,8 +190,6 @@ function AgentRoomRentalPost() {
             setRoomFileList(roomFileList);
         }
 
-
-
         fetchPropertyImages();
         setRoomDetails();
 
@@ -279,27 +276,59 @@ function AgentRoomRentalPost() {
     ];
 
 
-    useEffect(() => {
-        console.log(pFurnishType)
-        if (pFurnishType === 'Unfurnished') {
+    // useEffect(() => {
+    //     console.log(pFurnishType)
+    //     if (pFurnishType === 'Unfurnished') {
+    //         form.setFieldsValue({ propertyFurnish: [] })
+    //         setPFurnishChecklist([])
+    //     } else if (pFurnishType === 'Fully Furnished') {
+    //         form.setFieldsValue({ propertyFurnish: furnishOption.map((item) => item.value) })
+    //         setPFurnishChecklist(furnishOption)
+    //     } else if (pFurnishType === 'Partially Furnished') {
+    //         form.setFieldsValue({ propertyFurnish: ['Refrigerator', 'Washing machine', 'Water heater'] })
+    //         setPFurnishChecklist(['Refrigerator', 'Washing Machine', 'Water Heater'])
+    //     }
+    // }, [pFurnishType])
+
+    // useEffect(() => {
+    //     console.log(pFurnishChecklist)
+    //     if (pFurnishChecklist.length === 0) {
+    //         console.log('unfurnished')
+    //         form.setFieldsValue({ propertyFurnishType: 'Unfurnished' })
+    //         setPFurnishType('Unfurnished')
+    //     } else if (pFurnishChecklist.length === furnishOption.length) {
+    //         console.log('fully furnished')
+    //         form.setFieldsValue({ propertyFurnishType: 'Fully Furnished' })
+    //         setPFurnishType('Fully Furnished')
+    //     } else {
+    //         console.log('partially furnished')
+    //         form.setFieldsValue({ propertyFurnishType: 'Partially Furnished' })
+    //         setPFurnishType('Partially Furnished')
+    //     }
+    // }, [pFurnishChecklist])
+
+    const handlePFurnishType = (value) => {
+        setPFurnishType(value);
+        if (value === 'Unfurnished') {
             form.setFieldsValue({ propertyFurnish: [] })
             setPFurnishChecklist([])
-        } else if (pFurnishType === 'Fully Furnished') {
+        } else if (value === 'Fully Furnished') {
             form.setFieldsValue({ propertyFurnish: furnishOption.map((item) => item.value) })
             setPFurnishChecklist(furnishOption)
-        } else if (pFurnishType === 'Partially Furnished') {
+        } else if (value === 'Partially Furnished') {
             form.setFieldsValue({ propertyFurnish: ['Refrigerator', 'Washing machine', 'Water heater'] })
             setPFurnishChecklist(['Refrigerator', 'Washing Machine', 'Water Heater'])
         }
-    }, [pFurnishType])
+    };
 
-    useEffect(() => {
-        console.log(pFurnishChecklist)
-        if (pFurnishChecklist.length === 0) {
+
+    const handlePFurnishChecklist = (values) => {
+        setPFurnishChecklist(values)
+        if (values.length === 0) {
             console.log('unfurnished')
             form.setFieldsValue({ propertyFurnishType: 'Unfurnished' })
             setPFurnishType('Unfurnished')
-        } else if (pFurnishChecklist.length === furnishOption.length) {
+        } else if (values.length === furnishOption.length) {
             console.log('fully furnished')
             form.setFieldsValue({ propertyFurnishType: 'Fully Furnished' })
             setPFurnishType('Fully Furnished')
@@ -308,16 +337,9 @@ function AgentRoomRentalPost() {
             form.setFieldsValue({ propertyFurnishType: 'Partially Furnished' })
             setPFurnishType('Partially Furnished')
         }
-    }, [pFurnishChecklist])
+    }
 
-    // useEffect(() => {
-    //     //iterate through the roomNum and set initial value for roomSquareFeet
-    //     Array.from({ length: roomNum }, (_, i) => i + 1).forEach((index) => {
-    //         form.setFieldsValue({ [`roomSquareFeet${index}`]: 1 })
-    //     }
-    //     )
 
-    // }, [roomNum])
 
     const uploadPropertyImage = async (file, id) => {
         try {
@@ -668,14 +690,7 @@ function AgentRoomRentalPost() {
         return renderedItemOption
     }
 
-    const handlePFurnishType = (value) => {
-        setPFurnishType(value);
-    };
-
-
-    const handlePFurnishChecklist = (values) => {
-        setPFurnishChecklist(values)
-    }
+    
 
 
     const validatePostcode = (value) => {

@@ -194,8 +194,8 @@ function Roommate() {
 
     return (<>
         <div style={{
-            padding: '40px 10px 0px',
-            border: '0px solid black',
+            padding: '40px 10px 0px 10px',
+            // border: '1px solid black',
             boxShadow: '0px 4px 6px -2px rgba(0, 0, 0, 0.2)',
             position: 'sticky',
             top: '45px',
@@ -213,24 +213,19 @@ function Roommate() {
                         roomSelection: null,
                     }
                 }>
-                <Row style={{ marginLeft: '10%' }}>
-                    <Col span={4}>
+                <Row gutter={[16, 16]} style={{ marginLeft: '10%', paddingBottom: '10px' }}>
+                    <Col xs={24} sm={24} md={4}>
                         <Form.Item name="genderSelection">
-                            <GenderSelection bordered={true} style={{ width: '80%' }} />
+                            <GenderSelection bordered={true} style={{ width: '100%' }} />
                         </Form.Item>
                     </Col>
-                    <Col span={4}>
+                    <Col xs={24} sm={24} md={4}>
                         <Form.Item name="roomSelection">
-                            <RoomResourceSelection bordered={true} style={{ width: '80%' }} />
+                            <RoomResourceSelection bordered={true} style={{ width: '100%' }} />
                         </Form.Item>
                     </Col>
-                    {/* <Col span={4}>
-                    <Form.Item name="priceRange">
-                        <Slider range min={0} max={1000} defaultValue={[0, 1000]} step={100} />
-                    </Form.Item>
-                </Col> */}
-                    <Col span={2}>
-                        <Button type="primary" className="viewButton" htmlType="submit" style={{ width: '80%' }}>
+                    <Col xs={24} sm={24} md={2}>
+                        <Button type="primary" className="viewButton" htmlType="submit" style={{ width: '100%' }}>
                             Search
                         </Button>
                     </Col>
@@ -272,7 +267,13 @@ function Roommate() {
         <Row style={{ margin: '0% 5% 2% 8%' }}>
             {listings.map((listing, index) => {
                 return (
-                    <Col span={11} key={index} style={{ marginRight: '4%' }}>
+                    <Col
+                        xs={{ span: 24 }}        // 100% width on extra small screens
+                        sm={{ span: 24 }}        // 50% width on small screens
+                        md={{ span: 24 }}        // 50% width on medium screens
+                        lg={{ span: 11 }}        // Your current setting for large screens
+                        xl={{ span: 11 }}
+                        key={index} style={{ marginRight: '4%' }}>
                         <RoommatePostLayout listing={listing} />
                     </Col>
                 )

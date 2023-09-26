@@ -35,6 +35,8 @@ function ReportModalForm({ buttonContent, postID }) {
         const { reportDescription, reportReason } = e;
 
         const userID = (await supabase.auth.getUser()).data.user.id;
+
+        const currnetDate = new Date();
         
         const {data, error } =await supabase
             .from('report')
@@ -45,6 +47,7 @@ function ReportModalForm({ buttonContent, postID }) {
                     reportedBy: userID,
                     postID: postID,
                     reportStatus: 'Pending',
+                    reportedDate: currnetDate,
                 },
             ]);
         

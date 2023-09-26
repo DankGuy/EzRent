@@ -1,7 +1,7 @@
 .postContainer {
     margin: 2% 0% 0% 0%;
     height: auto;
-    /* width: 100%; */
+    width: 100%;
     background-color: white;
     box-shadow: 0 -1px 1px 0 rgba(0, 28, 36, .3), 0 1px 1px 0 rgba(0, 28, 36, .3), 1px 1px 1px 0 rgba(0, 28, 36, .15), -1px 1px 1px 0 rgba(0, 28, 36, .15);
 

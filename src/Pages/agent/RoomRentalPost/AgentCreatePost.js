@@ -679,11 +679,6 @@ function AgentCreatePost() {
         }
         )
 
-
-
-
-
-
         if (postError) {
             console.log(postError)
         } else {
