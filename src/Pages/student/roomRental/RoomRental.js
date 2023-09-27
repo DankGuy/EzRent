@@ -86,11 +86,11 @@ function RoomRental() {
                 console.log("testing2")
                 const searchInput = input['searchInput'];
                 query = query.or(
-                    `propertyName.eq."${searchInput}",propertyAddress.eq."${searchInput}",propertyCity.eq."${searchInput}"`,
+                    `propertyName.eq."${searchInput}",propertyAddress.eq."${searchInput}",propertyCity.eq."${searchInput}",propertyState.eq."${searchInput}"`
                 );
             }
 
-            if (!!input['propertyFurnishType'] && input['propertyFurnishType'] !== 'All Furnish Type') {
+            if (!!input['propertyFurnishType'] && input['propertyFurnishType'] !== 'null') {
                 console.log("testing3")
                 query = query.eq('propertyFurnishType', input['propertyFurnishType']);
             }

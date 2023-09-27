@@ -212,7 +212,10 @@ function CurrentPost({ post, deletePost, uploadPost, contextHolder ,unpostPost})
                             fontWeight: '700',
                             letterSpacing: 'normal',
                             lineHeight: '22px',
-                            paddingRight: '10px'
+                            paddingRight: '10px',
+                            overflow: 'hidden',
+                            textOverflow: 'ellipsis',
+                            whiteSpace: 'nowrap',
                         }}>
                         {post.propertyName}
                     </Col>

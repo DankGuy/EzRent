@@ -216,9 +216,9 @@ function RoommateRequest() {
                 studentPhone: element.student.phone,
                 requestDate: getDateOnly(element.requestedDateTime),
                 message: element.message == null ? "-" : element.message,
-                roomIndex: element.roomID.roomID.split("_")[1],
-                roomType: element.roomID.roomType,
-                roomID: element.roomID.roomID,
+                roomIndex: element.roomID?.roomID.split("_")[1],
+                roomType: element.roomID?.roomType,
+                roomID: element.roomID?.roomID,
             });
         });
 
