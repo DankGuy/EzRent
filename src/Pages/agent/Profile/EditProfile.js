@@ -1,5 +1,5 @@
 import { LoadingOutlined, PlusOutlined } from "@ant-design/icons";
-import { Button, message, Upload, Select, Form, Input } from "antd";
+import { Button, message, Upload, Select, Form, Input, Radio } from "antd";
 import { useState } from "react";
 import { supabase } from "../../../supabase-client";
 import { useEffect } from "react";
@@ -62,7 +62,7 @@ function EditProfile() {
   };
   const handleChange = (info) => {
     setAvatar(info.file.originFileObj);
-    getBase64(info.file.originFileObj, (imageUrl) => setAvatarUrl(imageUrl))
+    getBase64(info.file.originFileObj, (imageUrl) => setAvatarUrl(imageUrl));
   };
   // upload image to database
   const uploadImage = async (file) => {
@@ -79,21 +79,18 @@ function EditProfile() {
   };
 
   // handle form submission
-  const onFinish = (value) => {
+  const onFinish = async (value) => {
     if (avatar) {
       uploadImage(avatar);
     }
-    editProfile();
-  };
-  const editProfile = async () => {
     // update user information
     const { data, error } = await supabase
       .from("agent")
       .update({
-        name: formData?.name,
-        gender: formData?.gender,
-        phone: formData?.phone,
-        company: formData?.company,
+        name: value.name,
+        gender: value.gender,
+        phone: value.phone,
+        company: value.company,
       })
       .eq("agent_id", userInfo?.agent_id);
     if (error) {
@@ -113,12 +110,10 @@ function EditProfile() {
       setUserInfo(agent);
 
       form.setFieldValue("name", agent?.name);
-      form.setFieldValue('gender', agent?.gender);
-      form.setFieldValue('phone', agent?.phone);
-      form.setFieldValue('company', agent?.company);
-
-    }
-    );
+      form.setFieldValue("gender", agent?.gender);
+      form.setFieldValue("phone", agent?.phone);
+      form.setFieldValue("company", agent?.company);
+    });
   }, []);
 
   // update formData state when userInfo state changes (happens after the getUserInfo() function is called
@@ -131,11 +126,6 @@ function EditProfile() {
       company: userInfo?.company,
     });
   }, [userInfo]);
-
-  // update formData state when user changes input
-  const handleInfoChange = (e) => {
-    setFormData({ ...formData, [e.target.name]: e.target.value });
-  };
 
   return (
     <>
@@ -155,18 +145,18 @@ function EditProfile() {
           }}
           wrapperCol={{
             span: 16,
-          }} >
-
-          <div style={{
-            display: "flex",
-            flexDirection: "column",
-            justifyContent: "center",
-            alignItems: "center",
-            width: "100%",
-            marginTop: '2vh'
-          }} >
-
-
+          }}
+        >
+          <div
+            style={{
+              display: "flex",
+              flexDirection: "column",
+              justifyContent: "center",
+              alignItems: "center",
+              width: "100%",
+              marginTop: "2vh",
+            }}
+          >
             <Form.Item>
               <div
                 style={{
@@ -202,11 +192,11 @@ function EditProfile() {
 
             <fieldset
               style={{
-                width: '500px',
-                border: '1px solid #D9D9D9',
-                padding: '10px',
-                borderRadius: '10px',
-                marginBottom: '20px',
+                width: "500px",
+                border: "1px solid #D9D9D9",
+                padding: "10px",
+                borderRadius: "10px",
+                marginBottom: "20px",
                 // display: 'flex',
                 // flexDirection: 'column',
                 // alignItems: 'center',
@@ -214,17 +204,17 @@ function EditProfile() {
             >
               <legend
                 style={{
-                  width: 'auto',
-                  borderBottom: 'none',
-                  marginBottom: '0px',
-                  fontWeight: 'bold',
-                  textAlign: 'center',
+                  width: "auto",
+                  borderBottom: "none",
+                  marginBottom: "0px",
+                  fontWeight: "bold",
+                  textAlign: "center",
                 }}
               >
                 Personal Details
               </legend>
               <Form.Item
-                label={<span style={{ fontWeight: 'bold' }}>Name</span>}
+                label={<span style={{ fontWeight: "bold" }}>Name</span>}
                 name="name"
                 rules={[
                   {
@@ -233,62 +223,91 @@ function EditProfile() {
                   },
                 ]}
               >
-                <Input onChange={handleInfoChange} name="name" />
+                <Input name="name" />
               </Form.Item>
 
               <Form.Item
-                label={<span style={{ fontWeight: 'bold' }}>Gender</span>}
-                name="gender"
+                label={<span style={{ fontWeight: "bold" }}>Gender</span>}
+                name="gender" // Add the name attribute here
                 rules={[
                   {
                     required: true,
                   },
                 ]}
               >
-                <div style={{ display: "flex", justifyContent: "flex-start" }}>
-                  <Select
-                    name="gender"
-                    placeholder="select your gender"
-                    value={formData?.gender}
-                    onChange={(value) =>
-                      handleInfoChange({ target: { name: "gender", value } })
-                    }
-                  >
-                    <Option value="Male">Male</Option>
-                    <Option value="Female">Female</Option>
-                    <Option value="Other">Other</Option>
-                  </Select>
-                </div>
+                <Radio.Group>
+                  <Radio value={"Male"} style={{ fontSize: "1rem" }}>
+                    Male
+                  </Radio>
+                  <Radio value={"Female"} style={{ fontSize: "1rem" }}>
+                    Female
+                  </Radio>
+                </Radio.Group>
               </Form.Item>
-
             </fieldset>
 
             <fieldset
               style={{
-                width: '500px',
-                border: '1px solid #D9D9D9',
-                padding: '10px',
-                borderRadius: '10px',
-                marginBottom: '20px',
+                width: "500px",
+                border: "1px solid #D9D9D9",
+                padding: "10px",
+                borderRadius: "10px",
+                marginBottom: "20px",
               }}
             >
               <legend
                 style={{
-                  width: 'auto',
-                  borderBottom: 'none',
-                  marginBottom: '0px',
-                  fontWeight: 'bold',
-                  textAlign: 'center',
+                  width: "auto",
+                  borderBottom: "none",
+                  marginBottom: "0px",
+                  fontWeight: "bold",
+                  textAlign: "center",
+                }}
+              >
+                Company Details
+              </legend>
+              <Form.Item
+                label={<span style={{ fontWeight: "bold" }}>Company Name</span>}
+                name="company"
+                rules={[
+                  {
+                    required: true,
+                    message: "Please input your company name!",
+                  },
+                ]}
+              >
+                <Input name="company" />
+              </Form.Item>
+            </fieldset>
+
+            <fieldset
+              style={{
+                width: "500px",
+                border: "1px solid #D9D9D9",
+                padding: "10px",
+                borderRadius: "10px",
+                marginBottom: "20px",
+              }}
+            >
+              <legend
+                style={{
+                  width: "auto",
+                  borderBottom: "none",
+                  marginBottom: "0px",
+                  fontWeight: "bold",
+                  textAlign: "center",
                 }}
               >
                 Contact Details
-              </legend>          
-              <Form.Item label={<span style={{ fontWeight: 'bold' }}>Email</span>}>
+              </legend>
+              <Form.Item
+                label={<span style={{ fontWeight: "bold" }}>Email</span>}
+              >
                 <Input value={formData?.email} disabled />
               </Form.Item>
 
               <Form.Item
-                label={<span style={{ fontWeight: 'bold' }}>Phone Number</span>}
+                label={<span style={{ fontWeight: "bold" }}>Phone Number</span>}
                 name="phone"
                 rules={[
                   {
@@ -312,49 +331,9 @@ function EditProfile() {
                   },
                 ]}
               >
-                <Input
-                  onChange={handleInfoChange}
-                  name="phone"
-                />
+                <Input name="phone" />
               </Form.Item>
-
             </fieldset>
-
-            <fieldset
-              style={{
-                width: '500px',
-                border: '1px solid #D9D9D9',
-                padding: '10px',
-                borderRadius: '10px',
-                marginBottom: '20px',
-              }}
-            >
-              <legend
-                style={{
-                  width: 'auto',
-                  borderBottom: 'none',
-                  marginBottom: '0px',
-                  fontWeight: 'bold',
-                  textAlign: 'center',
-                }}
-              >
-                Company Details
-              </legend>          
-              <Form.Item 
-                label={<span style={{ fontWeight: 'bold' }}>Company Name</span>} 
-                name="company"
-                rules={[
-                  {
-                    required: true,
-                    message: "Please input your company name!",
-                  },
-                ]}
-                >
-                <Input onChange={handleInfoChange} name="company" />
-              </Form.Item>
-
-            </fieldset>
-
 
             <Form.Item>
               <div
@@ -365,7 +344,12 @@ function EditProfile() {
                   gap: "10px",
                 }}
               >
-                <Button type="default" htmlType="button" onClick={cancelSubmit} className="viewButton">
+                <Button
+                  type="default"
+                  htmlType="button"
+                  onClick={cancelSubmit}
+                  className="viewButton"
+                >
                   Cancel
                 </Button>
                 <Button type="primary" htmlType="submit" className="viewButton">
@@ -375,7 +359,6 @@ function EditProfile() {
             </Form.Item>
           </div>
         </Form>
-
       </div>
     </>
   );
