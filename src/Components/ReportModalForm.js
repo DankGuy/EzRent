@@ -2,7 +2,7 @@ import { Modal, Form, Input, Select, Button, message } from "antd";
 import { useState } from 'react';
 import { supabase } from '../supabase-client';
 
-function ReportModalForm({ buttonContent, postID }) {
+function ReportModalForm({ buttonContent, postID, warningMessage }) {
 
 
     const [form] = Form.useForm();
@@ -67,6 +67,7 @@ function ReportModalForm({ buttonContent, postID }) {
                 onClick={showModal} 
                 type="primary" 
                 style={{ width: '100%', margin: '0px' }}
+                disabled={warningMessage != '' ? true : false}
                 className="viewButton">{buttonContent}</Button>
 
             <Modal
