@@ -5,13 +5,13 @@
 ## 🚀 Modules
 
 ### 1. User Services Module 
-👤 **In charge**: Wilson Yau Kai Chun
+👤 **In charge**: [Wilson Yau Kai Chun](https://github.com/wilsonyau02)
 - 🛏️ Room Rental 
 - 📅 Appointment 
 - 👫 Roommate-finding 
 
 ### 2. User Administrative Module 
-👤 **In charge**: Kelvin Ee Wei Keong
+👤 **In charge**: [Kelvin Ee Wei Keong](https://github.com/DankGuy)
 - 🔒 Account 
 - 💲 Payment 
 - 📜 Rental Agreement 
