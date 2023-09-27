@@ -138,11 +138,11 @@ function RentalAgreement() {
       // within rental period
       // the first month of rental
       if (currentMonth === commencementDate.getMonth()) {
-        if (commencementDate > 10 && listing.status === "pending") {
+        if (commencementDate.getDate() > 10 && listing.status === "pending") {
           // if the commencement date is after 10th of the month, the pay before 10th monthly doesnt apply for the first month
           return "pending";
         } else if (
-          commencementDate <= 10 &&
+          commencementDate.getDate() <= 10 &&
           currentDate.getDate() >= 10 &&
           listing.status === "pending"
         ) {
