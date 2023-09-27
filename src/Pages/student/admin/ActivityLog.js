@@ -3,6 +3,7 @@ import { Table, Button, Input, Space, Tag, Typography } from "antd";
 import { SearchOutlined } from "@ant-design/icons";
 import Highlighter from "react-highlight-words";
 import { useEffect } from "react";
+import moment from 'moment';
 import { supabase } from "../../../supabase-client";
 
 function ActivityLog() {
@@ -263,6 +264,7 @@ function ActivityLog() {
       sorter: (a, b) => new Date(a.date) - new Date(b.date),
       sortDirections: ["descend", "ascend"],
       width: "20%",
+      render: (date) => moment(date).format('YYYY-MM-DD HH:mm:ss'),
     },
   ];
 
