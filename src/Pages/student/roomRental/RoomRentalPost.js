@@ -654,7 +654,7 @@ function RoomRentalPost() {
                             </Col>
                         </Row>
                         <Row>
-                            <Col span={22} style={{ fontSize: '18px', marginLeft: '20px', textAlign: 'center' }}>Rating: {post.agent?.rating}/5.0</Col>
+                            <Col span={22} style={{ fontSize: '18px', marginLeft: '20px', textAlign: 'center' }}>Rating: {post.agent?.rating.toFixed(1)}/5.0</Col>
                         </Row>
                         <Row>
                             <Col span={24} style={{ fontSize: '18px', marginLeft: '0px', marginTop: '10px', textAlign: 'center' }}>
