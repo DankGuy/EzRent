@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { Table, Button, message, Typography } from "antd";
+import moment from "moment";
 import { supabase } from "../../../supabase-client";
 import GenerateLog from "../../../Components/GenerateLog";
 
@@ -137,6 +138,7 @@ function UserActivation() {
       title: "Deactivated Date",
       dataIndex: "deactivated_date",
       sorter: (a, b) => new Date(a.date) - new Date(b.date),
+      render: (date) => moment(date).format('YYYY-MM-DD HH:mm:ss'),
     },
     {
       key: "deactivated_by",
