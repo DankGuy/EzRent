@@ -22,7 +22,7 @@ function AgentCreatePost() {
     const [propertyCity, setPropertyCity] = useState('');
     const [roomNum, setRoomNum] = useState(1);
 
-    const [pFurnishType, setPFurnishType] = useState(null);
+    const [pFurnishType, setPFurnishType] = useState('null');
     const [pFurnishChecklist, setPFurnishChecklist] = useState([]);
 
 
@@ -104,36 +104,7 @@ function AgentCreatePost() {
     ];
 
 
-    useEffect(() => {
-        console.log(pFurnishType)
-        if (pFurnishType === 'Unfurnished') {
-            form.setFieldsValue({ propertyFurnish: [] })
-            setPFurnishChecklist([])
-        } else if (pFurnishType === 'Fully Furnished') {
-            form.setFieldsValue({ propertyFurnish: furnishOption.map((item) => item.value) })
-            setPFurnishChecklist(furnishOption)
-        } else if (pFurnishType === 'Partially Furnished') {
-            form.setFieldsValue({ propertyFurnish: ['Refrigerator', 'Washing machine', 'Water heater'] })
-            setPFurnishChecklist(['Refrigerator', 'Washing Machine', 'Water Heater'])
-        }
-    }, [pFurnishType])
-
-    useEffect(() => {
-        console.log(pFurnishChecklist)
-        if (pFurnishChecklist.length === 0) {
-            console.log('unfurnished')
-            form.setFieldsValue({ propertyFurnishType: 'Unfurnished' })
-            setPFurnishType('Unfurnished')
-        } else if (pFurnishChecklist.length === furnishOption.length) {
-            console.log('fully furnished')
-            form.setFieldsValue({ propertyFurnishType: 'Fully Furnished' })
-            setPFurnishType('Fully Furnished')
-        } else {
-            console.log('partially furnished')
-            form.setFieldsValue({ propertyFurnishType: 'Partially Furnished' })
-            setPFurnishType('Partially Furnished')
-        }
-    }, [pFurnishChecklist])
+    
 
     useEffect(() => {
         //iterate through the roomNum and set initial value for roomSquareFeet
@@ -430,14 +401,70 @@ function AgentCreatePost() {
         return renderedItemOption
     }
 
+    // useEffect(() => {
+    //     console.log(pFurnishType)
+    //     if (pFurnishType === 'Unfurnished') {
+    //         form.setFieldsValue({ propertyFurnish: [] })
+    //         setPFurnishChecklist([])
+    //     } else if (pFurnishType === 'Fully Furnished') {
+    //         form.setFieldsValue({ propertyFurnish: furnishOption.map((item) => item.value) })
+    //         setPFurnishChecklist(furnishOption)
+    //     } else if (pFurnishType === 'Partially Furnished') {
+    //         form.setFieldsValue({ propertyFurnish: ['Refrigerator', 'Washing machine', 'Water heater'] })
+    //         setPFurnishChecklist(['Refrigerator', 'Washing Machine', 'Water Heater'])
+    //     }
+    // }, [pFurnishType])
+
+    // useEffect(() => {
+    //     console.log(pFurnishChecklist)
+    //     if (pFurnishChecklist.length === 0) {
+    //         console.log('unfurnished')
+    //         form.setFieldsValue({ propertyFurnishType: 'Unfurnished' })
+    //         setPFurnishType('Unfurnished')
+    //     } else if (pFurnishChecklist.length === furnishOption.length) {
+    //         console.log('fully furnished')
+    //         form.setFieldsValue({ propertyFurnishType: 'Fully Furnished' })
+    //         setPFurnishType('Fully Furnished')
+    //     } else {
+    //         console.log('partially furnished')
+    //         form.setFieldsValue({ propertyFurnishType: 'Partially Furnished' })
+    //         setPFurnishType('Partially Furnished')
+    //     }
+    // }, [pFurnishChecklist])
+
     const handlePFurnishType = (value) => {
         setPFurnishType(value);
+        if (value === 'Unfurnished' || value === 'null') {
+            form.setFieldsValue({ propertyFurnish: [] })
+            setPFurnishChecklist([])
+        } else if (value === 'Fully Furnished') {
+            form.setFieldsValue({ propertyFurnish: furnishOption.map((item) => item.value) })
+            setPFurnishChecklist(furnishOption)
+        } else if (value === 'Partially Furnished') {
+            form.setFieldsValue({ propertyFurnish: ['Refrigerator', 'Washing machine', 'Water heater'] })
+            setPFurnishChecklist(['Refrigerator', 'Washing Machine', 'Water Heater'])
+        }
     };
 
 
     const handlePFurnishChecklist = (values) => {
         console.log(values)
         setPFurnishChecklist(values)
+        if (values.length === 0) {
+            console.log('unfurnished')
+            form.setFieldsValue({ propertyFurnishType: 'Unfurnished' })
+            setPFurnishType('Unfurnished')
+        } else if (values.length === furnishOption.length) {
+            console.log('fully furnished')
+            form.setFieldsValue({ propertyFurnishType: 'Fully Furnished' })
+            setPFurnishType('Fully Furnished')
+        } else {
+            console.log('partially furnished')
+            form.setFieldsValue({ propertyFurnishType: 'Partially Furnished' })
+            setPFurnishType('Partially Furnished')
+            // setPFurnishChecklist(['Refrigerator', 'Washing Machine', 'Water Heater', ...values])
+            form.setFieldsValue({ propertyFurnish: ['Refrigerator', 'Washing machine', 'Water heater', ...values] })
+        }
     }
 
     const clearPropertyStateAndCity = () => {

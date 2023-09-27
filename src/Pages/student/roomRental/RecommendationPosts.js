@@ -210,14 +210,24 @@ function RecommendationPosts({ postID }) {
     return (
         <>
             <div>
-                <Carousel
-                    responsive={responsive}
-                    swipeable={false}
-                    draggable={false}
-                    infinite={false}
-                >
-                    {renderPosts()}
-                </Carousel>
+                {recommendedPosts.length !== 0 &&
+                    <>
+                        <Row>
+                            <Col span={24} style={{ fontSize: '30px', marginLeft: '10px', fontWeight: '500' }}>Recommended Properties</Col>
+                        </Row>
+
+                        <Carousel
+                            responsive={responsive}
+                            swipeable={false}
+                            draggable={false}
+                            infinite={false}
+                        >
+                            {renderPosts()}
+                        </Carousel>
+                    </>
+                }
+
+
             </div>
 
 

@@ -309,7 +309,7 @@ function AgentRoomRentalPost() {
 
     const handlePFurnishType = (value) => {
         setPFurnishType(value);
-        if (value === 'Unfurnished') {
+        if (value === 'Unfurnished' || value === 'null') {
             form.setFieldsValue({ propertyFurnish: [] })
             setPFurnishChecklist([])
         } else if (value === 'Fully Furnished') {
@@ -318,6 +318,7 @@ function AgentRoomRentalPost() {
         } else if (value === 'Partially Furnished') {
             form.setFieldsValue({ propertyFurnish: ['Refrigerator', 'Washing machine', 'Water heater'] })
             setPFurnishChecklist(['Refrigerator', 'Washing Machine', 'Water Heater'])
+            
         }
     };
 
@@ -336,6 +337,7 @@ function AgentRoomRentalPost() {
             console.log('partially furnished')
             form.setFieldsValue({ propertyFurnishType: 'Partially Furnished' })
             setPFurnishType('Partially Furnished')
+            form.setFieldsValue({ propertyFurnish: ['Refrigerator', 'Washing machine', 'Water heater', ...values] })
         }
     }
 
