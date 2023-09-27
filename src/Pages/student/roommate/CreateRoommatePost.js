@@ -755,7 +755,7 @@ function CreateRoommatePost({ value, onModalChange, onTrigger }) {
                                 <Button
                                     type="primary"
                                     disabled={
-                                        index === 0 && hasRentedProperty && !rentedProperty ? true : false
+                                        (index === 0 && hasRentedProperty && !rentedProperty) || (index === 0 && !hasRentedProperty && selectedValues.length === 0)
                                     }
                                     style={{ marginRight: 10, backgroundColor: '#6643b5', color: 'white', borderRadius: '0px', fontWeight: 'bold' }}
                                     onClick={index === stepsData.length - 1 ? handleFormFinish : handleNextStep}

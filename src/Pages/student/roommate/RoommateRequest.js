@@ -814,11 +814,17 @@ function RoommateRequest() {
                         >
                             <Button
                                 type="primary"
+                                className="viewButton"
                                 style={{
-                                    width: "40%",
+                                    width: "auto",
                                     height: "auto",
-                                    margin: "10px",
+                                    marginTop: "20px",
+                                    marginRight: "10px",
+                                    marginBottom: "10px",
                                     fontSize: "1.1rem",
+                                    borderRadius: "0px",
+                                    backgroundColor: "#6643b5",
+                                    fontWeight: "500",
                                 }}
                                 onClick={handleApproveClick}
                             >
@@ -827,11 +833,16 @@ function RoommateRequest() {
                             <Button
                                 type="primary"
                                 danger
+                                className="rejectButton"
                                 style={{
-                                    width: "40%",
+                                    width: 100,
                                     height: "auto",
-                                    margin: "10px",
+                                    marginTop: "20px",  
+                                    marginRight: "10px",
+                                    marginBottom: "10px",
                                     fontSize: "1.1rem",
+                                    borderRadius: "0px",
+                                    fontWeight: "500",
                                 }}
                                 onClick={handleRejectClick}
                             >

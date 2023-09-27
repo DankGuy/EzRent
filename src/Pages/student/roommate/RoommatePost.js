@@ -1,4 +1,4 @@
-import { Avatar, Breadcrumb, Button, Col, message, Row, Popconfirm, Modal, Form, Input, Tag, Select } from "antd";
+import { Avatar, Breadcrumb, Button, Col, message, Row, Popconfirm, Modal, Form, Input, Tag, Select, Alert } from "antd";
 import { useEffect, useState } from "react";
 import { useLocation } from "react-router-dom";
 import { supabase } from "../../../supabase-client";
@@ -24,6 +24,8 @@ function RoommatePost() {
     const [form] = Form.useForm();
 
     const [roomTypeOptions, setRoomTypeOptions] = useState([]);
+
+    const [warningMessage, setWarningMessage] = useState('');
 
     useEffect(() => {
         if (!postID) {
@@ -87,6 +89,13 @@ function RoommatePost() {
                 ),
                 disabled: value.availableSpace === 0,
             })));
+
+            //Check if all room is full
+            const isAllRoomFull = uniqueRoomTypes.every((value) => value.availableSpace === 0);
+
+            if (isAllRoomFull) {
+                setWarningMessage('Inactive Post Warning: This post is no longer active and is not visible to others. Any requests related to this post are disabled.');
+            }
 
             console.log(roomTypeOptions);
         }
@@ -227,7 +236,24 @@ function RoommatePost() {
                             ]}
                         />
                     </div>
+                    {warningMessage !== '' && (
+                        <Alert
+                            message={
+                                <>
+                                    <strong>{warningMessage.split(':')[0]}</strong>
+                                    {warningMessage.split(':').slice(1).join(':')}
+                                </>
+                            }
+                            type="warning"
+                            showIcon
+                            banner
+                            closable
+                        />
+                    )}
+
                     <div className="postSectionContainer">
+
+
 
                         <Row>
                             <Col span={2}

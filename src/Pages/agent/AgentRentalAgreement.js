@@ -619,6 +619,7 @@ function AgentRentalAgreement() {
                       placeholder="Search tenant"
                       enterButton
                       style={{ width: "100%" }}
+                      className="search-input"
                     />
                   </AutoComplete>
                 </Form.Item>
@@ -712,10 +713,12 @@ function AgentRentalAgreement() {
                 <Button
                   type="primary"
                   htmlType="submit"
+                  className="viewButton"
                   style={{
                     fontSize: "1rem",
                     height: "auto",
                     marginRight: "10px",
+                    marginTop: "10px",
                     width: "100%",
                   }}
                 >
