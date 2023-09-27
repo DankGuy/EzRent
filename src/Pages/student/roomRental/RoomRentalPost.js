@@ -1,6 +1,6 @@
 import { useLocation } from 'react-router-dom'
 import { useState, useEffect } from 'react'
-import { Col, Row, Image, Breadcrumb, Avatar, Divider, Spin } from 'antd';
+import { Col, Row, Image, Breadcrumb, Avatar, Divider, Spin, Alert } from 'antd';
 import { TfiLocationPin, TfiBasketball } from 'react-icons/tfi'
 import { BsHouseFill, BsCurrencyDollar, BsPeopleFill } from 'react-icons/bs'
 import { FaBed, FaShower, FaCar, FaSwimmer, FaRunning, FaSwimmingPool, FaDumbbell, FaTableTennis, FaShoppingCart } from 'react-icons/fa'
@@ -31,7 +31,7 @@ function RoomRentalPost() {
     const stateParam = queryParams.get('state');
     const postID = stateParam ? JSON.parse(decodeURIComponent(stateParam)) : null;
 
-    
+
     const [post, setPost] = useState({});
     const [rooms, setRooms] = useState({});
     const [propertyImages, setPropertyImages] = useState([]);
@@ -40,6 +40,7 @@ function RoomRentalPost() {
     const [agentAvatar, setAgentAvatar] = useState(null);
 
     const [loadingImages, setLoadingImages] = useState(true);
+    const [warningMessage, setWarningMessage] = useState('');
 
 
     const responsive = {
@@ -77,9 +78,16 @@ function RoomRentalPost() {
                 console.log(error)
             }
 
-            // console.log(post)
+            console.log(post)
+            console.log(post.propertyStatus.status)
 
             setPost(post);
+
+            //Check if the post is still available
+            if (post.propertyStatus.status === 'inactive') {
+                setWarningMessage('Inactive Post Warning: This post is no longer active and is not visible to others. Any requests related to this post are disabled.');
+            }
+
 
 
             // console.log(post.postID);
@@ -154,7 +162,7 @@ function RoomRentalPost() {
                     console.log(roomError);
                 }
             });
-            
+
 
             // // Create an array of room numbers
             // const roomNumbers = Array.from({ length: post.propertyRoomNumber }, (_, i) => i + 1);
@@ -191,22 +199,22 @@ function RoomRentalPost() {
             // to speed up the process, browser will use cached data instead of fetching from the server
             const timestamp = new Date().getTime(); // Generate a timestamp to serve as the cache-busting query parameter
             const { data, error } = supabase.storage
-              .from("avatar")
-              .getPublicUrl(`avatar-${post.agent.agent_id}`, {
-                select: "metadata",
-                fileFilter: (metadata) => {
-                  const fileType = metadata.content_type.split("/")[1];
-                  return fileType === "jpg" || fileType === "png";
-                },
-              });
-        
-              if (error){
+                .from("avatar")
+                .getPublicUrl(`avatar-${post.agent.agent_id}`, {
+                    select: "metadata",
+                    fileFilter: (metadata) => {
+                        const fileType = metadata.content_type.split("/")[1];
+                        return fileType === "jpg" || fileType === "png";
+                    },
+                });
+
+            if (error) {
                 console.log(error);
-              }
+            }
             const avatarUrlWithCacheBuster = `${data.publicUrl}?timestamp=${timestamp}`; // Append the cache-busting query parameter
-        
+
             return avatarUrlWithCacheBuster;
-          };
+        };
 
         getAvatar().then((data) => {
             setAgentAvatar(data);
@@ -396,8 +404,10 @@ function RoomRentalPost() {
 
         if (loadingImages) {
             return (
-                <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', 
-                    height: '200px', width: '200px'}}>
+                <div style={{
+                    display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center',
+                    height: '200px', width: '200px'
+                }}>
                     <Spin size="small" />
                     <span style={{ marginTop: '10px', fontFamily: 'arial', fontSize: '15px' }}>
                         Loading...
@@ -427,7 +437,7 @@ function RoomRentalPost() {
         if (loadingImages) {
             return (
                 <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', height: '200px', width: '200px' }}>
-                    <Spin size="small"/>
+                    <Spin size="small" />
                     <span style={{ marginTop: '10px', fontFamily: 'arial', fontSize: '15px' }}>
                         Loading...
                     </span>
@@ -506,7 +516,7 @@ function RoomRentalPost() {
 
 
     return (
-        <div style={{ margin:'2.5% 6% 0 4%', padding: '10px' }}>
+        <div style={{ margin: '2.5% 6% 0 4%', padding: '10px' }}>
             <div>
                 <Breadcrumb style={{ margin: '16px 0', fontWeight: '500' }}
                     items={[
@@ -516,6 +526,20 @@ function RoomRentalPost() {
                     ]}
                 />
             </div>
+            {warningMessage !== '' && (
+                <Alert
+                    message={
+                        <>
+                            <strong>{warningMessage.split(':')[0]}</strong>
+                            {warningMessage.split(':').slice(1).join(':')}
+                        </>
+                    }
+                    type="warning"
+                    showIcon
+                    banner
+                    closable
+                />
+            )}
             <h1 style={{ fontFamily: 'arial', fontWeight: 'normal' }}>{post.propertyName}</h1>
             <h3 style={{ fontFamily: 'arial', fontWeight: 'normal', marginBottom: '0em' }}> <TfiLocationPin size={15} />{post.propertyAddress}, {post.propertyPostcode}, {post.propertyCity}</h3>
             <Row>
@@ -634,7 +658,7 @@ function RoomRentalPost() {
                         </Row>
                         <Row>
                             <Col span={24} style={{ fontSize: '18px', marginLeft: '0px', marginTop: '10px', textAlign: 'center' }}>
-                                <AppointmentModalForm post={post} />
+                                <AppointmentModalForm post={post} warningMessage={warningMessage} />
                             </Col>
                         </Row>
                     </div>
@@ -647,7 +671,7 @@ function RoomRentalPost() {
                         </Row>
                         <Row>
                             <Col span={24} style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', marginTop: '10px' }}>
-                                <ReportModalForm buttonContent={"Report this post"} postID={post.postID} />
+                                <ReportModalForm buttonContent={"Report this post"} postID={post.postID} warningMessage={warningMessage} />
                             </Col>
                         </Row>
                     </div>

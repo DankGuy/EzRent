@@ -7,7 +7,7 @@ import customParseFormat from 'dayjs/plugin/customParseFormat';
 import { message } from 'antd';
 
 
-function AppointmentModalForm({ post }) {
+function AppointmentModalForm({ post , warningMessage}) {
 
     // console.log(post);
 
@@ -232,6 +232,7 @@ function AppointmentModalForm({ post }) {
             onClick={showModal}
             type="primary"
             style={{ width: '80%', margin: '0px' }}
+            disabled={warningMessage !== '' ? true : false}
             className='viewButton'>Book Appointment</Button>
 
         <Modal
