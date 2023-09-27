@@ -621,7 +621,12 @@ function RoomRentalPost() {
                             <Col span={24} className='postSectionTitle'>Property Facility: </Col>
                         </Row>
                         <Row>
-                            {renderedFacility}
+                            {post.propertyFacility === null ?
+                                <Col span={24} style={{ fontSize: '18px', margin: '5px 20px 5px', paddingRight: '30px' }}>
+                                    No other facility...
+                                </Col>
+                                : renderedFacility
+                            }
                         </Row>
                     </div>
 
