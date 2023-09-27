@@ -73,7 +73,7 @@ function LoginCard() {
         if (error) {
           console.log("error", error);
         } else {
-          if (agentData[0].account_status === false) {
+          if (agentData[0]?.account_status === false) {
             // const { error } = await supabase.auth.signOut();
             message.error(
               "Your account is deactivated. Please contact admin for assistance."
