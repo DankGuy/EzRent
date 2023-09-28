@@ -311,32 +311,25 @@ function AgentRentalAgreement() {
     const months = form.getFieldValue("durationMonths");
     let calculatedEndDate;
 
-    console.log(startDate);
-
     if (startDate) {
       if (!years && !months || years === 0 && months === 0) {
         calculatedEndDate = startDate;
-
-        console.log("!years && !months")
       }
       else if (!months) {
         calculatedEndDate = moment(startDate)
           .add(years, "years")
           .format("YYYY-MM-DD");
-        console.log("!months", calculatedEndDate)
       }
       else if (!years) {
         calculatedEndDate = moment(startDate)
           .add(months, "months")
           .format("YYYY-MM-DD");
-        console.log("!years", calculatedEndDate)
       }
       else {
         calculatedEndDate = moment(startDate)
           .add(years, "years")
           .add(months, "months")
           .format("YYYY-MM-DD");
-        console.log("else", calculatedEndDate)
       }
       
       calculatedEndDate = dayjs(calculatedEndDate);

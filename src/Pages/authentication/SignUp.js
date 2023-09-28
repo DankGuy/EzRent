@@ -227,7 +227,7 @@ function SignUpCard() {
                     return Promise.resolve();
                   }
                   return Promise.reject(
-                    new Error("Please use tarc student email!")
+                    new Error("Please use TARUMT student email!")
                   );
                 },
               },
