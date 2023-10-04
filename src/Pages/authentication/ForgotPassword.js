@@ -19,7 +19,7 @@ function ForgotPasswordCard() {
     e.preventDefault();
     try {
       const { data, error } = await supabase.auth.resetPasswordForEmail(email, {
-        redirectTo: "https://ez-rent.vercel.app//update-password",
+        redirectTo: "https://ez-rent.vercel.app/update-password",
       });
       if (error) throw error;
       message.success("Password recovery email has been sent!");
