@@ -6,6 +6,7 @@ import { useEffect, useState } from "react";
 import { Avatar, Dropdown, Menu } from "antd";
 import { UserOutlined, LogoutOutlined, DownOutlined } from "@ant-design/icons";
 import { RiAdminLine } from "react-icons/ri";
+import { useAuth } from "../context/AuthProvider";
 
 function NavBar() {
 
@@ -18,7 +19,11 @@ function NavBar() {
   const [userName, setUserName] = useState(null);
 
 
+  const { recordUserLog } = useAuth();
+
   const logout = async () => {
+    const user_id = (await supabase.auth.getUser()).data.user.id;
+    recordUserLog(user_id, "logout");
     await supabase.auth.signOut().then(() => {
       navigate("/");
     });

@@ -18,6 +18,19 @@ export const useAuth = () => useContext(AuthContext);
 // const updatePassword = (updatedPassword) =>
 //   supabase.auth.updateUser({ password: updatedPassword });
 
+const recordUserLog = async (user_id, event) => {
+  const { data, error } = await supabase.from("user_authentication_log").insert([
+    {
+      user_id,
+      event_name: event,
+      created_at: new Date(),
+    },
+  ]);
+  if (error) {
+    console.log(error);
+  }
+}
+
 const AuthProvider = ({ children }) => {
   const [auth, setAuth] = useState(false);
   const [user, setUser] = useState(null);
@@ -74,6 +87,7 @@ const AuthProvider = ({ children }) => {
         auth,
         // user,
         userSession,
+        recordUserLog,
         // login,
         // signOut,
         // passwordReset,

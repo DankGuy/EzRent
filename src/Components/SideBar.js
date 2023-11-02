@@ -8,6 +8,7 @@ import '../Pages/agent/AgentHome.css'
 import { useEffect, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { supabase } from '../supabase-client'
+import { useAuth } from '../context/AuthProvider'
 
 
 function Sidebar({ value, setTitle }) {
@@ -25,6 +26,8 @@ function Sidebar({ value, setTitle }) {
     }, []);
 
     const [selectedKey, setSelectedKey] = useState('/agent')
+
+    const { recordUserLog } = useAuth();
 
     return (
         <Sider trigger={null} collapsible collapsed={value} collapsedWidth={90} width={220} className='menuSidebar'
@@ -46,8 +49,10 @@ function Sidebar({ value, setTitle }) {
                     height: '100%',
                     overflowY: 'auto',
                 }}
-                onClick={async({ key }) => {
+                onClick={async ({ key }) => {
                     if (key === '/logout') {
+                        const user_id = (await supabase.auth.getUser()).data.user.id;
+                        recordUserLog(user_id, "logout");
                         await supabase.auth.signOut();
                         localStorage.removeItem('selectedKey');
                         navigate('/');

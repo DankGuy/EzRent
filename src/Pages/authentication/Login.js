@@ -15,7 +15,7 @@ function LoginCard() {
 
   const [isReady, setIsReady] = useState(true);
 
-  const { userSession, auth } = useAuth();
+  const { userSession, auth, recordUserLog } = useAuth();
 
   const navigate = useNavigate();
 
@@ -80,10 +80,12 @@ function LoginCard() {
             );
             // navigate("/login");
           } else {
+            recordUserLog(user.id, "login");
             localStorage.setItem("selectedKey", "/agent");
           }
         }
       } else if (user.user_metadata.userType === "student") {
+        recordUserLog(user.id, "login");
         localStorage.setItem(
           "selectedKey",
           "/student/profile/profileInformation"
